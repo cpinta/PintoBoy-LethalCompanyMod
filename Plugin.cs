@@ -103,13 +103,10 @@ namespace PintoMod
             //pintoGrab.spawnPrefab.AddComponent<ScanNodeProperties>();
 
             //Items.RegisterShopItem(pintoGrab, 0);
-            //
 
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(pintoGrab.spawnPrefab);
             Items.RegisterScrap(pintoGrab, 100, Levels.LevelTypes.All);
 
         }
-
-
     }
 }

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PintoBoy : RemoteProp
+public class PintoBoy : PhysicsProp
 {
     GameObject player;
     GameObject screen;
@@ -22,7 +22,6 @@ public class PintoBoy : RemoteProp
         useCooldown = 0.5f;
 
         playerStartPos = player.transform.localPosition;
-        Enable(false);
 
         grabbable = true;
         parentObject = this.transform;
@@ -30,15 +29,21 @@ public class PintoBoy : RemoteProp
 
         customGrabTooltip = "Pinto grab tooltup custom";
         grabbableToEnemies = true;
-        remoteAudio = this.GetComponent<AudioSource>();
 
 
         scanNodeProperties.maxRange = 100;
-        scanNodeProperties.minRange = 0;
+        scanNodeProperties.minRange = 1;
+        scanNodeProperties.requiresLineOfSight = true;
         scanNodeProperties.headerText = "PintoBoy";
         scanNodeProperties.subText = "PintoBoy Subtext";
         scanNodeProperties.creatureScanID = -1;
-        scanNodeProperties.nodeType = 1;
+        scanNodeProperties.nodeType = 2;
+
+        Pinto_ModBase.pintoGrab.weight = 5;
+        Pinto_ModBase.pintoGrab.canBeGrabbedBeforeGameStart = true;
+        Pinto_ModBase.pintoGrab.isScrap = true;
+        Pinto_ModBase.pintoGrab.canBeInspected = true;
+        Pinto_ModBase.pintoGrab.allowDroppingAheadOfPlayer = true;
     }
 
 
@@ -46,6 +51,8 @@ public class PintoBoy : RemoteProp
     // Update is called once per frame
     void Update()
     {
+        base.Update();
+
         if (playerStartPos.y < player.transform.localPosition.y)
         {
             player.transform.localPosition -= new Vector3(0, fallSpeed, 0);
@@ -87,6 +94,8 @@ public class PintoBoy : RemoteProp
     {
         return 0;
     }
+
+
 
     public bool IsAnythingNull()
     {
