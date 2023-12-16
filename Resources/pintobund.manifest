@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 3175812996
+CRC: 2931537288
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 714f334f43cf92c2c1b7aadda911c4ef
+    Hash: 40ebf511a459bafd292df8b203110da7
   TypeTreeHash:
     serializedVersion: 2
-    Hash: c2c21af4c5a6b07f28cbd99905eed694
+    Hash: fe8deb19fd82aa7833f1fa7d8ad09740
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 714f334f43cf92c2c1b7aadda911c4ef
+    Hash: 40ebf511a459bafd292df8b203110da7
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -32,6 +32,8 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 50
   Script: {instanceID: 0}
+- Class: 60
+  Script: {instanceID: 0}
 - Class: 61
   Script: {instanceID: 0}
 - Class: 64
@@ -51,18 +53,34 @@ ClassTypes:
 - Class: 95
   Script: {instanceID: 0}
 - Class: 114
+  Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: 23c1ce4fb46143f46bc5cb5224c934f6, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: c30496d6ae6d6f907456e10a94e01ec6, type: 3}
 - Class: 114
+  Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: 3c36d0a92cbb1f26a39169ef0eae393a, type: 3}
 - Class: 114
+  Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
 - Class: 115
+  Script: {instanceID: 0}
+- Class: 128
   Script: {instanceID: 0}
 - Class: 212
   Script: {instanceID: 0}
 - Class: 213
+  Script: {instanceID: 0}
+- Class: 222
+  Script: {instanceID: 0}
+- Class: 223
+  Script: {instanceID: 0}
+- Class: 224
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers:
 - AssemblyName: Unity.RenderPipelines.Core.Runtime
@@ -77,22 +95,71 @@ SerializeReferenceClassIdentifiers:
   ClassName: UnityEngine.Rendering.HighDefinition.ObsoleteFrameSettings
 - AssemblyName: Unity.RenderPipelines.HighDefinition.Runtime
   ClassName: UnityEngine.Rendering.HighDefinition.ObsoleteLightLoopSettings
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.FaceInfo_Legacy
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.FontAssetCreationSettings
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.KerningTable
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.TMP_Character
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.TMP_FontFeatureTable
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.TMP_FontWeightPair
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.VertexGradient
+- AssemblyName: UnityEngine.CoreModule
+  ClassName: UnityEngine.Events.PersistentCallGroup
+- AssemblyName: UnityEngine.TextCoreFontEngineModule
+  ClassName: UnityEngine.TextCore.FaceInfo
+- AssemblyName: UnityEngine.TextCoreFontEngineModule
+  ClassName: UnityEngine.TextCore.Glyph
+- AssemblyName: UnityEngine.TextCoreFontEngineModule
+  ClassName: UnityEngine.TextCore.GlyphMetrics
+- AssemblyName: UnityEngine.TextCoreFontEngineModule
+  ClassName: UnityEngine.TextCore.GlyphRect
+- AssemblyName: UnityEngine.UI
+  ClassName: UnityEngine.UI.MaskableGraphic/CullStateChangedEvent
 Assets:
 - Assets/Pintoboy/screen.mat
 - Assets/Pintoboy/player.mat
 - Assets/Pintoboy/sprite.png
 - Assets/Pintoboy/2D/Background/RailingGround.controller
+- Assets/Pintoboy/2D/Menus/Fade.controller
 - Assets/Pintoboy/2D/Employee/2DEmployee_Jump.anim
+- Assets/Pintoboy/2D/Loot Bug/Loot Bug.png
 - Assets/Pintoboy/Pintoboy.asset
+- Assets/Pintoboy/2D/Menus/Main Menu.png
 - Assets/Pintoboy/2D/Background/RailingGround_Scroll.anim
+- Assets/Pintoboy/2D/Menus/Main Menu_Selected.anim
+- Assets/Pintoboy/2D/Spider/Spider_Walk.anim
+- Assets/Pintoboy/2D/Slime/Slime.prefab
+- Assets/Pintoboy/2D/Loot Bug/Loot Bug.prefab
 - Assets/Pintoboy/Screen Mat.mat
 - Assets/Pintoboy/Pintoboy.prefab
 - Assets/Pintoboy/2D/Employee/Employee.png
+- Assets/Pintoboy/2D/Loot Bug/Loot Bug_Idle.anim
+- Assets/Pintoboy/2D/Loot Bug/Loot Bug.controller
 - Assets/Pintoboy/2D/Employee/2DEmployee_Run.anim
+- Assets/Pintoboy/2D/Slime/Slime_Idle.anim
 - Assets/Pintoboy/2D/Background/Ceiling.png
 - Assets/Pintoboy/2D/Employee/2DEmployee.controller
+- Assets/Pintoboy/2D/Menus/Main Menu.controller
 - Assets/Pintoboy/Screen Render Tex.renderTexture
 - Assets/Pintoboy/Pintoboy.fbx
+- Assets/Pintoboy/2D/Menus/Fade_Off.anim
+- Assets/Pintoboy/2D/Menus/Fade_Out.anim
 - Assets/Pintoboy/2D/Background/RailingGround.png
+- Assets/Pintoboy/2D/Menus/Main Menu_Static.anim
+- Assets/Pintoboy/2D/Spider/Spider.png
+- Assets/Pintoboy/3270Condensed-Regular.otf
+- Assets/Pintoboy/3270Condensed-Regular SDF.asset
+- Assets/Pintoboy/2D/Menus/Fade_In.anim
 - Assets/Pintoboy/boy color.mat
+- Assets/Pintoboy/2D/Slime/Slime.controller
+- Assets/Pintoboy/2D/Menus/Fade_On.anim
+- Assets/Pintoboy/2D/Spider/Spider.prefab
+- Assets/Pintoboy/2D/Slime/Slime.png
+- Assets/Pintoboy/2D/Spider/Spider.controller
 Dependencies: []

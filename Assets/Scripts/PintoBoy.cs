@@ -69,9 +69,9 @@ public class PintoBoy : PhysicsProp
 
     TMP_Text scoreText;
 
-    public JumpanyEnemy spiderPrefab;
-    public JumpanyEnemy lootbugPrefab;
-    public JumpanyEnemy slimePrefab;
+    public GameObject spiderPrefab;
+    public GameObject lootbugPrefab;
+    public GameObject slimePrefab;
     float spiderSpeed = 2f;
     float lootbugSpeed = 3f;
     float slimeSpeed = 1.75f;
@@ -96,7 +96,15 @@ public class PintoBoy : PhysicsProp
     // Start is called before the first frame update
     void Awake()
     {
+
+        mainObjectRenderer = transform.Find("Model/Body").GetComponent<MeshRenderer>();
+
+        spiderPrefab = Pinto_ModBase.spiderPrefab;
+        lootbugPrefab = Pinto_ModBase.lootbugPrefab;
+        slimePrefab = Pinto_ModBase.slimePrefab;
+
         fadeAnim = transform.Find("2D Scene/Fade").GetComponent<Animator>();
+
         mainMenu = transform.Find("2D Scene/Main Menu");
         mainMenuAnim = transform.Find("2D Scene/Main Menu/Main Menu Sprite").GetComponent<Animator>();
 
@@ -112,24 +120,25 @@ public class PintoBoy : PhysicsProp
         paused = transform.Find("2D Scene/Paused");
         lost = transform.Find("2D Scene/Lost");
 
-
         playerRb.bodyType = RigidbodyType2D.Kinematic;
 
         screen = transform.Find("2D Scene");
         cam = transform.Find("2D Cam");
 
+        topSpawnpoint = transform.Find("2D Scene/Game/Top Spawnpoint");
+        midSpawnpoint = transform.Find("2D Scene/Game/Mid Spawnpoint");
+        bottomSpawnpoint = transform.Find("2D Scene/Game/Bottom Spawnpoint");
+        playerSpawnpoint = transform.Find("2D Scene/Game/Player Spawnpoint");
 
         scanNodeProperties = this.GetComponentInChildren<ScanNodeProperties>();
 
-        useCooldown = 0.5f;
+        useCooldown = 0.1f;
 
         grabbable = true;
         parentObject = this.transform;
-        //itemProperties = Pinto_ModBase.pintoGrab;
-
         customGrabTooltip = "Pinto grab tooltup custom";
-        grabbableToEnemies = true;
 
+        grabbableToEnemies = true;
 
         scanNodeProperties.maxRange = 100;
         scanNodeProperties.minRange = 1;
@@ -139,21 +148,108 @@ public class PintoBoy : PhysicsProp
         scanNodeProperties.creatureScanID = -1;
         scanNodeProperties.nodeType = 2;
 
+
         SwitchState(PintoBoyState.MainMenu);
+
+
         fadeAnim.gameObject.SetActive(true);
-
-        topSpawnpoint = transform.Find("2D Scene/Game/Top Spawnpoint");
-        midSpawnpoint = transform.Find("2D Scene/Game/Mid Spawnpoint");
-        bottomSpawnpoint = transform.Find("2D Scene/Game/Bottom Spawnpoint");
-
         Pinto_ModBase.pintoGrab.canBeGrabbedBeforeGameStart = true;
         Pinto_ModBase.pintoGrab.isScrap = true;
         Pinto_ModBase.pintoGrab.canBeInspected = true;
         Pinto_ModBase.pintoGrab.allowDroppingAheadOfPlayer = true;
 
-
         screen.parent = null;
         cam.parent = null;
+
+    }
+
+    void LateUpdate()
+    {
+        try
+        {
+            base.LateUpdate();
+        }
+        catch (System.Exception ex)
+        {
+            Debug.Log("");
+            Debug.Log("");
+            Debug.Log("");
+            Debug.Log("");
+            Debug.Log("");
+            Debug.Log("Exception caught in PintoBoy LateUpdate: " + ex.Message);
+            Debug.Log($"gameState: {gameState}");
+
+            Debug.Log($"fadeAnim: {fadeAnim}");
+            Debug.Log($"mainMenu: {mainMenu}");
+            Debug.Log($"mainMenuAnim: {mainMenuAnim}");
+            Debug.Log($"mainmenuTime: {mainmenuTime}");
+            Debug.Log($"mainmenuTimer: {mainmenuTimer}");
+
+            Debug.Log($"SelectedString: {SelectedString}");
+            Debug.Log($"FadeString: {FadeString}");
+            Debug.Log($"DoAnimString: {DoAnimString}");
+
+            Debug.Log($"inGame: {inGame}");
+            Debug.Log($"player: {player}");
+            Debug.Log($"playerRb: {playerRb}");
+            Debug.Log($"playerCol: {playerCol}");
+            Debug.Log($"groundCol: {groundCol}");
+            Debug.Log($"playerAnim: {playerAnim}");
+
+            Debug.Log($"InAirString: {InAirString}");
+
+            Debug.Log($"screen: {screen}");
+            Debug.Log($"cam: {cam}");
+            Debug.Log($"scanNodeProperties: {scanNodeProperties}");
+            Debug.Log($"jumpHeight: {jumpHeight}");
+            Debug.Log($"fastFallSpeed: {fastFallSpeed}");
+            Debug.Log($"rayCastDistance: {rayCastDistance}");
+            Debug.Log($"rayCastOffset: {rayCastOffset}");
+
+            Debug.Log($"jump: {jump}");
+            Debug.Log($"isGrounded: {isGrounded}");
+
+            Debug.Log($"doOnce: {doOnce}");
+
+            Debug.Log($"paused: {paused}");
+            Debug.Log($"lost: {lost}");
+
+            Debug.Log($"playerSpawnpoint: {playerSpawnpoint}");
+            Debug.Log($"topSpawnpoint: {topSpawnpoint}");
+            Debug.Log($"midSpawnpoint: {midSpawnpoint}");
+            Debug.Log($"bottomSpawnpoint: {bottomSpawnpoint}");
+
+            Debug.Log($"scoreText: {scoreText}");
+
+            Debug.Log($"spiderPrefab: {spiderPrefab}");
+            Debug.Log($"lootbugPrefab: {lootbugPrefab}");
+            Debug.Log($"slimePrefab: {slimePrefab}");
+            Debug.Log($"spiderSpeed: {spiderSpeed}");
+            Debug.Log($"lootbugSpeed: {lootbugSpeed}");
+            Debug.Log($"slimeSpeed: {slimeSpeed}");
+
+            Debug.Log($"highScore: {highScore}");
+            Debug.Log($"currentScore: {currentScore}");
+            Debug.Log($"scoreIncreaseRate: {scoreIncreaseRate}");
+
+            Debug.Log($"increaseSpeedAddition: {increaseSpeedAddition}");
+            Debug.Log($"increaseAdditionRate: {increaseAdditionRate}");
+            Debug.Log($"speedAdditionMultiplier: {speedAdditionMultiplier}");
+            Debug.Log($"speedAdditionMultiplierDefault: {speedAdditionMultiplierDefault}");
+            Debug.Log($"timesIncreased: {timesIncreased}");
+
+            Debug.Log($"spawnEnemyEveryMin: {spawnEnemyEveryMin}");
+            Debug.Log($"spawnEnemyEveryMax: {spawnEnemyEveryMax}");
+            Debug.Log($"lastTimeSpawned: {lastTimeSpawned}");
+
+            Debug.Log($"enemies Count: {enemies.Count}");
+            Debug.Log("");
+            Debug.Log("");
+            Debug.Log("");
+            Debug.Log("");
+            Debug.Log("");
+
+        }
     }
 
 
@@ -272,17 +368,17 @@ public class PintoBoy : PhysicsProp
 
     void SpawnSpider()
     {
-        SpawnEnemy(spiderPrefab, topSpawnpoint, spiderSpeed);
+        SpawnEnemy(spiderPrefab.GetComponent<JumpanyEnemy>(), topSpawnpoint, spiderSpeed);
     }
 
     void SpawnLootbug()
     {
-        SpawnEnemy(lootbugPrefab, midSpawnpoint, lootbugSpeed);
+        SpawnEnemy(lootbugPrefab.GetComponent<JumpanyEnemy>(), midSpawnpoint, lootbugSpeed);
     }
 
     void SpawnSlime()
     {
-        SpawnEnemy(slimePrefab, bottomSpawnpoint, slimeSpeed);
+        SpawnEnemy(slimePrefab.GetComponent<JumpanyEnemy>(), bottomSpawnpoint, slimeSpeed);
     }
 
     void SetFade(FadeState state)

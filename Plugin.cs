@@ -45,6 +45,9 @@ namespace PintoMod
         public static readonly Lazy<Pinto_ModBase> Instance = new Lazy<Pinto_ModBase>(() => new Pinto_ModBase());
         public static GameObject pintoPrefab;
         public static Item pintoGrab;
+        public static GameObject spiderPrefab;
+        public static GameObject slimePrefab;
+        public static GameObject lootbugPrefab;
 
         private void Awake()
         {
@@ -87,35 +90,56 @@ namespace PintoMod
 
         private void LoadBundle()
         {
+            try
+            {
+                AssetBundle pintoBundle = AssetBundle.LoadFromMemory(Properties.Resources.pintobund);
+                if (pintoBundle == null) throw new Exception("Failed to load Pinto Bundle!");
 
-            AssetBundle pintoBundle = AssetBundle.LoadFromMemory(Properties.Resources.pintobund);
-            if (pintoBundle == null) throw new Exception("Failed to load Bundle!");
+                string[] assetNames = pintoBundle.GetAllAssetNames();
+                Debug.Log("Asset Names: \n" + string.Join("\n", assetNames));
 
-            string[] assetNames = pintoBundle.GetAllAssetNames();
-            Debug.Log("Asset Names: \n" + string.Join("\n", assetNames));
+                pintoPrefab = pintoBundle.LoadAsset<GameObject>("assets/pintoboy/pintoboy.prefab");
+                if (pintoPrefab == null) throw new Exception("Failed to load Pinto Prefab!");
 
-            pintoPrefab = pintoBundle.LoadAsset<GameObject>("assets/pintoboy/pintoboy.prefab");
-            if (pintoPrefab == null) throw new Exception("Failed to load Pinto Prefab!");
+                pintoGrab = pintoBundle.LoadAsset<Item>("assets/pintoboy/pintoboy.asset");
+                if (pintoGrab == null) throw new Exception("Failed to load Pinto Item!");
 
-            pintoGrab = pintoBundle.LoadAsset<Item>("assets/pintoboy/pintoboy.asset");
-            if (pintoGrab == null) throw new Exception("Failed to load Pinto Item!");
-
-            PintoBoy pintoBoy = pintoGrab.spawnPrefab.AddComponent<PintoBoy>();
-
-            BoomboxItem boombox = new BoomboxItem();
-            //boombox.musicAudios
-
-            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(pintoGrab.spawnPrefab);
-            Items.RegisterScrap(pintoGrab, 100, Levels.LevelTypes.All);
+                PintoBoy pintoBoy = pintoGrab.spawnPrefab.AddComponent<PintoBoy>();
+                if (pintoBoy == null) throw new Exception("Failed to load Pinto Boy!");
 
 
-            pintoBoy.spiderPrefab = pintoBundle.LoadAsset<JumpanyEnemy>("assets/pintoboy/2d/spider/spider.prefab");
-            pintoBoy.slimePrefab = pintoBundle.LoadAsset<JumpanyEnemy>("assets/pintoboy/2d/slime/slime.prefab");
-            pintoBoy.lootbugPrefab = pintoBundle.LoadAsset<JumpanyEnemy>("assets/pintoboy/2d/lootbug/lootbug.prefab");
-            pintoBoy.spiderPrefab.gameObject.AddComponent<JumpanyEnemy>();
-            pintoBoy.slimePrefab.gameObject.AddComponent<JumpanyEnemy>();
-            pintoBoy.lootbugPrefab.gameObject.AddComponent<JumpanyEnemy>();
 
+                BoomboxItem boombox = new BoomboxItem();
+                //boombox.musicAudios
+                pintoBoy.itemProperties = pintoGrab;
+
+                LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(pintoGrab.spawnPrefab);
+                Items.RegisterScrap(pintoGrab, 100, Levels.LevelTypes.All);
+
+                GameObject spider = pintoBundle.LoadAsset<GameObject>("assets/pintoboy/2d/spider/spider.prefab");
+                if (spider == null) throw new Exception("Failed to load Spider Prefab Object!");
+                spider.AddComponent<JumpanyEnemy>();
+                spiderPrefab = spider;
+
+                if (spiderPrefab == null) throw new Exception("Failed to Spider Prefab!");
+
+                GameObject slime = pintoBundle.LoadAsset<GameObject>("assets/pintoboy/2d/slime/slime.prefab");
+                if (slime == null) throw new Exception("Failed to load Slime Prefab Object!");
+                slime.AddComponent<JumpanyEnemy>();
+                slimePrefab = slime;
+                if (slimePrefab == null) throw new Exception("Failed to Slime Prefab!");
+
+                GameObject lootbug = pintoBundle.LoadAsset<GameObject>("assets/pintoboy/2d/loot bug/loot bug.prefab");
+                if (lootbug == null) throw new Exception("Failed to load Lootbug Prefab Object!");
+                lootbug.AddComponent<JumpanyEnemy>();
+                lootbugPrefab = lootbug;
+                if (lootbugPrefab == null) throw new Exception("Failed to Lootbug Prefab!");
+
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
     }
 }
