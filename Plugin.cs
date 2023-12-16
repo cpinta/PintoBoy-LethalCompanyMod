@@ -77,6 +77,8 @@ namespace PintoMod
 
         private void ConfigSetup()
         {
+            //
+            
             config_PushCooldown = Config.Bind("Push Cooldown", "Value", 0.025f, "How long until the player can push again");
             config_PushForce = Config.Bind("Push Force", "Value", 12.5f, "How strong the player pushes.");
             config_PushRange = Config.Bind("Push Range", "Value", 3.0f, "The distance the player is able to push.");
@@ -86,26 +88,33 @@ namespace PintoMod
         private void LoadBundle()
         {
 
-            AssetBundle pushBundle = AssetBundle.LoadFromMemory(Properties.Resources.pintobund);
-            if (pushBundle == null) throw new Exception("Failed to load Bundle!");
+            AssetBundle pintoBundle = AssetBundle.LoadFromMemory(Properties.Resources.pintobund);
+            if (pintoBundle == null) throw new Exception("Failed to load Bundle!");
 
-
-            string[] assetNames = pushBundle.GetAllAssetNames();
+            string[] assetNames = pintoBundle.GetAllAssetNames();
             Debug.Log("Asset Names: \n" + string.Join("\n", assetNames));
 
-            pintoPrefab = pushBundle.LoadAsset<GameObject>("assets/pintoboy/pintoboy.prefab");
+            pintoPrefab = pintoBundle.LoadAsset<GameObject>("assets/pintoboy/pintoboy.prefab");
             if (pintoPrefab == null) throw new Exception("Failed to load Pinto Prefab!");
 
-            pintoGrab = pushBundle.LoadAsset<Item>("assets/pintoboy/pintoboy.asset");
+            pintoGrab = pintoBundle.LoadAsset<Item>("assets/pintoboy/pintoboy.asset");
             if (pintoGrab == null) throw new Exception("Failed to load Pinto Item!");
 
-            pintoGrab.spawnPrefab.AddComponent<PintoBoy>();
-            //pintoGrab.spawnPrefab.AddComponent<ScanNodeProperties>();
+            PintoBoy pintoBoy = pintoGrab.spawnPrefab.AddComponent<PintoBoy>();
 
-            //Items.RegisterShopItem(pintoGrab, 0);
+            BoomboxItem boombox = new BoomboxItem();
+            //boombox.musicAudios
 
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(pintoGrab.spawnPrefab);
             Items.RegisterScrap(pintoGrab, 100, Levels.LevelTypes.All);
+
+
+            pintoBoy.spiderPrefab = pintoBundle.LoadAsset<JumpanyEnemy>("assets/pintoboy/2d/spider/spider.prefab");
+            pintoBoy.slimePrefab = pintoBundle.LoadAsset<JumpanyEnemy>("assets/pintoboy/2d/slime/slime.prefab");
+            pintoBoy.lootbugPrefab = pintoBundle.LoadAsset<JumpanyEnemy>("assets/pintoboy/2d/lootbug/lootbug.prefab");
+            pintoBoy.spiderPrefab.gameObject.AddComponent<JumpanyEnemy>();
+            pintoBoy.slimePrefab.gameObject.AddComponent<JumpanyEnemy>();
+            pintoBoy.lootbugPrefab.gameObject.AddComponent<JumpanyEnemy>();
 
         }
     }

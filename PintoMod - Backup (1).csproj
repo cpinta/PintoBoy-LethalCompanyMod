@@ -43,9 +43,6 @@
       <Reference Include="Unity.Netcode.Runtime">
         <HintPath>E:\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Netcode.Runtime.dll</HintPath>
       </Reference>
-      <Reference Include="Unity.TextMeshPro">
-        <HintPath>E:\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.TextMeshPro.dll</HintPath>
-      </Reference>
       <Reference Include="UnityEngine">
         <HintPath>E:\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.dll</HintPath>
       </Reference>

@@ -1,20 +1,22 @@
 ManifestFileVersion: 0
-CRC: 3879936890
+CRC: 3175812996
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: fee938917cb61c241e409c3b436af908
+    Hash: 714f334f43cf92c2c1b7aadda911c4ef
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 59ad268cbc332cedb3e918a30b23bad0
+    Hash: c2c21af4c5a6b07f28cbd99905eed694
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: fee938917cb61c241e409c3b436af908
+    Hash: 714f334f43cf92c2c1b7aadda911c4ef
 HashAppended: 0
 ClassTypes:
 - Class: 1
   Script: {instanceID: 0}
 - Class: 4
+  Script: {instanceID: 0}
+- Class: 20
   Script: {instanceID: 0}
 - Class: 21
   Script: {instanceID: 0}
@@ -28,10 +30,28 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 48
   Script: {instanceID: 0}
+- Class: 50
+  Script: {instanceID: 0}
+- Class: 61
+  Script: {instanceID: 0}
+- Class: 64
+  Script: {instanceID: 0}
 - Class: 65
+  Script: {instanceID: 0}
+- Class: 70
+  Script: {instanceID: 0}
+- Class: 74
   Script: {instanceID: 0}
 - Class: 82
   Script: {instanceID: 0}
+- Class: 84
+  Script: {instanceID: 0}
+- Class: 91
+  Script: {instanceID: 0}
+- Class: 95
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: 23c1ce4fb46143f46bc5cb5224c934f6, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: c30496d6ae6d6f907456e10a94e01ec6, type: 3}
 - Class: 114
@@ -40,14 +60,39 @@ ClassTypes:
   Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
 - Class: 115
   Script: {instanceID: 0}
+- Class: 212
+  Script: {instanceID: 0}
 - Class: 213
   Script: {instanceID: 0}
-SerializeReferenceClassIdentifiers: []
+SerializeReferenceClassIdentifiers:
+- AssemblyName: Unity.RenderPipelines.Core.Runtime
+  ClassName: UnityEngine.Rendering.BitArray128
+- AssemblyName: Unity.RenderPipelines.HighDefinition.Runtime
+  ClassName: UnityEngine.Rendering.HighDefinition.FrameSettings
+- AssemblyName: Unity.RenderPipelines.HighDefinition.Runtime
+  ClassName: UnityEngine.Rendering.HighDefinition.FrameSettingsOverrideMask
+- AssemblyName: Unity.RenderPipelines.HighDefinition.Runtime
+  ClassName: UnityEngine.Rendering.HighDefinition.HDPhysicalCamera
+- AssemblyName: Unity.RenderPipelines.HighDefinition.Runtime
+  ClassName: UnityEngine.Rendering.HighDefinition.ObsoleteFrameSettings
+- AssemblyName: Unity.RenderPipelines.HighDefinition.Runtime
+  ClassName: UnityEngine.Rendering.HighDefinition.ObsoleteLightLoopSettings
 Assets:
 - Assets/Pintoboy/screen.mat
 - Assets/Pintoboy/player.mat
 - Assets/Pintoboy/sprite.png
+- Assets/Pintoboy/2D/Background/RailingGround.controller
+- Assets/Pintoboy/2D/Employee/2DEmployee_Jump.anim
 - Assets/Pintoboy/Pintoboy.asset
+- Assets/Pintoboy/2D/Background/RailingGround_Scroll.anim
+- Assets/Pintoboy/Screen Mat.mat
 - Assets/Pintoboy/Pintoboy.prefab
+- Assets/Pintoboy/2D/Employee/Employee.png
+- Assets/Pintoboy/2D/Employee/2DEmployee_Run.anim
+- Assets/Pintoboy/2D/Background/Ceiling.png
+- Assets/Pintoboy/2D/Employee/2DEmployee.controller
+- Assets/Pintoboy/Screen Render Tex.renderTexture
+- Assets/Pintoboy/Pintoboy.fbx
+- Assets/Pintoboy/2D/Background/RailingGround.png
 - Assets/Pintoboy/boy color.mat
 Dependencies: []
