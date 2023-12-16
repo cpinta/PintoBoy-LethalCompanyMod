@@ -36,4 +36,4 @@ public class JumpanyEnemy : MonoBehaviour
             pintoBoy.Die();
         }
     }
-}//
+}

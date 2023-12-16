@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 2931537288
+CRC: 2376836472
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 40ebf511a459bafd292df8b203110da7
+    Hash: 8c81317daaa8903c82b4cbf0397afc6f
   TypeTreeHash:
     serializedVersion: 2
-    Hash: fe8deb19fd82aa7833f1fa7d8ad09740
+    Hash: fd736ebe0749307a980a07c2592c4139
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 40ebf511a459bafd292df8b203110da7
+    Hash: 8c81317daaa8903c82b4cbf0397afc6f
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -68,6 +68,8 @@ ClassTypes:
   Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: b92e5d129f9962947b74613c990f6b59, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 128
@@ -83,6 +85,8 @@ ClassTypes:
 - Class: 224
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers:
+- AssemblyName: Assembly-CSharp
+  ClassName: Battery
 - AssemblyName: Unity.RenderPipelines.Core.Runtime
   ClassName: UnityEngine.Rendering.BitArray128
 - AssemblyName: Unity.RenderPipelines.HighDefinition.Runtime
