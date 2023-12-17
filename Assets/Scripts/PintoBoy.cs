@@ -1,5 +1,6 @@
-﻿using LC_API.GameInterfaceAPI;
-using LethalLib.Modules;
+﻿//using LC_API.GameInterfaceAPI;
+//using LethalLib.Modules;
+//using PintoMod;
 using PintoMod;
 using System.Collections;
 using System.Collections.Generic;
@@ -26,6 +27,7 @@ public enum FadeState
 public class PintoBoy : PhysicsProp
 {
     PintoBoyState gameState = PintoBoyState.MainMenu;
+    AudioSource audioSource;
 
     Animator fadeAnim;
     Transform mainMenu;
@@ -33,23 +35,37 @@ public class PintoBoy : PhysicsProp
     float mainmenuTime = 2f;
     float mainmenuTimer = 0f;
 
+    float mainmenuWaitTime = 1.5f;
+    float mainmenuWaitTimer = 0f;
+
     string SelectedString = "Selected";
     string FadeString = "Fade";
     string DoAnimString = "DoAnim";
 
     Transform inGame;
+    Vector3 playerStart;
     GameObject player;
     Rigidbody2D playerRb;
     Collider2D playerCol;
-    Collider2D groundCol;
     Animator playerAnim;
+    SpriteRenderer playerSprite;
+    int[] playerPositions = { 0, 5, 10, 15 };
+
+    Vector3 brackenStart;
+    GameObject bracken;
+    Animator brackenAnim;
+
+    Collider2D groundCol;
+    Animator groundAnim;
 
     string InAirString = "InAir";
+    string DeathString = "Death";
+    string ResetString = "Reset";
 
     Transform screen;
     Transform cam;
     ScanNodeProperties scanNodeProperties;
-    public float jumpHeight = 17.5f;
+    public float jumpHeight = 9.75f;
     public float fastFallSpeed = 15f;
     public float rayCastDistance = 0.5f;
     public float rayCastOffset = -0.05f;
@@ -68,17 +84,19 @@ public class PintoBoy : PhysicsProp
     Transform bottomSpawnpoint;
 
     TMP_Text scoreText;
+    TMP_Text endScreenText;
 
     public GameObject spiderPrefab;
     public GameObject lootbugPrefab;
     public GameObject slimePrefab;
-    float spiderSpeed = 2f;
+    float spiderSpeed = 2.5f;
     float lootbugSpeed = 3f;
-    float slimeSpeed = 1.75f;
+    float slimeSpeed = 2f;
 
     float highScore = 0f;
     float currentScore = 0f;
     float scoreIncreaseRate = 15f;     //how much score is added every second
+    int lives = 3;
 
     float increaseSpeedAddition = 0.25f;    //how much speed is added every increaseAdditionRate score
     float increaseAdditionRate = 100;
@@ -93,9 +111,81 @@ public class PintoBoy : PhysicsProp
 
     List<JumpanyEnemy> enemies = new List<JumpanyEnemy>();
 
+    string camString = "2D Cam/";
+
+    bool invincible = false;
+    float invincibleTime = 2f;
+    float invincibleTimer = 0f;
+
+    bool dead;
+    bool deadHitGround;
+    bool deadAnimStarted;
+    bool endScreenShown;
+
+    float deathAnimTime = 2.5f;
+    float deathAnimTimer = 0f;
+    int deathAnimIndex = 0;
+
+    public AudioClip acPlayerStep1;
+    public AudioClip acPlayerStep2;
+    public AudioClip acPlayerJump;
+
+    public AudioClip acSnapNeck;
+    public AudioClip acSnapNeckLand;
+
+    public AudioClip acSpiderStep1;
+    public AudioClip acSpiderStep2;
+    public AudioClip acSpiderStep3;
+    public AudioClip acSpiderStep4;
+
+    public AudioClip acLootbugStep;
+
+    public AudioClip acSlimeStep;
+
+    public AudioClip acConfirm;
+
+    public AudioClip acNewHighscore;
+    public AudioClip acNoHighscore;
+
+    public AudioClip acBackgroundSong;
+
+    float stepSoundTimer = 0f;
+    float stepSoundTime = 0.25f;
+    int stepSoundIndex = 0;
+
+    float backgroundMusicTimer = 0f;
+    float backgroundMusicTime = 0f;
+
+    bool firstPlay = true;
+
     // Start is called before the first frame update
     void Awake()
     {
+        audioSource = this.GetComponent<AudioSource>();
+
+        acPlayerStep1 = Pinto_ModBase.GetAudioClip("21_walk1 (player step 1)");
+        acPlayerStep2 = Pinto_ModBase.GetAudioClip("22_walk2 (player step 2)");
+        acPlayerJump = Pinto_ModBase.GetAudioClip("23_ladder (player land)");
+
+        acSnapNeck = Pinto_ModBase.GetAudioClip("12_exchange (snap neck)");
+        acSnapNeckLand = Pinto_ModBase.GetAudioClip("67_knock (fall after neck snap)");
+
+        acSpiderStep1 = Pinto_ModBase.GetAudioClip("52_step1 (spider movement)");
+        acSpiderStep2 = Pinto_ModBase.GetAudioClip("53_step2 (spider movement)");
+        acSpiderStep3 = Pinto_ModBase.GetAudioClip("54_step3 (spider movement)");
+        acSpiderStep4 = Pinto_ModBase.GetAudioClip("55_step4 (spider movement)");
+
+        acLootbugStep = Pinto_ModBase.GetAudioClip("47_grass (lootbug movement)");
+
+        acSlimeStep = Pinto_ModBase.GetAudioClip("30_triangle (slime movement)");
+
+        acConfirm = Pinto_ModBase.GetAudioClip("59_confirm (start game)");
+
+        acNewHighscore = Pinto_ModBase.GetAudioClip("24_levelclear (new highscore)");
+        acNoHighscore = Pinto_ModBase.GetAudioClip("64_lose2 (no highscore)");
+
+        acBackgroundSong = Pinto_ModBase.GetAudioClip("danger_streets");
+        backgroundMusicTime = acBackgroundSong.length;
 
         mainObjectRenderer = transform.Find("Model/Body").GetComponent<MeshRenderer>();
 
@@ -103,32 +193,41 @@ public class PintoBoy : PhysicsProp
         lootbugPrefab = Pinto_ModBase.lootbugPrefab;
         slimePrefab = Pinto_ModBase.slimePrefab;
 
-        fadeAnim = transform.Find("2D Scene/Fade").GetComponent<Animator>();
+        fadeAnim = transform.Find(camString + "2D Scene/Fade").GetComponent<Animator>();
 
-        mainMenu = transform.Find("2D Scene/Main Menu");
-        mainMenuAnim = transform.Find("2D Scene/Main Menu/Main Menu Sprite").GetComponent<Animator>();
+        mainMenu = transform.Find(camString + "2D Scene/Main Menu");
+        mainMenuAnim = transform.Find(camString + "2D Scene/Main Menu/Main Menu Sprite").GetComponent<Animator>();
 
-        inGame = transform.Find("2D Scene/Game");
-        player = transform.Find("2D Scene/Game/PintoEmployee").gameObject;
+        inGame = transform.Find(camString + "2D Scene/Game");
+        player = transform.Find(camString + "2D Scene/Game/PintoEmployee").gameObject;
+        playerStart = player.transform.localPosition;
         playerRb = player.GetComponent<Rigidbody2D>();
         playerAnim = player.GetComponent<Animator>();
         playerCol = player.GetComponent<Collider2D>();
-        groundCol = transform.Find("2D Scene/Game/RailingGround").GetComponent<Collider2D>();
+        playerSprite = player.GetComponent<SpriteRenderer>();
 
-        scoreText = transform.Find("2D Scene/Game/UI/Score").GetComponent<TMP_Text>();
+        bracken = transform.Find(camString + "2D Scene/Game/Bracken").gameObject;
+        brackenAnim = bracken.GetComponent<Animator>();
+        brackenStart = bracken.transform.localPosition;
 
-        paused = transform.Find("2D Scene/Paused");
-        lost = transform.Find("2D Scene/Lost");
+        groundCol = transform.Find(camString + "2D Scene/Game/RailingGround").GetComponent<Collider2D>();
+        groundAnim = groundCol.gameObject.GetComponent<Animator>();
+
+        scoreText = transform.Find(camString + "2D Scene/Game/UI/Score").GetComponent<TMP_Text>();
+        endScreenText = transform.Find(camString + "2D Scene/Game/UI/Death Screen/Text").GetComponent<TMP_Text>();
+
+        paused = transform.Find(camString + "2D Scene/Paused");
+        lost = transform.Find(camString + "2D Scene/Lost");
 
         playerRb.bodyType = RigidbodyType2D.Kinematic;
 
-        screen = transform.Find("2D Scene");
+        screen = transform.Find(camString + "2D Scene");
         cam = transform.Find("2D Cam");
 
-        topSpawnpoint = transform.Find("2D Scene/Game/Top Spawnpoint");
-        midSpawnpoint = transform.Find("2D Scene/Game/Mid Spawnpoint");
-        bottomSpawnpoint = transform.Find("2D Scene/Game/Bottom Spawnpoint");
-        playerSpawnpoint = transform.Find("2D Scene/Game/Player Spawnpoint");
+        topSpawnpoint = transform.Find(camString + "2D Scene/Game/Top Spawnpoint");
+        midSpawnpoint = transform.Find(camString + "2D Scene/Game/Mid Spawnpoint");
+        bottomSpawnpoint = transform.Find(camString + "2D Scene/Game/Bottom Spawnpoint");
+        playerSpawnpoint = transform.Find(camString + "2D Scene/Game/Player Spawnpoint");
 
         scanNodeProperties = this.GetComponentInChildren<ScanNodeProperties>();
 
@@ -161,6 +260,9 @@ public class PintoBoy : PhysicsProp
         screen.parent = null;
         cam.parent = null;
 
+        endScreenText.text = "";
+
+        mainmenuWaitTimer = mainmenuWaitTime;
     }
 
     void LateUpdate()
@@ -268,6 +370,11 @@ public class PintoBoy : PhysicsProp
         switch (gameState)
         {
             case PintoBoyState.MainMenu:
+                if (mainmenuWaitTimer > 0)
+                {
+                    mainmenuWaitTimer -= Time.deltaTime;
+                }
+
                 if (mainmenuTimer > 0)
                 {
                     mainmenuTimer -= Time.deltaTime;
@@ -280,7 +387,7 @@ public class PintoBoy : PhysicsProp
                 if (mainmenuTimer <= 1 && mainmenuTimer > 0 && doOnce)
                 {
                     mainmenuTimer = 0f;
-                    SwitchState(PintoBoyState.InGame);
+                    StartGame();
                     SetFade(FadeState.FadeIn);
                     doOnce = false;
                 }
@@ -303,20 +410,61 @@ public class PintoBoy : PhysicsProp
 
     void InGameUpdate()
     {
-        RaycastHit2D hit = Physics2D.Raycast(player.transform.position - (rayCastOffset * Vector3.down), Vector2.down, rayCastDistance);
+        if (endScreenShown)
+        {
+            return;
+        }
+        if (!deadAnimStarted)
+        {
+            RaycastHit2D hit = Physics2D.Raycast(player.transform.position - (rayCastOffset * Vector3.down), Vector2.down, rayCastDistance);
 
-        if (hit.collider == groundCol)
-        {
-            isGrounded = true;
-            Debug.DrawRay(player.transform.position - (rayCastOffset * Vector3.down), Vector2.down * rayCastDistance, Color.green);
-            playerAnim.SetBool(InAirString, false);
+            if (hit.collider == groundCol)
+            {
+                isGrounded = true;
+                Debug.DrawRay(player.transform.position - (rayCastOffset * Vector3.down), Vector2.down * rayCastDistance, Color.green);
+                playerAnim.SetBool(InAirString, false);
+                deadHitGround = true;
+            }
+            else
+            {
+                isGrounded = false;
+                Debug.DrawRay(player.transform.position - (rayCastOffset * Vector3.down), Vector2.down * rayCastDistance, Color.red);
+                playerAnim.SetBool(InAirString, true);
+                deadHitGround = false;
+            }
         }
-        else
+
+        if (dead)
         {
-            isGrounded = false;
-            Debug.DrawRay(player.transform.position - (rayCastOffset * Vector3.down), Vector2.down * rayCastDistance, Color.red);
-            playerAnim.SetBool(InAirString, true);
+            if (deadHitGround)
+            {
+                PlayDeathAnim();
+            }
+            if (deadAnimStarted)
+            {
+                deathAnimTimer -= Time.deltaTime;
+                if (deathAnimTimer <= 0)
+                {
+                    deadAnimStarted = false;
+                    ShowEndScreen();
+                }
+                else if (deathAnimTimer < deathAnimTime - 0.25f && deathAnimIndex == 0)
+                {
+                    deathAnimIndex++;
+                    PlaySound(acSnapNeck);
+                }
+                else if (deathAnimTimer < deathAnimTime - 1.75f && deathAnimIndex == 1)
+                {
+                    deathAnimIndex++;
+                    PlaySound(acSnapNeckLand);
+                }
+            }
+
+
+            return;
         }
+
+
 
         currentScore += scoreIncreaseRate * Time.deltaTime;
 
@@ -333,6 +481,51 @@ public class PintoBoy : PhysicsProp
         }
 
         scoreText.text = Mathf.Round(currentScore).ToString();
+
+        if (player.transform.localPosition.y < playerStart.y - 2 && player.transform.localPosition.y > playerStart.y + 100)
+        {
+            player.transform.localPosition = playerSpawnpoint.localPosition;
+        }
+
+        if (invincible)
+        {
+            invincibleTimer -= Time.deltaTime;
+
+            if (invincibleTimer <= 0)
+            {
+                invincible = false;
+                playerSprite.enabled = true;
+            }
+            else if (invincibleTimer % 0.25f < 0.05f)
+            {
+                playerSprite.enabled = !playerSprite.enabled;
+            }
+        }
+
+        if (lives > -1)
+        {
+            player.transform.localPosition = new Vector3(playerSpawnpoint.localPosition.x + playerPositions[lives], player.transform.localPosition.y, 0);
+            bracken.transform.localPosition = new Vector3(playerSpawnpoint.localPosition.x - (playerPositions[lives] * 3), brackenStart.y, 0);
+        }
+        else
+        {
+            Debug.Log($"Lives less than 0: {lives}");
+        }
+
+        if (isGrounded)
+        {
+            PlayStepSound();
+        }
+
+        if (backgroundMusicTimer > 0)
+        {
+            backgroundMusicTimer -= Time.deltaTime;
+        }
+        else
+        {
+            backgroundMusicTimer = backgroundMusicTime;
+            PlaySound(acBackgroundSong);
+        }
     }
 
     void SpawnRandomEnemy()
@@ -352,33 +545,38 @@ public class PintoBoy : PhysicsProp
         }
     }
 
-    void SpawnEnemy(JumpanyEnemy prefab, Transform position, float speed)
+    JumpanyEnemy SpawnEnemy(JumpanyEnemy prefab, Transform position, float speed, PintoEnemyType enemy, AudioClip[] audioClips)
     {
-        JumpanyEnemy enemy = Instantiate(prefab, position.position, Quaternion.identity, position);
-        enemy.speed = speed + (increaseSpeedAddition * speedAdditionMultiplier);
-        enemy.pintoBoy = this;
-        enemy.onDeath.AddListener(OnEnemyDeath);
-        enemies.Add(enemy);
+        JumpanyEnemy enemyObj = Instantiate(prefab, position.position, Quaternion.identity, position);
+        enemyObj.speed = speed + (increaseSpeedAddition * speedAdditionMultiplier);
+        enemyObj.pintoBoy = this;
+        enemyObj.onDeath.AddListener(OnEnemyDeath);
+        enemyObj.enemyType = enemy;
+        enemyObj.SetMovementSounds(audioClips);
+        enemies.Add(enemyObj);
+        return enemyObj;
     }
 
     void OnEnemyDeath(JumpanyEnemy enemy)
     {
         enemies.Remove(enemy);
+        enemy.onDeath.RemoveListener(OnEnemyDeath);
+        Destroy(enemy.gameObject);
     }
 
     void SpawnSpider()
     {
-        SpawnEnemy(spiderPrefab.GetComponent<JumpanyEnemy>(), topSpawnpoint, spiderSpeed);
+        JumpanyEnemy spider = SpawnEnemy(spiderPrefab.GetComponent<JumpanyEnemy>(), topSpawnpoint, spiderSpeed, PintoEnemyType.Spider, new AudioClip[] { acSpiderStep1, acSpiderStep2, acSpiderStep3, acSpiderStep4 });
     }
 
     void SpawnLootbug()
     {
-        SpawnEnemy(lootbugPrefab.GetComponent<JumpanyEnemy>(), midSpawnpoint, lootbugSpeed);
+        JumpanyEnemy lootbug = SpawnEnemy(lootbugPrefab.GetComponent<JumpanyEnemy>(), midSpawnpoint, lootbugSpeed, PintoEnemyType.Lootbug, new AudioClip[] { acLootbugStep });
     }
 
     void SpawnSlime()
     {
-        SpawnEnemy(slimePrefab.GetComponent<JumpanyEnemy>(), bottomSpawnpoint, slimeSpeed);
+        JumpanyEnemy slime = SpawnEnemy(slimePrefab.GetComponent<JumpanyEnemy>(), bottomSpawnpoint, slimeSpeed, PintoEnemyType.Slime, new AudioClip[] { acSlimeStep });
     }
 
     void SetFade(FadeState state)
@@ -409,10 +607,24 @@ public class PintoBoy : PhysicsProp
         switch (gameState)
         {
             case PintoBoyState.MainMenu:
-                mainMenuAnim.SetTrigger(SelectedString);
-                mainmenuTimer = mainmenuTime;
+                if (mainmenuWaitTimer <= 0)
+                {
+                    StartFromTitleScreen();
+                }
                 break;
             case PintoBoyState.InGame:
+                if (dead)
+                {
+                    if (!endScreenShown)
+                    {
+                        ShowEndScreen();
+                    }
+                    else
+                    {
+                        ShowTitleScreen();
+                    }
+                    return;
+                }
                 Jump();
                 break;
             case PintoBoyState.Paused:
@@ -420,6 +632,19 @@ public class PintoBoy : PhysicsProp
             case PintoBoyState.Lost:
                 break;
         }
+    }
+
+    void StartFromTitleScreen()
+    {
+        mainMenuAnim.SetTrigger(SelectedString);
+        mainmenuTimer = mainmenuTime;
+        PlaySound(acConfirm);
+    }
+
+    void ShowTitleScreen()
+    {
+        SwitchState(PintoBoyState.MainMenu);
+        mainmenuWaitTimer = mainmenuWaitTime;
     }
 
     void StartGame()
@@ -430,6 +655,30 @@ public class PintoBoy : PhysicsProp
         currentScore = 0f;
         speedAdditionMultiplier = speedAdditionMultiplierDefault;
 
+        brackenAnim.SetTrigger(ResetString);
+        playerAnim.SetTrigger(ResetString);
+
+        ClearEnemies();
+
+        groundAnim.enabled = true;
+        dead = false;
+        endScreenText.text = "";
+        deadAnimStarted = false;
+        endScreenShown = false;
+        deathAnimTimer = 0f;
+
+        lives = 3;
+
+        timesIncreased = 0;
+        lastTimeSpawned = 0f;
+        deathAnimIndex = 0;
+
+        firstPlay = false;
+        backgroundMusicTimer = 0;
+    }
+
+    void ClearEnemies()
+    {
         if (enemies.Count > 0)
         {
             foreach (JumpanyEnemy enemy in enemies)
@@ -437,6 +686,22 @@ public class PintoBoy : PhysicsProp
                 Destroy(enemy.gameObject);
             }
             enemies.Clear();
+        }
+    }
+
+    void ClearEnemiesExcept(JumpanyEnemy enemy)
+    {
+        if (enemies.Count > 0)
+        {
+            foreach (JumpanyEnemy enemys in enemies)
+            {
+                if (enemys == enemy)
+                {
+                    continue;
+                }
+                Destroy(enemys.gameObject);
+                enemies.Remove(enemys);
+            }
         }
     }
 
@@ -479,10 +744,12 @@ public class PintoBoy : PhysicsProp
         if (isGrounded)
         {
             playerRb.velocity = new Vector2(0, jumpHeight);
+            PlaySound(acPlayerJump);
         }
         else
         {
             playerRb.velocity = new Vector2(0, -fastFallSpeed);
+            PlaySound(acPlayerJump);
         }
     }
 
@@ -511,13 +778,96 @@ public class PintoBoy : PhysicsProp
         return 0;
     }
 
-    public void Die()
+    public void PlayerGotHit(JumpanyEnemy enemy)
+    {
+        if (invincible)
+        {
+            return;
+        }
+        lives--;
+        if (lives <= 0)
+        {
+            Die(enemy);
+        }
+        else
+        {
+            invincible = true;
+            invincibleTimer = invincibleTime;
+        }
+    }
+
+    public void Die(JumpanyEnemy enemy)
+    {
+        ClearEnemiesExcept(enemy);
+        groundAnim.enabled = false;
+        dead = true;
+        enemy.killedPlayer = true;
+        if (Mathf.Abs(player.transform.localPosition.x - playerSpawnpoint.localPosition.x) < 5)
+        {
+            playerRb.velocity = new Vector2(0, 0);
+            player.transform.localPosition = new Vector3(player.transform.localPosition.x, playerSpawnpoint.localPosition.y, 0);
+        }
+    }
+
+    public void PlayDeathAnim()
+    {
+        player.transform.localPosition = playerSpawnpoint.localPosition;
+        brackenAnim.SetTrigger(DeathString);
+        playerAnim.SetTrigger(DeathString);
+        deathAnimTimer = deathAnimTime;
+        deadAnimStarted = true;
+        deadHitGround = false;
+        deathAnimIndex = 0;
+        audioSource.Stop();
+    }
+
+    void ShowEndScreen()
     {
         if (currentScore > highScore)
         {
+            endScreenText.text = $"New Best!\n" +
+                                 $"{Mathf.Round(currentScore)}\n" +
+                                 $"Last Best:\n" +
+                                 $"{Mathf.Round(highScore)}";
             highScore = currentScore;
+            PlaySound(acNewHighscore);
         }
-        StartGame();
+        else
+        {
+            endScreenText.text = $"Score:\n" +
+                                 $"{Mathf.Round(currentScore)}\n" +
+                                 $"Best:\n" +
+                                 $"{Mathf.Round(highScore)}";
+            PlaySound(acNoHighscore);
+        }
+        endScreenShown = true;
+    }
 
+    public void PlaySound(AudioClip clip)
+    {
+        audioSource.PlayOneShot(clip);
+    }
+
+    void PlayStepSound()
+    {
+        stepSoundTimer -= Time.deltaTime;
+        if (stepSoundTimer <= 0)
+        {
+            stepSoundTimer = stepSoundTime;
+            stepSoundIndex++;
+            if (stepSoundIndex > 1)
+            {
+                stepSoundIndex = 0;
+            }
+            switch (stepSoundIndex)
+            {
+                case 0:
+                    PlaySound(acPlayerStep1);
+                    break;
+                case 1:
+                    PlaySound(acPlayerStep2);
+                    break;
+            }
+        }
     }
 }

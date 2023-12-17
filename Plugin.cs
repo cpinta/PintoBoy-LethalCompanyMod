@@ -49,6 +49,10 @@ namespace PintoMod
         public static GameObject slimePrefab;
         public static GameObject lootbugPrefab;
 
+        public static AssetBundle pintoBundle;
+
+        static string audioPath = "assets/pintoboy/audio/";
+
         private void Awake()
         {
             logger = BepInEx.Logging.Logger.CreateLogSource(PluginInfo.PLUGIN_GUID);
@@ -92,7 +96,7 @@ namespace PintoMod
         {
             try
             {
-                AssetBundle pintoBundle = AssetBundle.LoadFromMemory(Properties.Resources.pintobund);
+                pintoBundle = AssetBundle.LoadFromMemory(Properties.Resources.pintobund);
                 if (pintoBundle == null) throw new Exception("Failed to load Pinto Bundle!");
 
                 string[] assetNames = pintoBundle.GetAllAssetNames();
@@ -140,6 +144,21 @@ namespace PintoMod
             {
                 throw new Exception(e.Message);
             }
+        }
+
+        public static AudioClip GetAudioClip(string path)
+        {
+            AudioClip clip = pintoBundle.LoadAsset<AudioClip>(audioPath + path + ".wav");
+            if (clip == null)
+            {
+                clip = pintoBundle.LoadAsset<AudioClip>(audioPath + path + ".mp3");
+            }
+            if (clip == null)
+            {
+                throw new Exception($"Failed to load Audio Clip {path}. Full Path: {audioPath + path}");
+            }
+
+            return clip;
         }
     }
 }

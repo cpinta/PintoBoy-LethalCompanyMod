@@ -1,0 +1,1 @@
+Thanks to Shiru/shiru8bit for the sound effects: https://opengameart.org/content/nes-8-bit-sound-effects
