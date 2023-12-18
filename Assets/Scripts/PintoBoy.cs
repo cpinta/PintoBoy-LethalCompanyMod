@@ -482,7 +482,7 @@ public class PintoBoy : PhysicsProp
 
         scoreText.text = Mathf.Round(currentScore).ToString();
 
-        if (player.transform.localPosition.y < playerStart.y - 2 && player.transform.localPosition.y > playerStart.y + 100)
+        if (player.transform.localPosition.y < playerStart.y -0.5f || player.transform.localPosition.y > playerStart.y + 100)
         {
             player.transform.localPosition = playerSpawnpoint.localPosition;
         }
