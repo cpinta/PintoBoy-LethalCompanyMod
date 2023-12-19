@@ -44,6 +44,7 @@ namespace PintoMod
 
         public static readonly Lazy<Pinto_ModBase> Instance = new Lazy<Pinto_ModBase>(() => new Pinto_ModBase());
         public static GameObject pintoPrefab;
+        public static GameObject screenPrefab;
         public static Item pintoGrab;
         public static GameObject spiderPrefab;
         public static GameObject slimePrefab;
@@ -111,11 +112,11 @@ namespace PintoMod
                 PintoBoy pintoBoy = pintoGrab.spawnPrefab.AddComponent<PintoBoy>();
                 if (pintoBoy == null) throw new Exception("Failed to load Pinto Boy!");
 
-
-
-                BoomboxItem boombox = new BoomboxItem();
-                //boombox.musicAudios
                 pintoBoy.itemProperties = pintoGrab;
+
+                screenPrefab = pintoBundle.LoadAsset<GameObject>("assets/pintoboy/2d cam.prefab");
+                if (screenPrefab == null) throw new Exception("Failed to load Screen for Pinto!");
+
 
                 LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(pintoGrab.spawnPrefab);
                 Items.RegisterScrap(pintoGrab, 100, Levels.LevelTypes.All);
@@ -159,6 +160,19 @@ namespace PintoMod
             }
 
             return clip;
+        }
+
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.CollectNewScrapForThisRound))]
+        public static void PintoBoyAddedToShip(GrabbableObject scrapObject)
+        {
+            if (scrapObject is PintoBoy)
+            {
+                PintoBoy pinto = (PintoBoy)scrapObject;
+                pinto.MakeScreenNOTSpawnable();
+                Debug.Log("PintoBoy added to ship and screen not spawned");
+            }
         }
     }
 }

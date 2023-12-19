@@ -23,7 +23,7 @@ public class JumpanyEnemy : MonoBehaviour
 
     public bool killedPlayer = false;
 
-    AudioClip[] movementSounds;
+    AudioClip[] movementSounds;//
     float currentMovementSoundTimer = 0f;
     int currentMovementSoundIndex = 0;
     //
@@ -51,11 +51,6 @@ public class JumpanyEnemy : MonoBehaviour
         this.transform.position += Vector3.left * difference;
 
         distance -= difference;
-
-        if(Mathf.Round(distance) % 10 == 0)
-        {
-            Debug.Log("Distance: " + distance);
-        }
 
         if (distance < 0)
         {

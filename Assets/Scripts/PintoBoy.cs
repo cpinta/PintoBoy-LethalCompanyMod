@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Xml.Linq;
 using TMPro;
 using UnityEngine;
+using HarmonyLib;
 
 public enum PintoBoyState
 {
@@ -62,8 +63,8 @@ public class PintoBoy : PhysicsProp
     string DeathString = "Death";
     string ResetString = "Reset";
 
-    Transform screen;
     Transform cam;
+    GameObject modelScreen;
     ScanNodeProperties scanNodeProperties;
     public float jumpHeight = 9.75f;
     public float fastFallSpeed = 15f;
@@ -158,6 +159,8 @@ public class PintoBoy : PhysicsProp
 
     bool firstPlay = true;
 
+    bool spawnScreen = true;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -193,42 +196,6 @@ public class PintoBoy : PhysicsProp
         lootbugPrefab = Pinto_ModBase.lootbugPrefab;
         slimePrefab = Pinto_ModBase.slimePrefab;
 
-        fadeAnim = transform.Find(camString + "2D Scene/Fade").GetComponent<Animator>();
-
-        mainMenu = transform.Find(camString + "2D Scene/Main Menu");
-        mainMenuAnim = transform.Find(camString + "2D Scene/Main Menu/Main Menu Sprite").GetComponent<Animator>();
-
-        inGame = transform.Find(camString + "2D Scene/Game");
-        player = transform.Find(camString + "2D Scene/Game/PintoEmployee").gameObject;
-        playerStart = player.transform.localPosition;
-        playerRb = player.GetComponent<Rigidbody2D>();
-        playerAnim = player.GetComponent<Animator>();
-        playerCol = player.GetComponent<Collider2D>();
-        playerSprite = player.GetComponent<SpriteRenderer>();
-
-        bracken = transform.Find(camString + "2D Scene/Game/Bracken").gameObject;
-        brackenAnim = bracken.GetComponent<Animator>();
-        brackenStart = bracken.transform.localPosition;
-
-        groundCol = transform.Find(camString + "2D Scene/Game/RailingGround").GetComponent<Collider2D>();
-        groundAnim = groundCol.gameObject.GetComponent<Animator>();
-
-        scoreText = transform.Find(camString + "2D Scene/Game/UI/Score").GetComponent<TMP_Text>();
-        endScreenText = transform.Find(camString + "2D Scene/Game/UI/Death Screen/Text").GetComponent<TMP_Text>();
-
-        paused = transform.Find(camString + "2D Scene/Paused");
-        lost = transform.Find(camString + "2D Scene/Lost");
-
-        playerRb.bodyType = RigidbodyType2D.Kinematic;
-
-        screen = transform.Find(camString + "2D Scene");
-        cam = transform.Find("2D Cam");
-
-        topSpawnpoint = transform.Find(camString + "2D Scene/Game/Top Spawnpoint");
-        midSpawnpoint = transform.Find(camString + "2D Scene/Game/Mid Spawnpoint");
-        bottomSpawnpoint = transform.Find(camString + "2D Scene/Game/Bottom Spawnpoint");
-        playerSpawnpoint = transform.Find(camString + "2D Scene/Game/Player Spawnpoint");
-
         scanNodeProperties = this.GetComponentInChildren<ScanNodeProperties>();
 
         useCooldown = 0.1f;
@@ -248,21 +215,14 @@ public class PintoBoy : PhysicsProp
         scanNodeProperties.nodeType = 2;
 
 
-        SwitchState(PintoBoyState.MainMenu);
-
-
-        fadeAnim.gameObject.SetActive(true);
         Pinto_ModBase.pintoGrab.canBeGrabbedBeforeGameStart = true;
         Pinto_ModBase.pintoGrab.isScrap = true;
         Pinto_ModBase.pintoGrab.canBeInspected = true;
         Pinto_ModBase.pintoGrab.allowDroppingAheadOfPlayer = true;
 
-        screen.parent = null;
-        cam.parent = null;
-
-        endScreenText.text = "";
-
         mainmenuWaitTimer = mainmenuWaitTime;
+
+        modelScreen = transform.Find("Model/Body/Screen").gameObject;
     }
 
     void LateUpdate()
@@ -300,8 +260,7 @@ public class PintoBoy : PhysicsProp
 
             Debug.Log($"InAirString: {InAirString}");
 
-            Debug.Log($"screen: {screen}");
-            Debug.Log($"cam: {cam}");
+            Debug.Log($"screen: {cam}");
             Debug.Log($"scanNodeProperties: {scanNodeProperties}");
             Debug.Log($"jumpHeight: {jumpHeight}");
             Debug.Log($"fastFallSpeed: {fastFallSpeed}");
@@ -361,6 +320,12 @@ public class PintoBoy : PhysicsProp
     void Update()
     {
         base.Update();
+
+        if (spawnScreen)
+        {
+            SpawnScreen();
+            spawnScreen = false;
+        }
 
         if (fadeAnim.GetBool(DoAnimString))
         {
@@ -869,5 +834,87 @@ public class PintoBoy : PhysicsProp
                     break;
             }
         }
+    }
+
+    public void MakeScreenNOTSpawnable()
+    {
+        spawnScreen = false;
+    }
+
+    void SpawnScreen()
+    {
+        if(Pinto_ModBase.screenPrefab == null)
+        {
+            Debug.Log("Screen is null");
+        }
+        cam = Instantiate(Pinto_ModBase.screenPrefab, this.transform.position - (Vector3.down * 300), Quaternion.identity, transform.root).transform;
+        if(cam == null)
+        {
+            Debug.Log("Screen in Pintoboy is null");
+        }
+
+        GiveScreenUniqueRenderTexture(cam.gameObject, 160, 160, 16);
+
+        cam.parent = null;
+
+        fadeAnim = cam.Find("2D Scene/Fade").GetComponent<Animator>();
+
+        mainMenu = cam.Find("2D Scene/Main Menu");
+        mainMenuAnim = cam.Find("2D Scene/Main Menu/Main Menu Sprite").GetComponent<Animator>();
+
+        inGame = cam.Find("2D Scene/Game");
+        player = cam.Find("2D Scene/Game/PintoEmployee").gameObject;
+        playerStart = player.transform.localPosition;
+        playerRb = player.GetComponent<Rigidbody2D>();
+        playerAnim = player.GetComponent<Animator>();
+        playerCol = player.GetComponent<Collider2D>();
+        playerSprite = player.GetComponent<SpriteRenderer>();
+
+        bracken = cam.Find("2D Scene/Game/Bracken").gameObject;
+        brackenAnim = bracken.GetComponent<Animator>();
+        brackenStart = bracken.transform.localPosition;
+
+        groundCol = cam.Find("2D Scene/Game/RailingGround").GetComponent<Collider2D>();
+        groundAnim = groundCol.gameObject.GetComponent<Animator>();
+
+        scoreText = cam.Find("2D Scene/Game/UI/Score").GetComponent<TMP_Text>();
+        endScreenText = cam.Find("2D Scene/Game/UI/Death Screen/Text").GetComponent<TMP_Text>();
+
+        paused = cam.Find("2D Scene/Paused");
+        lost = cam.Find("2D Scene/Lost");
+
+        playerRb.bodyType = RigidbodyType2D.Kinematic;
+
+        topSpawnpoint = cam.Find("2D Scene/Game/Top Spawnpoint");
+        midSpawnpoint = cam.Find("2D Scene/Game/Mid Spawnpoint");
+        bottomSpawnpoint = cam.Find("2D Scene/Game/Bottom Spawnpoint");
+        playerSpawnpoint = cam.Find("2D Scene/Game/Player Spawnpoint");
+
+
+        SwitchState(PintoBoyState.MainMenu);
+
+        fadeAnim.gameObject.SetActive(true);
+        endScreenText.text = "";
+    }
+
+    public void GiveScreenUniqueRenderTexture(GameObject cam, int textureWidth, int textureHeight, int textureDepth)
+    {
+        // Step 1: Create a Render Texture
+        RenderTexture uniqueRenderTexture = new RenderTexture(textureWidth, textureHeight, textureDepth);
+        uniqueRenderTexture.name = "PintoBoyScreen";
+        uniqueRenderTexture.filterMode = FilterMode.Point;
+        // Step 3: Assign the Unique Render Texture to the Prefab Instance
+
+        // Step 4: Use Render Texture in Shader or Camera
+        Material material = modelScreen.GetComponent<Renderer>().material;
+        material.SetTexture("_MainTex", uniqueRenderTexture);
+        material.mainTexture = uniqueRenderTexture;
+
+
+        cam.GetComponent<Camera>().targetTexture = uniqueRenderTexture;
+
+        // Or if using a camera:
+        // Camera camera = prefabInstance.GetComponent<Camera>();
+        // camera.targetTexture = uniqueRenderTexture;
     }
 }
