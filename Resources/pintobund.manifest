@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 3923827779
+CRC: 2536743616
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 76587b6a29fe308aacf7a6f8ec8573ba
+    Hash: ff510985900e32523247ce4b72c441d3
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 1d44f2115cd7ec0dd1ebc9f9d06f02a9
+    Hash: 03036bdfa8fe077ef05ff789511f2349
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 76587b6a29fe308aacf7a6f8ec8573ba
+    Hash: ff510985900e32523247ce4b72c441d3
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -36,8 +36,6 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 61
   Script: {instanceID: 0}
-- Class: 64
-  Script: {instanceID: 0}
 - Class: 65
   Script: {instanceID: 0}
 - Class: 70
@@ -59,17 +57,17 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: 23c1ce4fb46143f46bc5cb5224c934f6, type: 3}
 - Class: 114
+  Script: {fileID: 11500000, guid: c30496d6ae6d6f907456e10a94e01ec6, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 3c36d0a92cbb1f26a39169ef0eae393a, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: c30496d6ae6d6f907456e10a94e01ec6, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: 3c36d0a92cbb1f26a39169ef0eae393a, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 128
@@ -125,11 +123,13 @@ SerializeReferenceClassIdentifiers:
   ClassName: UnityEngine.UI.MaskableGraphic/CullStateChangedEvent
 Assets:
 - Assets/Pintoboy/screen.mat
-- Assets/Pintoboy/sprite.png
+- Assets/Pintoboy/off screen.mat
 - Assets/Pintoboy/2D/Background/RailingGround.controller
 - Assets/Pintoboy/2D/Employee/2DEmployee_Jump.anim
-- Assets/Pintoboy/2D/Bracken/Bracken_Kill2.anim
+- Assets/Pintoboy/Button_Press.anim
+- Assets/Pintoboy/icon.png
 - Assets/Pintoboy/Audio/59_confirm (start game).wav
+- Assets/Pintoboy/2D/Bracken/Bracken_Kill2.anim
 - Assets/Pintoboy/VCR_OSD_MONO_1.asset
 - Assets/Pintoboy/Audio/54_step3 (spider movement).wav
 - Assets/Pintoboy/2D/Spider/Spider_Walk.anim
@@ -145,29 +145,31 @@ Assets:
 - Assets/Pintoboy/2D/Employee/2DEmployee.controller
 - Assets/Pintoboy/VCR_OSD_MONO_1.001.ttf
 - Assets/Pintoboy/2D/Menus/Main Menu.controller
-- Assets/Pintoboy/Pintoboy.fbx
 - Assets/Pintoboy/2D/Menus/Fade_Off.anim
 - Assets/Pintoboy/Audio/12_exchange (snap neck).wav
 - Assets/Pintoboy/2D/Background/RailingGround.png
-- Assets/Pintoboy/Audio/67_knock (fall after neck snap).wav
+- Assets/Pintoboy/Pintoboy 2.fbx
 - Assets/Pintoboy/3270Condensed-Regular SDF.asset
 - Assets/Pintoboy/2D/Bracken/Bracken_Run.anim
-- Assets/Pintoboy/2D/Employee/EmployeeDeath.png
+- Assets/Pintoboy/Audio/67_knock (fall after neck snap).wav
 - Assets/Pintoboy/2D/Menus/Fade_In.anim
+- Assets/Pintoboy/2D/Employee/EmployeeDeath.png
 - Assets/Pintoboy/2D/Slime/Slime.png
+- Assets/Pintoboy/Button.controller
 - Assets/Pintoboy/2D/Menus/Fade_On.anim
-- Assets/Pintoboy/2D/Spider/Spider.png
 - Assets/Pintoboy/2D/Spider/Spider.prefab
 - Assets/Pintoboy/2D/Spider/Spider.controller
+- Assets/Pintoboy/2D/Spider/Spider.png
 - Assets/Pintoboy/player.mat
 - Assets/Pintoboy/2D/Employee/2DEmployee_Death.anim
 - Assets/Pintoboy/2D/Menus/Fade.controller
-- Assets/Pintoboy/2D/Loot Bug/Loot Bug.png
+- Assets/Pintoboy/Cartridge.png
+- Assets/Pintoboy/console logo.psd
 - Assets/Pintoboy/2D Cam.prefab
 - Assets/Pintoboy/Pintoboy.asset
 - Assets/Pintoboy/2D/Menus/Main Menu.png
 - Assets/Pintoboy/2D/Background/RailingGround_Scroll.anim
-- Assets/Pintoboy/2D/Menus/Main Menu_Selected.anim
+- Assets/Pintoboy/Button_Idle.anim
 - Assets/Pintoboy/2D/Bracken/Bracken.png
 - Assets/Pintoboy/2D/Background/RailingGround_Stop.anim
 - Assets/Pintoboy/2D/Employee/Employee.png
@@ -176,13 +178,15 @@ Assets:
 - Assets/Pintoboy/2D/Loot Bug/Loot Bug_Idle.anim
 - Assets/Pintoboy/Audio/23_ladder (player land).wav
 - Assets/Pintoboy/2D/Menus/Fade_Out.anim
-- Assets/Pintoboy/2D/Slime/Slime.prefab
+- Assets/Pintoboy/2D/Menus/Main Menu_Selected.anim
+- Assets/Pintoboy/2D/Loot Bug/Loot Bug.png
 - Assets/Pintoboy/2D/Background/Ceiling.png
 - Assets/Pintoboy/Audio/danger_streets.mp3
 - Assets/Pintoboy/Audio/64_lose2 (no highscore).wav
-- Assets/Pintoboy/Screen Render Tex.renderTexture
 - Assets/Pintoboy/Audio/22_walk2 (player step 2).wav
 - Assets/Pintoboy/2D/Menus/Main Menu_Static.anim
+- Assets/Pintoboy/2D/Slime/Slime.prefab
+- Assets/Pintoboy/Render Texture.renderTexture
 - Assets/Pintoboy/3270Condensed-Regular.otf
 - Assets/Pintoboy/Audio/24_levelclear (new highscore).wav
 - Assets/Pintoboy/Audio/52_step1 (spider movement).wav

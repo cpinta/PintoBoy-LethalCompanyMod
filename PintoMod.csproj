@@ -31,9 +31,6 @@
       <Reference Include="Assembly-CSharp">
         <HintPath>E:\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Assembly-CSharp-nstrip.dll</HintPath>
       </Reference>
-      <Reference Include="LC_API">
-        <HintPath>E:\Games\Steam\steamapps\common\Lethal Company\BepInEx\plugins\2018-LC_API-2.1.2\LC_API.dll</HintPath>
-      </Reference>
       <Reference Include="LethalLib">
         <HintPath>E:\Games\Steam\steamapps\common\Lethal Company\BepInEx\plugins\Evaisa-LethalLib\LethalLib\LethalLib.dll</HintPath>
       </Reference>

@@ -19,7 +19,8 @@ public class JumpanyEnemy : MonoBehaviour
     public PintoBoy pintoBoy;
     public UnityEvent<JumpanyEnemy> onDeath;
 
-    Animator animator;
+    public Animator animator;
+    public bool paused = false;
 
     public bool killedPlayer = false;
 
@@ -37,6 +38,11 @@ public class JumpanyEnemy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (pintoBoy.isPaused)
+        {
+            return;
+        }
+
         if (killedPlayer)
         {
             if (enemyType == PintoEnemyType.Spider)

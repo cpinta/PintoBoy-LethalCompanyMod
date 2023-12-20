@@ -12,7 +12,6 @@ using GameNetcodeStuff;
 using UnityEngine;
 using Unity.Netcode;
 using LethalLib;
-using LC_API;
 using System.Reflection;
 using LethalLib.Modules;
 using Object = UnityEngine.Object;
@@ -20,8 +19,6 @@ using HarmonyLib.Tools;
 using UnityEngine.Yoga;
 using BepInEx.Configuration;
 using PintoMod.Assets.Scripts;
-
-[assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
 
 namespace PintoMod
 {
@@ -50,6 +47,9 @@ namespace PintoMod
         public static GameObject slimePrefab;
         public static GameObject lootbugPrefab;
 
+        public static Material matOffScreen;
+        public static Material matOnScreen;
+
         public static AssetBundle pintoBundle;
 
         static string audioPath = "assets/pintoboy/audio/";
@@ -60,6 +60,7 @@ namespace PintoMod
 
             ConfigSetup();
             LoadBundle();
+            SetVariables();
 
             harmony.PatchAll(typeof(Pinto_ModBase));
             harmony.PatchAll(typeof(PlayerControllerB_Patches));
@@ -85,12 +86,33 @@ namespace PintoMod
 
         private void ConfigSetup()
         {
-            //
-            
-            config_PushCooldown = Config.Bind("Push Cooldown", "Value", 0.025f, "How long until the player can push again");
-            config_PushForce = Config.Bind("Push Force", "Value", 12.5f, "How strong the player pushes.");
-            config_PushRange = Config.Bind("Push Range", "Value", 3.0f, "The distance the player is able to push.");
-            config_PushCost = Config.Bind("Push Cost", "Value", 0.08f, "The energy cost of each push.");
+            //config_PushCooldown = Config.Bind("Push Cooldown", "Value", 0.025f, "How long until the player can push again");
+            //config_PushForce = Config.Bind("Push Force", "Value", 12.5f, "How strong the player pushes.");
+            //config_PushRange = Config.Bind("Push Range", "Value", 3.0f, "The distance the player is able to push.");
+            //config_PushCost = Config.Bind("Push Cost", "Value", 0.08f, "The energy cost of each push.");
+        }
+
+        private void SetVariables()
+        {
+
+            pintoGrab.canBeGrabbedBeforeGameStart = true;
+            pintoGrab.isScrap = true;
+            pintoGrab.canBeInspected = true;
+            pintoGrab.allowDroppingAheadOfPlayer = true;
+            pintoGrab.rotationOffset = new Vector3(0, 0, 0);
+            pintoGrab.positionOffset = new Vector3(0, 0, 0);
+            pintoGrab.restingRotation = new Vector3(-30, 0, 0);
+            pintoGrab.verticalOffset = -0.1f;
+
+            //Battery
+            pintoGrab.requiresBattery = true;
+            pintoGrab.batteryUsage = 600;
+
+            pintoGrab.syncInteractLRFunction = true;
+
+
+            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(pintoGrab.spawnPrefab);
+            Items.RegisterScrap(pintoGrab, 20, Levels.LevelTypes.All);
         }
 
         private void LoadBundle()
@@ -117,29 +139,30 @@ namespace PintoMod
                 screenPrefab = pintoBundle.LoadAsset<GameObject>("assets/pintoboy/2d cam.prefab");
                 if (screenPrefab == null) throw new Exception("Failed to load Screen for Pinto!");
 
-
-                LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(pintoGrab.spawnPrefab);
-                Items.RegisterScrap(pintoGrab, 100, Levels.LevelTypes.All);
-
                 GameObject spider = pintoBundle.LoadAsset<GameObject>("assets/pintoboy/2d/spider/spider.prefab");
                 if (spider == null) throw new Exception("Failed to load Spider Prefab Object!");
                 spider.AddComponent<JumpanyEnemy>();
                 spiderPrefab = spider;
 
-                if (spiderPrefab == null) throw new Exception("Failed to Spider Prefab!");
+                if (spiderPrefab == null) throw new Exception("Failed to load Spider Prefab!");
 
                 GameObject slime = pintoBundle.LoadAsset<GameObject>("assets/pintoboy/2d/slime/slime.prefab");
                 if (slime == null) throw new Exception("Failed to load Slime Prefab Object!");
                 slime.AddComponent<JumpanyEnemy>();
                 slimePrefab = slime;
-                if (slimePrefab == null) throw new Exception("Failed to Slime Prefab!");
+                if (slimePrefab == null) throw new Exception("Failed to load Slime Prefab!");
 
                 GameObject lootbug = pintoBundle.LoadAsset<GameObject>("assets/pintoboy/2d/loot bug/loot bug.prefab");
                 if (lootbug == null) throw new Exception("Failed to load Lootbug Prefab Object!");
                 lootbug.AddComponent<JumpanyEnemy>();
                 lootbugPrefab = lootbug;
-                if (lootbugPrefab == null) throw new Exception("Failed to Lootbug Prefab!");
+                if (lootbugPrefab == null) throw new Exception("Failed to load Lootbug Prefab!");
 
+                matOffScreen = pintoBundle.LoadAsset<Material>("assets/pintoboy/off screen.mat");
+                if (matOffScreen == null) throw new Exception("Failed to load off screen material!");
+
+                matOnScreen = pintoBundle.LoadAsset<Material>("assets/pintoboy/Screen Mat.mat");
+                if (matOnScreen == null) throw new Exception("Failed to load Screen Mat material!");
             }
             catch (Exception e)
             {
@@ -173,6 +196,26 @@ namespace PintoMod
                 pinto.MakeScreenNOTSpawnable();
                 Debug.Log("PintoBoy added to ship and screen not spawned");
             }
+        }
+
+        public void InstantiateScreenWithUniqueRenderTexture(GameObject prefab, Vector3 spawnPosition, Quaternion spawnRotation, int textureWidth, int textureHeight, int textureDepth)
+        {
+            // Step 1: Create a Render Texture
+            RenderTexture uniqueRenderTexture = new RenderTexture(textureWidth, textureHeight, textureDepth);
+
+            // Step 2: Instantiate the Prefab
+            GameObject prefabInstance = Instantiate(prefab, spawnPosition, spawnRotation);
+
+            // Step 3: Assign the Unique Render Texture to the Prefab Instance
+            prefabInstance.GetComponent<Camera>().targetTexture = uniqueRenderTexture;
+
+            // Step 4: Use Render Texture in Shader or Camera
+            Material material = prefabInstance.GetComponent<Renderer>().material;
+            material.SetTexture("_MainTex", uniqueRenderTexture);
+
+            // Or if using a camera:
+            // Camera camera = prefabInstance.GetComponent<Camera>();
+            // camera.targetTexture = uniqueRenderTexture;
         }
     }
 }

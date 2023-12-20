@@ -8,6 +8,8 @@ using System.Xml.Linq;
 using TMPro;
 using UnityEngine;
 using HarmonyLib;
+using Unity.Netcode;
+using UnityEngine.UIElements.UIR;
 
 public enum PintoBoyState
 {
@@ -25,8 +27,9 @@ public enum FadeState
     FadeOut = 3
 }
 
-public class PintoBoy : PhysicsProp
+public class PintoBoy : GrabbableObject
 {
+
     PintoBoyState gameState = PintoBoyState.MainMenu;
     AudioSource audioSource;
 
@@ -65,6 +68,8 @@ public class PintoBoy : PhysicsProp
 
     Transform cam;
     GameObject modelScreen;
+    Animator buttonAnim;
+
     ScanNodeProperties scanNodeProperties;
     public float jumpHeight = 9.75f;
     public float fastFallSpeed = 15f;
@@ -161,6 +166,15 @@ public class PintoBoy : PhysicsProp
 
     bool spawnScreen = true;
 
+    Material matRenderTex = null;
+    RenderTexture texRenderTex = null;
+
+    public bool isPaused = false;
+
+    Renderer rendModelScreen;
+
+    float batteryDischargeRate = 0.002f;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -190,7 +204,7 @@ public class PintoBoy : PhysicsProp
         acBackgroundSong = Pinto_ModBase.GetAudioClip("danger_streets");
         backgroundMusicTime = acBackgroundSong.length;
 
-        mainObjectRenderer = transform.Find("Model/Body").GetComponent<MeshRenderer>();
+        mainObjectRenderer = transform.Find("Model").GetComponent<MeshRenderer>();
 
         spiderPrefab = Pinto_ModBase.spiderPrefab;
         lootbugPrefab = Pinto_ModBase.lootbugPrefab;
@@ -202,7 +216,7 @@ public class PintoBoy : PhysicsProp
 
         grabbable = true;
         parentObject = this.transform;
-        customGrabTooltip = "Pinto grab tooltup custom";
+        //customGrabTooltip = "";
 
         grabbableToEnemies = true;
 
@@ -215,14 +229,16 @@ public class PintoBoy : PhysicsProp
         scanNodeProperties.nodeType = 2;
 
 
-        Pinto_ModBase.pintoGrab.canBeGrabbedBeforeGameStart = true;
-        Pinto_ModBase.pintoGrab.isScrap = true;
-        Pinto_ModBase.pintoGrab.canBeInspected = true;
-        Pinto_ModBase.pintoGrab.allowDroppingAheadOfPlayer = true;
 
         mainmenuWaitTimer = mainmenuWaitTime;
 
-        modelScreen = transform.Find("Model/Body/Screen").gameObject;
+        modelScreen = transform.Find("Model/Screen").gameObject;
+        buttonAnim = transform.Find("Model/Button").GetComponent<Animator>();
+
+        startFallingPosition = new Vector3(0, 0, 0);
+        targetFloorPosition = new Vector3(0, 0, 0);
+
+        insertedBattery = new Battery(false, 100);
     }
 
     void LateUpdate()
@@ -327,6 +343,25 @@ public class PintoBoy : PhysicsProp
             spawnScreen = false;
         }
 
+        if(isPaused)
+        {
+            //if(!insertedBattery.empty && isHeld)
+            //{
+            //    UnPause();
+            //}
+            return;
+        }
+        else
+        {
+
+            insertedBattery.charge -= batteryDischargeRate * Time.deltaTime;
+            //if (!isHeld)
+            //{
+            //    Pause();
+            //}
+        }
+
+
         if (fadeAnim.GetBool(DoAnimString))
         {
             fadeAnim.SetBool(DoAnimString, false);
@@ -375,6 +410,7 @@ public class PintoBoy : PhysicsProp
 
     void InGameUpdate()
     {
+
         if (endScreenShown)
         {
             return;
@@ -509,6 +545,32 @@ public class PintoBoy : PhysicsProp
                 break;
         }
     }
+    public override void ItemInteractLeftRight(bool right)
+    {
+        base.ItemInteractLeftRight(right);
+
+        if (!right)
+        {
+            TogglePause();
+        }
+
+    }
+    public override void DiscardItem()
+    {
+        if (playerHeldBy != null)
+        {
+            playerHeldBy.equippedUsableItemQE = false;
+        }
+        isBeingUsed = false;
+        base.DiscardItem();
+    }
+
+
+    public override void EquipItem()
+    {
+        base.EquipItem();
+        playerHeldBy.equippedUsableItemQE = true;
+    }
 
     JumpanyEnemy SpawnEnemy(JumpanyEnemy prefab, Transform position, float speed, PintoEnemyType enemy, AudioClip[] audioClips)
     {
@@ -569,12 +631,21 @@ public class PintoBoy : PhysicsProp
 
     void ButtonPress()
     {
+        buttonAnim.SetTrigger("Press");
+        if (isPaused)
+        {
+            return;
+        }
         switch (gameState)
         {
             case PintoBoyState.MainMenu:
-                if (mainmenuWaitTimer <= 0)
+                if (mainmenuWaitTimer <= 0 && mainmenuTimer <= 0)
                 {
                     StartFromTitleScreen();
+                }
+                else
+                {
+                    return;
                 }
                 break;
             case PintoBoyState.InGame:
@@ -718,9 +789,76 @@ public class PintoBoy : PhysicsProp
         }
     }
 
-    private void Enable(bool enable, bool inHand = true)
+    void TogglePause()
     {
-        //screen.SetActive(enable);
+        if (isPaused)
+        {
+            UnPause();
+        }
+        else
+        {
+            Pause();
+        }
+    }
+
+    void Pause()
+    {
+        if (isPaused)
+        {
+            return;
+        }
+
+        isPaused = true;
+        SetScreenToOffTexture();
+        DisableAllAnimators();
+        audioSource.Stop();
+    }
+
+    void UnPause()
+    {
+        if(!isPaused)
+        {
+            return;
+        }
+
+        isPaused = false;
+        SetScreenToRenderTexture();
+        EnableAllAnimators();
+
+
+
+        ClearEnemies();
+        ShowTitleScreen();
+    }
+
+    void EnableAllAnimators()
+    {
+        groundAnim.enabled = true;
+        brackenAnim.enabled = true;
+        mainMenuAnim.enabled = true;
+        playerAnim.enabled = true;
+        fadeAnim.enabled = true;
+
+        for (int i = 0; i < enemies.Count; i++)
+        {
+            enemies[i].animator.enabled = true;
+            enemies[i].paused = true;
+        }
+    }
+
+    void DisableAllAnimators()
+    {
+        groundAnim.enabled = false;
+        brackenAnim.enabled = false;
+        mainMenuAnim.enabled = false;
+        playerAnim.enabled = false;
+        fadeAnim.enabled = false;
+
+        for (int i = 0; i < enemies.Count; i++)
+        {
+            enemies[i].animator.enabled = false;
+            enemies[i].paused = false;
+        }
     }
 
     public override void ItemActivate(bool used, bool buttonDown = true)
@@ -735,7 +873,7 @@ public class PintoBoy : PhysicsProp
     public override void UseUpBatteries()
     {
         base.UseUpBatteries();
-        Enable(false, false);
+        Pause();
     }
 
     public float Remap(float from, float fromMin, float fromMax, float toMin, float toMax)
@@ -847,13 +985,13 @@ public class PintoBoy : PhysicsProp
         {
             Debug.Log("Screen is null");
         }
-        cam = Instantiate(Pinto_ModBase.screenPrefab, this.transform.position - (Vector3.down * 300), Quaternion.identity, transform.root).transform;
+        cam = Instantiate(Pinto_ModBase.screenPrefab, this.transform.position + (Vector3.down * 300), Quaternion.identity, transform.root).transform;
         if(cam == null)
         {
             Debug.Log("Screen in Pintoboy is null");
         }
 
-        GiveScreenUniqueRenderTexture(cam.gameObject, 160, 160, 16);
+        SetScreenToRenderTexture();
 
         cam.parent = null;
 
@@ -895,26 +1033,55 @@ public class PintoBoy : PhysicsProp
 
         fadeAnim.gameObject.SetActive(true);
         endScreenText.text = "";
+
     }
 
-    public void GiveScreenUniqueRenderTexture(GameObject cam, int textureWidth, int textureHeight, int textureDepth)
+    void SetScreenToRenderTexture()
     {
-        // Step 1: Create a Render Texture
-        RenderTexture uniqueRenderTexture = new RenderTexture(textureWidth, textureHeight, textureDepth);
-        uniqueRenderTexture.name = "PintoBoyScreen";
-        uniqueRenderTexture.filterMode = FilterMode.Point;
-        // Step 3: Assign the Unique Render Texture to the Prefab Instance
+        Debug.Log("SetScreenRendTex: checking if texRenderTex null");
+        if (texRenderTex == null)
+        {
 
-        // Step 4: Use Render Texture in Shader or Camera
-        Material material = modelScreen.GetComponent<Renderer>().material;
-        material.SetTexture("_MainTex", uniqueRenderTexture);
-        material.mainTexture = uniqueRenderTexture;
+            Debug.Log("SetScreenRendTex: texRenderTex is null. Setting");
+            texRenderTex = new RenderTexture(160, 160, 16);
+
+            // Step 1: Create a Render Texture
+            texRenderTex.name = "PintoBoyScreen";
+            texRenderTex.filterMode = FilterMode.Point;
+
+            cam.GetComponent<Camera>().targetTexture = texRenderTex;
+        }
+        Debug.Log("SetScreenRendTex: checking if matRenderTex null");
+        if (matRenderTex == null)
+        {
+            Debug.Log("SetScreenRendTex: matRenderTex is null. Setting");
+            matRenderTex = Instantiate(Pinto_ModBase.matOnScreen);
+            // Step 3: Assign the Unique Render Texture to the Prefab Instance
+            matRenderTex.SetTexture("_MainTex", texRenderTex);
+            matRenderTex.mainTexture = texRenderTex;
+            // Step 4: Use Render Texture in Shader or Camera
+
+        }
+
+        Debug.Log("SetScreenRendTex: checking if rendModelScreen is null");
+        if (rendModelScreen == null)
+        {
+            Debug.Log("SetScreenRendTex: rendModelScreen is null");
+            rendModelScreen = modelScreen.GetComponent<Renderer>();
+        }
 
 
-        cam.GetComponent<Camera>().targetTexture = uniqueRenderTexture;
+        Debug.Log("SetScreenRendTex: setting rendModelScreen to matRenderTex");
+        rendModelScreen.material = matRenderTex;
+    }
 
-        // Or if using a camera:
-        // Camera camera = prefabInstance.GetComponent<Camera>();
-        // camera.targetTexture = uniqueRenderTexture;
+    void SetScreenToOffTexture()
+    {
+        if (rendModelScreen == null)
+        {
+            rendModelScreen = modelScreen.GetComponent<Renderer>();
+        }
+
+        rendModelScreen.material = Pinto_ModBase.matOffScreen;
     }
 }
