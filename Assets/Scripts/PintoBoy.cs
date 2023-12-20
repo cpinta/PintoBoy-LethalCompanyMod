@@ -475,10 +475,13 @@ public class PintoBoy : GrabbableObject
             speedAdditionMultiplier++;
         }
 
-        if (currentScore > lastTimeSpawned + Random.Range(spawnEnemyEveryMin, spawnEnemyEveryMax))
+        if (IsOwner)
         {
-            SpawnRandomEnemy();
-            lastTimeSpawned = currentScore;
+            if (currentScore > lastTimeSpawned + Random.Range(spawnEnemyEveryMin, spawnEnemyEveryMax))
+            {
+                SpawnRandomEnemyServerRpc();
+                lastTimeSpawned = currentScore;
+            }
         }
 
         scoreText.text = Mathf.Round(currentScore).ToString();
@@ -529,7 +532,8 @@ public class PintoBoy : GrabbableObject
         }
     }
 
-    void SpawnRandomEnemy()
+    [ServerRpc]
+    void SpawnRandomEnemyServerRpc()
     {
         int random = Random.Range(0, 3);
         switch (random)
@@ -576,11 +580,18 @@ public class PintoBoy : GrabbableObject
     {
         JumpanyEnemy enemyObj = Instantiate(prefab, position.position, Quaternion.identity, position);
         enemyObj.speed = speed + (increaseSpeedAddition * speedAdditionMultiplier);
-        enemyObj.pintoBoy = this;
+        //enemyObj.pintoBoy = this;
         enemyObj.onDeath.AddListener(OnEnemyDeath);
         enemyObj.enemyType = enemy;
         enemyObj.SetMovementSounds(audioClips);
         enemies.Add(enemyObj);
+        NetworkObject netobj = enemyObj.GetComponent<NetworkObject>();
+        netobj.Spawn();
+        netobj.TrySetParent(transform.root, false);
+        netobj.transform.SetPositionAndRotation(transform.position, transform.rotation);
+        
+        //enemyObj.transform.position = position.position;
+        //enemyObj.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
         return enemyObj;
     }
 
