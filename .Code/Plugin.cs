@@ -118,7 +118,7 @@ namespace PintoMod
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(slimePrefab);
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(lootbugPrefab);
             //LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(screenPrefab);
-            Items.RegisterScrap(pintoGrab, 100, Levels.LevelTypes.All);
+            Items.RegisterScrap(pintoGrab, 20, Levels.LevelTypes.All);
         }
 
         private void LoadBundle()
