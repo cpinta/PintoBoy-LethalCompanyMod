@@ -337,13 +337,16 @@ public class PintoBoy : GrabbableObject
     {
         base.Update();
 
-        if (spawnScreen)
+
+
+        if (spawnScreen && IsServer)
         {
             SpawnScreen();
             spawnScreen = false;
         }
 
-        if(isPaused)
+
+        if (isPaused)
         {
             //if(!insertedBattery.empty && isHeld)
             //{
@@ -574,9 +577,11 @@ public class PintoBoy : GrabbableObject
     {
         base.EquipItem();
         playerHeldBy.equippedUsableItemQE = true;
+        ChangeOwnershipOfProp(playerHeldBy.playerClientId);
     }
 
-    JumpanyEnemy SpawnEnemy(JumpanyEnemy prefab, Transform position, float speed, PintoEnemyType enemy, AudioClip[] audioClips)
+    [ServerRpc]
+    JumpanyEnemy SpawnEnemyServerRpc(JumpanyEnemy prefab, Transform position, float speed, PintoEnemyType enemy, AudioClip[] audioClips)
     {
         JumpanyEnemy enemyObj = Instantiate(prefab, position.position, Quaternion.identity, position);
         enemyObj.speed = speed + (increaseSpeedAddition * speedAdditionMultiplier);
@@ -585,10 +590,10 @@ public class PintoBoy : GrabbableObject
         enemyObj.enemyType = enemy;
         enemyObj.SetMovementSounds(audioClips);
         enemies.Add(enemyObj);
-        NetworkObject netobj = enemyObj.GetComponent<NetworkObject>();
-        netobj.Spawn();
-        netobj.TrySetParent(transform.root, false);
-        netobj.transform.SetPositionAndRotation(transform.position, transform.rotation);
+        //NetworkObject netobj = enemyObj.GetComponent<NetworkObject>();
+        //netobj.Spawn();
+        //netobj.TrySetParent(transform.root, false);
+        //netobj.transform.SetPositionAndRotation(transform.position, transform.rotation);
         
         //enemyObj.transform.position = position.position;
         //enemyObj.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
@@ -604,17 +609,17 @@ public class PintoBoy : GrabbableObject
 
     void SpawnSpider()
     {
-        JumpanyEnemy spider = SpawnEnemy(spiderPrefab.GetComponent<JumpanyEnemy>(), topSpawnpoint, spiderSpeed, PintoEnemyType.Spider, new AudioClip[] { acSpiderStep1, acSpiderStep2, acSpiderStep3, acSpiderStep4 });
+        JumpanyEnemy spider = SpawnEnemyServerRpc(spiderPrefab.GetComponent<JumpanyEnemy>(), topSpawnpoint, spiderSpeed, PintoEnemyType.Spider, new AudioClip[] { acSpiderStep1, acSpiderStep2, acSpiderStep3, acSpiderStep4 });
     }
 
     void SpawnLootbug()
     {
-        JumpanyEnemy lootbug = SpawnEnemy(lootbugPrefab.GetComponent<JumpanyEnemy>(), midSpawnpoint, lootbugSpeed, PintoEnemyType.Lootbug, new AudioClip[] { acLootbugStep });
+        JumpanyEnemy lootbug = SpawnEnemyServerRpc(lootbugPrefab.GetComponent<JumpanyEnemy>(), midSpawnpoint, lootbugSpeed, PintoEnemyType.Lootbug, new AudioClip[] { acLootbugStep });
     }
 
     void SpawnSlime()
     {
-        JumpanyEnemy slime = SpawnEnemy(slimePrefab.GetComponent<JumpanyEnemy>(), bottomSpawnpoint, slimeSpeed, PintoEnemyType.Slime, new AudioClip[] { acSlimeStep });
+        JumpanyEnemy slime = SpawnEnemyServerRpc(slimePrefab.GetComponent<JumpanyEnemy>(), bottomSpawnpoint, slimeSpeed, PintoEnemyType.Slime, new AudioClip[] { acSlimeStep });
     }
 
     void SetFade(FadeState state)
@@ -892,6 +897,7 @@ public class PintoBoy : GrabbableObject
         return 0;
     }
 
+
     public void PlayerGotHit(JumpanyEnemy enemy)
     {
         if (invincible)
@@ -990,6 +996,7 @@ public class PintoBoy : GrabbableObject
         spawnScreen = false;
     }
 
+    [ServerRpc]
     void SpawnScreen()
     {
         if(Pinto_ModBase.screenPrefab == null)
@@ -1004,7 +1011,6 @@ public class PintoBoy : GrabbableObject
 
         SetScreenToRenderTexture();
 
-        cam.parent = null;
 
         fadeAnim = cam.Find("2D Scene/Fade").GetComponent<Animator>();
 
@@ -1039,12 +1045,28 @@ public class PintoBoy : GrabbableObject
         bottomSpawnpoint = cam.Find("2D Scene/Game/Bottom Spawnpoint");
         playerSpawnpoint = cam.Find("2D Scene/Game/Player Spawnpoint");
 
+        cam.GetComponent<NetworkObject>().Spawn();
+        //cam.parent = null;
+
+
+        SpawnCameraClientRpc(cam);
 
         SwitchState(PintoBoyState.MainMenu);
 
         fadeAnim.gameObject.SetActive(true);
         endScreenText.text = "";
 
+    }
+
+    [ClientRpc]
+    void SpawnCameraClientRpc(Transform camera)
+    {
+        if (camera == null)
+        {
+            return;
+        }
+
+        cam = camera;
     }
 
     void SetScreenToRenderTexture()
