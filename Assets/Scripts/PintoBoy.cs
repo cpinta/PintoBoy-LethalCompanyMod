@@ -10,6 +10,8 @@ using UnityEngine;
 using HarmonyLib;
 using Unity.Netcode;
 using UnityEngine.UIElements.UIR;
+using System;
+using Random = UnityEngine.Random;
 
 public enum PintoBoyState
 {
@@ -99,10 +101,10 @@ public class PintoBoy : GrabbableObject
     float lootbugSpeed = 3f;
     float slimeSpeed = 2f;
 
-    float highScore = 0f;
-    float currentScore = 0f;
+    NetworkVariable<float> highScore = new NetworkVariable<float>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    NetworkVariable<float> currentScore = new NetworkVariable<float>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     float scoreIncreaseRate = 15f;     //how much score is added every second
-    int lives = 3;
+    NetworkVariable<int> lives = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
     float increaseSpeedAddition = 0.25f;    //how much speed is added every increaseAdditionRate score
     float increaseAdditionRate = 100;
@@ -337,12 +339,16 @@ public class PintoBoy : GrabbableObject
     {
         base.Update();
 
-
-
-        if (spawnScreen && IsServer)
+        if (spawnScreen)
         {
-            SpawnScreen();
-            spawnScreen = false;
+            if (IsServer)
+            {
+                SpawnScreenServerRpc();
+            }
+            else
+            {
+                return;
+            }
         }
 
 
@@ -469,10 +475,12 @@ public class PintoBoy : GrabbableObject
         }
 
 
+        if (IsOwner)
+        {
+            currentScore.Value += scoreIncreaseRate * Time.deltaTime;
+        }
 
-        currentScore += scoreIncreaseRate * Time.deltaTime;
-
-        if (currentScore > speedAdditionMultiplier * increaseAdditionRate && speedAdditionMultiplier > timesIncreased)
+        if (currentScore.Value > speedAdditionMultiplier * increaseAdditionRate && speedAdditionMultiplier > timesIncreased)
         {
             timesIncreased++;
             speedAdditionMultiplier++;
@@ -480,14 +488,14 @@ public class PintoBoy : GrabbableObject
 
         if (IsOwner)
         {
-            if (currentScore > lastTimeSpawned + Random.Range(spawnEnemyEveryMin, spawnEnemyEveryMax))
+            if (currentScore.Value > lastTimeSpawned + Random.Range(spawnEnemyEveryMin, spawnEnemyEveryMax))
             {
                 SpawnRandomEnemyServerRpc();
-                lastTimeSpawned = currentScore;
+                lastTimeSpawned = currentScore.Value;
             }
         }
 
-        scoreText.text = Mathf.Round(currentScore).ToString();
+        scoreText.text = Mathf.Round(currentScore.Value).ToString();
 
         if (player.transform.localPosition.y < playerStart.y -0.5f || player.transform.localPosition.y > playerStart.y + 100)
         {
@@ -509,10 +517,10 @@ public class PintoBoy : GrabbableObject
             }
         }
 
-        if (lives > -1)
+        if (lives.Value > -1)
         {
-            player.transform.localPosition = new Vector3(playerSpawnpoint.localPosition.x + playerPositions[lives], player.transform.localPosition.y, 0);
-            bracken.transform.localPosition = new Vector3(playerSpawnpoint.localPosition.x - (playerPositions[lives] * 3), brackenStart.y, 0);
+            player.transform.localPosition = new Vector3(playerSpawnpoint.localPosition.x + playerPositions[lives.Value], player.transform.localPosition.y, 0);
+            bracken.transform.localPosition = new Vector3(playerSpawnpoint.localPosition.x - (playerPositions[lives.Value] * 3), brackenStart.y, 0);
         }
         else
         {
@@ -580,23 +588,79 @@ public class PintoBoy : GrabbableObject
         ChangeOwnershipOfProp(playerHeldBy.playerClientId);
     }
 
+    JumpanyEnemy EnumToJumpanyEnemy(PintoEnemyType enemyType)
+    {
+        JumpanyEnemy newPrefab = new JumpanyEnemy();
+        switch (enemyType)
+        {
+            case PintoEnemyType.Spider:
+                newPrefab = Pinto_ModBase.spiderPrefab.GetComponent<JumpanyEnemy>();
+                break;
+            case PintoEnemyType.Slime:
+                newPrefab = Pinto_ModBase.slimePrefab.GetComponent<JumpanyEnemy>();
+                break;
+            case PintoEnemyType.Lootbug:
+                newPrefab = Pinto_ModBase.lootbugPrefab.GetComponent<JumpanyEnemy>();
+                break;
+        }
+        return newPrefab;
+    }
+
+    Transform EnumToEnemySpawnPoint(PintoEnemyType enemyType)
+    {
+        Transform transform = null;
+        switch (enemyType)
+        {
+            case PintoEnemyType.Spider:
+                transform = topSpawnpoint; break;
+            case PintoEnemyType.Lootbug:
+                transform = midSpawnpoint; break;
+            case PintoEnemyType.Slime:
+                transform = bottomSpawnpoint; break;
+        }
+        return transform;
+    }
+
+    AudioClip[] EnumToEnemySounds(PintoEnemyType enemyType)
+    {
+        AudioClip[] sounds = null;
+        switch (enemyType)
+        {
+            case PintoEnemyType.Spider:
+                sounds = new AudioClip[] { acSpiderStep1, acSpiderStep2, acSpiderStep3, acSpiderStep4 }; break;
+            case PintoEnemyType.Slime:
+                sounds = new AudioClip[] { acSlimeStep }; break;
+            case PintoEnemyType.Lootbug:
+                sounds = new AudioClip[] { acLootbugStep }; break;
+        }
+        return sounds;
+    }
+
     [ServerRpc]
-    JumpanyEnemy SpawnEnemyServerRpc(JumpanyEnemy prefab, Transform position, float speed, PintoEnemyType enemy, AudioClip[] audioClips)
+    void SpawnEnemyServerRpc(float speed, string enemy)
+    {
+        PintoEnemyType enemyType = Enum.Parse<PintoEnemyType>(enemy);
+        JumpanyEnemy newEnemy = SpawnEnemy(EnumToJumpanyEnemy(enemyType), EnumToEnemySpawnPoint(enemyType), speed, enemyType, EnumToEnemySounds(enemyType));
+        SpawnEnemyClientRpc(speed, enemy);
+    }
+
+    [ClientRpc]
+    void SpawnEnemyClientRpc(float speed, string enemy)
+    {
+        PintoEnemyType enemyType = Enum.Parse<PintoEnemyType>(enemy);
+
+        JumpanyEnemy newEnemy = SpawnEnemy(EnumToJumpanyEnemy(enemyType), EnumToEnemySpawnPoint(enemyType), speed, enemyType, EnumToEnemySounds(enemyType));
+    }
+
+    JumpanyEnemy SpawnEnemy(JumpanyEnemy prefab, Transform position, float speed, PintoEnemyType enemy, AudioClip[] audioClips)
     {
         JumpanyEnemy enemyObj = Instantiate(prefab, position.position, Quaternion.identity, position);
         enemyObj.speed = speed + (increaseSpeedAddition * speedAdditionMultiplier);
-        //enemyObj.pintoBoy = this;
+        enemyObj.pintoBoy = this;
         enemyObj.onDeath.AddListener(OnEnemyDeath);
         enemyObj.enemyType = enemy;
         enemyObj.SetMovementSounds(audioClips);
         enemies.Add(enemyObj);
-        //NetworkObject netobj = enemyObj.GetComponent<NetworkObject>();
-        //netobj.Spawn();
-        //netobj.TrySetParent(transform.root, false);
-        //netobj.transform.SetPositionAndRotation(transform.position, transform.rotation);
-        
-        //enemyObj.transform.position = position.position;
-        //enemyObj.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
         return enemyObj;
     }
 
@@ -609,17 +673,17 @@ public class PintoBoy : GrabbableObject
 
     void SpawnSpider()
     {
-        JumpanyEnemy spider = SpawnEnemyServerRpc(spiderPrefab.GetComponent<JumpanyEnemy>(), topSpawnpoint, spiderSpeed, PintoEnemyType.Spider, new AudioClip[] { acSpiderStep1, acSpiderStep2, acSpiderStep3, acSpiderStep4 });
+        SpawnEnemyServerRpc(spiderSpeed, PintoEnemyType.Spider.ToString());
     }
 
     void SpawnLootbug()
     {
-        JumpanyEnemy lootbug = SpawnEnemyServerRpc(lootbugPrefab.GetComponent<JumpanyEnemy>(), midSpawnpoint, lootbugSpeed, PintoEnemyType.Lootbug, new AudioClip[] { acLootbugStep });
+        SpawnEnemyServerRpc(lootbugSpeed, PintoEnemyType.Lootbug.ToString());
     }
 
     void SpawnSlime()
     {
-        JumpanyEnemy slime = SpawnEnemyServerRpc(slimePrefab.GetComponent<JumpanyEnemy>(), bottomSpawnpoint, slimeSpeed, PintoEnemyType.Slime, new AudioClip[] { acSlimeStep });
+        SpawnEnemyServerRpc(slimeSpeed, PintoEnemyType.Slime.ToString());
     }
 
     void SetFade(FadeState state)
@@ -699,12 +763,25 @@ public class PintoBoy : GrabbableObject
         mainmenuWaitTimer = mainmenuWaitTime;
     }
 
+    [ServerRpc]
+    void StartGameServerRpc()
+    {
+        StartGame();
+        StartGameClientRpc();
+    }
+
+    [ClientRpc]
+    void StartGameClientRpc()
+    {
+        StartGame();
+    }
+
     void StartGame()
     {
+
         SwitchState(PintoBoyState.InGame);
 
         playerRb.bodyType = RigidbodyType2D.Dynamic;
-        currentScore = 0f;
         speedAdditionMultiplier = speedAdditionMultiplierDefault;
 
         brackenAnim.SetTrigger(ResetString);
@@ -719,7 +796,11 @@ public class PintoBoy : GrabbableObject
         endScreenShown = false;
         deathAnimTimer = 0f;
 
-        lives = 3;
+        if (IsOwner)
+        {
+            lives.Value = 3;
+            currentScore.Value = 0f;
+        }
 
         timesIncreased = 0;
         lastTimeSpawned = 0f;
@@ -755,6 +836,19 @@ public class PintoBoy : GrabbableObject
                 enemies.Remove(enemys);
             }
         }
+    }
+
+    [ServerRpc]
+    void SwitchStateServerRpc(PintoBoyState newState)
+    {
+        SwitchState(newState);
+        SwitchStateClientRpc(newState);
+    }
+
+    [ClientRpc]
+    void SwitchStateClientRpc(PintoBoyState newState)
+    {
+        SwitchState(newState);
     }
 
     void SwitchState(PintoBoyState newState)
@@ -898,16 +992,24 @@ public class PintoBoy : GrabbableObject
     }
 
 
-    public void PlayerGotHit(JumpanyEnemy enemy)
+    public void PlayerGotHit()
     {
+        if (!IsOwner)
+        {
+            return;
+        }
+
         if (invincible)
         {
             return;
         }
-        lives--;
-        if (lives <= 0)
+
+
+        lives.Value--;
+
+        if (lives.Value <= 0)
         {
-            Die(enemy);
+            DieServerRpc();
         }
         else
         {
@@ -916,12 +1018,28 @@ public class PintoBoy : GrabbableObject
         }
     }
 
-    public void Die(JumpanyEnemy enemy)
+    [ServerRpc]
+    public void DieServerRpc()
     {
-        ClearEnemiesExcept(enemy);
+        Die();
+        DieClientRpc();
+    }
+
+    [ClientRpc]
+    public void DieClientRpc()
+    {
+        Die();
+    }
+
+    public void Die()
+    {
         groundAnim.enabled = false;
         dead = true;
-        enemy.killedPlayer = true;
+
+        for(int i = 0; i<enemies.Count; i++)
+        {
+            enemies[i].killedPlayer = true;
+        }
         if (Mathf.Abs(player.transform.localPosition.x - playerSpawnpoint.localPosition.x) < 5)
         {
             playerRb.velocity = new Vector2(0, 0);
@@ -943,21 +1061,24 @@ public class PintoBoy : GrabbableObject
 
     void ShowEndScreen()
     {
-        if (currentScore > highScore)
+        if (currentScore.Value > highScore.Value)
         {
             endScreenText.text = $"New Best!\n" +
-                                 $"{Mathf.Round(currentScore)}\n" +
+                                 $"{Mathf.Round(currentScore.Value)}\n" +
                                  $"Last Best:\n" +
-                                 $"{Mathf.Round(highScore)}";
-            highScore = currentScore;
+                                 $"{Mathf.Round(highScore.Value)}";
+            if (IsOwner)
+            {
+                highScore.Value = currentScore.Value;
+            }
             PlaySound(acNewHighscore);
         }
         else
         {
             endScreenText.text = $"Score:\n" +
-                                 $"{Mathf.Round(currentScore)}\n" +
+                                 $"{Mathf.Round(currentScore.Value)}\n" +
                                  $"Best:\n" +
-                                 $"{Mathf.Round(highScore)}";
+                                 $"{Mathf.Round(highScore.Value)}";
             PlaySound(acNoHighscore);
         }
         endScreenShown = true;
@@ -997,16 +1118,36 @@ public class PintoBoy : GrabbableObject
     }
 
     [ServerRpc]
+    void SpawnScreenServerRpc()
+    {
+        Debug.Log("SpawnScreenServerRpc Called");
+        SpawnScreenClientRpc();
+    }
+
+    [ClientRpc]
+    void SpawnScreenClientRpc()
+    {
+        Debug.Log("SpawnScreenClientRpc Called");
+        SpawnScreen();
+    }
+
+
     void SpawnScreen()
     {
-        if(Pinto_ModBase.screenPrefab == null)
+        if(cam != null)
         {
-            Debug.Log("Screen is null");
+            return;
+        }
+
+        Debug.Log("Spawning Screen");
+        if (Pinto_ModBase.screenPrefab == null)
+        {
+            Debug.Log("Screen prefab is null");
         }
         cam = Instantiate(Pinto_ModBase.screenPrefab, this.transform.position + (Vector3.down * 300), Quaternion.identity, transform.root).transform;
         if(cam == null)
         {
-            Debug.Log("Screen in Pintoboy is null");
+            Debug.Log("Screen in Pintoboy is null even after instantiate");
         }
 
         SetScreenToRenderTexture();
@@ -1045,29 +1186,27 @@ public class PintoBoy : GrabbableObject
         bottomSpawnpoint = cam.Find("2D Scene/Game/Bottom Spawnpoint");
         playerSpawnpoint = cam.Find("2D Scene/Game/Player Spawnpoint");
 
-        cam.GetComponent<NetworkObject>().Spawn();
-        //cam.parent = null;
+        cam.parent = null;
 
-
-        SpawnCameraClientRpc(cam);
 
         SwitchState(PintoBoyState.MainMenu);
 
         fadeAnim.gameObject.SetActive(true);
         endScreenText.text = "";
 
+        spawnScreen = false;
     }
 
-    [ClientRpc]
-    void SpawnCameraClientRpc(Transform camera)
-    {
-        if (camera == null)
-        {
-            return;
-        }
+    //[ClientRpc]
+    //void SpawnCameraClientRpc(Transform camera)
+    //{
+    //    if (camera == null)
+    //    {
+    //        return;
+    //    }
 
-        cam = camera;
-    }
+    //    cam = camera;
+    //}
 
     void SetScreenToRenderTexture()
     {

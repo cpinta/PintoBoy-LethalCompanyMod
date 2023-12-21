@@ -117,7 +117,7 @@ namespace PintoMod
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(spiderPrefab);
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(slimePrefab);
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(lootbugPrefab);
-            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(screenPrefab);
+            //LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(screenPrefab);
             Items.RegisterScrap(pintoGrab, 100, Levels.LevelTypes.All);
         }
 
@@ -144,7 +144,7 @@ namespace PintoMod
 
                 screenPrefab = pintoBundle.LoadAsset<GameObject>("assets/pintoboy/2d cam.prefab");
                 if (screenPrefab == null) throw new Exception("Failed to load Screen for Pinto!");
-                screenPrefab.AddComponent<NetworkObject>();
+                //screenPrefab.AddComponent<NetworkObject>();
 
                 GameObject spider = pintoBundle.LoadAsset<GameObject>("assets/pintoboy/2d/spider/spider.prefab");
                 if (spider == null) throw new Exception("Failed to load Spider Prefab Object!");
