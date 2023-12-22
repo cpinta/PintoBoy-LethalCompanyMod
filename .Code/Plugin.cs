@@ -35,13 +35,13 @@ namespace PintoMod
 
         public static ConfigEntry<float>
             config_PushCooldown,
-            config_PushForce,
+            config_PushForce,//
             config_PushRange,
             config_PushCost;
 
         public static readonly Lazy<Pinto_ModBase> Instance = new Lazy<Pinto_ModBase>(() => new Pinto_ModBase());
         public static GameObject pintoPrefab;
-        public static GameObject screenPrefab;
+        //public static GameObject screenPrefab;
         public static Item pintoGrab;
         public static GameObject spiderPrefab;
         public static GameObject slimePrefab;
@@ -51,6 +51,8 @@ namespace PintoMod
         public static Material matOnScreen;
 
         public static AssetBundle pintoBundle;
+
+        public int currentId = 0;
 
         static string audioPath = "assets/pintoboy/audio/";
 
@@ -113,12 +115,17 @@ namespace PintoMod
 
 
 
-            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(pintoGrab.spawnPrefab);
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(spiderPrefab);
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(slimePrefab);
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(lootbugPrefab);
             //LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(screenPrefab);
-            Items.RegisterScrap(pintoGrab, 20, Levels.LevelTypes.All);
+
+
+            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(pintoGrab.spawnPrefab);
+            LethalLib.Modules.Items.RegisterScrap(pintoGrab, 100, Levels.LevelTypes.All);
+
+
+            Items.RegisterScrap(pintoGrab, 100, Levels.LevelTypes.All);
         }
 
         private void LoadBundle()
@@ -142,9 +149,9 @@ namespace PintoMod
 
                 pintoBoy.itemProperties = pintoGrab;
 
-                screenPrefab = pintoBundle.LoadAsset<GameObject>("assets/pintoboy/2d cam.prefab");
-                if (screenPrefab == null) throw new Exception("Failed to load Screen for Pinto!");
-                //screenPrefab.AddComponent<NetworkObject>();
+                //screenPrefab = pintoBundle.LoadAsset<GameObject>("assets/pintoboy/2d cam.prefab");
+                //if (screenPrefab == null) throw new Exception("Failed to load Screen for Pinto!");
+                ////screenPrefab.AddComponent<NetworkObject>();
 
                 GameObject spider = pintoBundle.LoadAsset<GameObject>("assets/pintoboy/2d/spider/spider.prefab");
                 if (spider == null) throw new Exception("Failed to load Spider Prefab Object!");

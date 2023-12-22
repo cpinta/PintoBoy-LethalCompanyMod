@@ -67,6 +67,6 @@
     </ItemGroup>
 
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-      <Exec Command="cd &quot;D:\_\Code\Lethal Company\Unity Template\NetcodePatcher-2.4.0&quot;&#xD;&#xA;NetcodePatcher.dll &quot;D:\_\Code\Lethal Company\Pinto Mod\bin\Debug\netstandard2.1&quot; deps&#xD;&#xA;copy /y &quot;D:\_\Code\Lethal Company\Pinto Mod\bin\Debug\netstandard2.1\Pinto Mod.dll&quot; &quot;C:\Users\Christian\AppData\Roaming\r2modmanPlus-local\LethalCompany\profiles\JIMBO 2\BepInEx\plugins\Pinta-Pinto Mod\Pinto Mod.dll&quot;" />
+      <Exec Command="cd &quot;D:\_\Code\Lethal Company\Unity Template\NetcodePatcher-2.4.0&quot;&#xD;&#xA;NetcodePatcher.dll &quot;D:\_\Code\Lethal Company\Pinto Mod\bin\Debug\netstandard2.1&quot; deps" />
     </Target>
 </Project>
