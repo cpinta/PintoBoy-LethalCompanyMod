@@ -41,21 +41,7 @@ public class JumpanyEnemy : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Debug.Log($"enemyType: {enemyType}");
-        //Debug.Log($"speed: {speed}");
-        //Debug.Log($"startX: {startX}");
-        //Debug.Log($"distance: {distance}");
-        //Debug.Log($"pintoBoy: {pintoBoy}");
-        //Debug.Log($"onDeath: {onDeath}");
-        //Debug.Log($"animator: {animator}");
-        //Debug.Log($"paused: {paused}");
-        //Debug.Log($"killedPlayer: {killedPlayer}");
-        ////Debug.Log($"movementSounds: {movementSounds}");
-        //Debug.Log($"currentMovementSoundTimer: {currentMovementSoundTimer}");
-        //Debug.Log($"currentMovementSoundIndex: {currentMovementSoundIndex}");
-        //Debug.Log($"transform: {transform.position}");
-
-        if (pintoBoy.isPaused)
+        if (pintoBoy.isTurnedOff)
         {
             return;
         }

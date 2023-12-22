@@ -68,7 +68,7 @@ public class PintoBoy : GrabbableObject
     string DeathString = "Death";
     string ResetString = "Reset";
 
-    Transform cam;
+    GameObject cam;
     GameObject modelScreen;
     Animator buttonAnim;
 
@@ -105,6 +105,7 @@ public class PintoBoy : GrabbableObject
     NetworkVariable<float> currentScore = new NetworkVariable<float>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     float scoreIncreaseRate = 15f;     //how much score is added every second
     NetworkVariable<int> lives = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    public NetworkVariable<int> screenId = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
     float increaseSpeedAddition = 0.25f;    //how much speed is added every increaseAdditionRate score
     float increaseAdditionRate = 100;
@@ -171,6 +172,7 @@ public class PintoBoy : GrabbableObject
     Material matRenderTex = null;
     RenderTexture texRenderTex = null;
 
+    public bool isTurnedOff = false;
     public bool isPaused = false;
 
     Renderer rendModelScreen;
@@ -241,6 +243,7 @@ public class PintoBoy : GrabbableObject
         targetFloorPosition = new Vector3(0, 0, 0);
 
         insertedBattery = new Battery(false, 100);
+        EnableItemMeshes(true);
     }
 
     void LateUpdate()
@@ -332,6 +335,33 @@ public class PintoBoy : GrabbableObject
     }
 
 
+    void VerifyScreen()
+    {
+        if(cam != null)
+        {
+            Debug.Log("Need to verify screen");
+            if (cam.name != "PintoBoy Screen " + screenId.Value.ToString())
+            {
+                cam = GameObject.Find("PintoBoy Screen " + screenId.Value.ToString());
+                if (cam == null)
+                {
+                    Debug.Log("no cam matching id. Spawning one");
+                    SpawnScreen();
+                }
+                if (!isTurnedOff)
+                {
+                    Debug.Log("cam found, setting render texture");
+                    SetScreenToRenderTexture();
+                }
+            }
+        }
+        else
+        {
+            Debug.Log("verify: cam == null, spawning");
+            SpawnScreen();
+        }
+    }
+
 
 
     // Update is called once per frame
@@ -341,18 +371,27 @@ public class PintoBoy : GrabbableObject
 
         if (spawnScreen)
         {
-            if (IsServer)
+            SpawnScreen();
+            spawnScreen = false;
+
+            cam.transform.parent = null;
+            cam.GetComponent<Camera>().orthographicSize = 2;
+
+
+            cam.transform.position = transform.position + (Vector3.down * 400);
+            cam.transform.rotation = Quaternion.identity;
+            cam.transform.localScale = new Vector3(0.25f, 0.25f, 0.25f);
+
+            if(cam.transform.position.x == 0 || cam.transform.position.z == 0)
             {
-                SpawnScreenServerRpc();
+                cam.transform.position = new Vector3(Random.Range(-500f, 500f), cam.transform.position.y, Random.Range(-500f, 500f));
             }
-            else
-            {
-                return;
-            }
+
+
         }
+        //VerifyScreen();
 
-
-        if (isPaused)
+        if (isTurnedOff)
         {
             //if(!insertedBattery.empty && isHeld)
             //{
@@ -566,10 +605,10 @@ public class PintoBoy : GrabbableObject
 
         if (!right)
         {
-            TogglePause();
+            ToggleOnOff();
         }
-
     }
+
     public override void DiscardItem()
     {
         if (playerHeldBy != null)
@@ -712,7 +751,7 @@ public class PintoBoy : GrabbableObject
     void ButtonPress()
     {
         buttonAnim.SetTrigger("Press");
-        if (isPaused)
+        if (isTurnedOff)
         {
             return;
         }
@@ -901,7 +940,7 @@ public class PintoBoy : GrabbableObject
 
     void TogglePause()
     {
-        if (isPaused)
+        if (isTurnedOff)
         {
             UnPause();
         }
@@ -913,7 +952,7 @@ public class PintoBoy : GrabbableObject
 
     void Pause()
     {
-        if (isPaused)
+        if (isTurnedOff)
         {
             return;
         }
@@ -926,16 +965,55 @@ public class PintoBoy : GrabbableObject
 
     void UnPause()
     {
-        if(!isPaused)
+        if(!isTurnedOff)
         {
             return;
         }
 
         isPaused = false;
+        //Insert Pause Menu enable here
+        EnableAllAnimators();
+        if(gameState == PintoBoyState.InGame && !dead)
+        {
+            audioSource.PlayOneShot(acBackgroundSong);
+        }
+    }
+
+    void ToggleOnOff()
+    {
+        if (isTurnedOff)
+        {
+            TurnOn();
+        }
+        else
+        {
+            TurnOff();
+        }
+    }
+
+    void TurnOn()
+    {
+        if (isTurnedOff)
+        {
+            return;
+        }
+
+        isTurnedOff = true;
+        SetScreenToOffTexture();
+        DisableAllAnimators();
+        audioSource.Stop();
+    }
+
+    void TurnOff()
+    {
+        if (!isTurnedOff)
+        {
+            return;
+        }
+
+        isTurnedOff = false;
         SetScreenToRenderTexture();
         EnableAllAnimators();
-
-
 
         ClearEnemies();
         ShowTitleScreen();
@@ -1121,6 +1199,14 @@ public class PintoBoy : GrabbableObject
     void SpawnScreenServerRpc()
     {
         Debug.Log("SpawnScreenServerRpc Called");
+        int currentId = Pinto_ModBase.Instance.Value.currentId;
+        PintoBoy[] boys = (PintoBoy[])FindObjectsOfType(typeof(PintoBoy));
+        for(int i = currentId; i < boys.Length + currentId; i++)
+        {
+            Debug.Log("SpawnScreenServerRpc Called");
+            boys[i].screenId.Value = i;
+        }
+        Pinto_ModBase.Instance.Value.currentId += boys.Length;
         SpawnScreenClientRpc();
     }
 
@@ -1140,11 +1226,7 @@ public class PintoBoy : GrabbableObject
         }
 
         Debug.Log("Spawning Screen");
-        if (Pinto_ModBase.screenPrefab == null)
-        {
-            Debug.Log("Screen prefab is null");
-        }
-        cam = Instantiate(Pinto_ModBase.screenPrefab, this.transform.position + (Vector3.down * 300), Quaternion.identity, transform.root).transform;
+        cam = transform.Find("2D Cam").gameObject;
         if(cam == null)
         {
             Debug.Log("Screen in Pintoboy is null even after instantiate");
@@ -1153,40 +1235,39 @@ public class PintoBoy : GrabbableObject
         SetScreenToRenderTexture();
 
 
-        fadeAnim = cam.Find("2D Scene/Fade").GetComponent<Animator>();
+        fadeAnim = cam.transform.Find("2D Scene/Fade").GetComponent<Animator>();
 
-        mainMenu = cam.Find("2D Scene/Main Menu");
-        mainMenuAnim = cam.Find("2D Scene/Main Menu/Main Menu Sprite").GetComponent<Animator>();
+        mainMenu = cam.transform.Find("2D Scene/Main Menu");
+        mainMenuAnim = cam.transform.Find("2D Scene/Main Menu/Main Menu Sprite").GetComponent<Animator>();
 
-        inGame = cam.Find("2D Scene/Game");
-        player = cam.Find("2D Scene/Game/PintoEmployee").gameObject;
+        inGame = cam.transform.Find("2D Scene/Game");
+        player = cam.transform.Find("2D Scene/Game/PintoEmployee").gameObject;
         playerStart = player.transform.localPosition;
         playerRb = player.GetComponent<Rigidbody2D>();
         playerAnim = player.GetComponent<Animator>();
         playerCol = player.GetComponent<Collider2D>();
         playerSprite = player.GetComponent<SpriteRenderer>();
 
-        bracken = cam.Find("2D Scene/Game/Bracken").gameObject;
+        bracken = cam.transform.Find("2D Scene/Game/Bracken").gameObject;
         brackenAnim = bracken.GetComponent<Animator>();
         brackenStart = bracken.transform.localPosition;
 
-        groundCol = cam.Find("2D Scene/Game/RailingGround").GetComponent<Collider2D>();
+        groundCol = cam.transform.Find("2D Scene/Game/RailingGround").GetComponent<Collider2D>();
         groundAnim = groundCol.gameObject.GetComponent<Animator>();
 
-        scoreText = cam.Find("2D Scene/Game/UI/Score").GetComponent<TMP_Text>();
-        endScreenText = cam.Find("2D Scene/Game/UI/Death Screen/Text").GetComponent<TMP_Text>();
+        scoreText = cam.transform.Find("2D Scene/Game/UI/Score").GetComponent<TMP_Text>();
+        endScreenText = cam.transform.Find("2D Scene/Game/UI/Death Screen/Text").GetComponent<TMP_Text>();
 
-        paused = cam.Find("2D Scene/Paused");
-        lost = cam.Find("2D Scene/Lost");
+        paused = cam.transform.Find("2D Scene/Paused");
+        lost = cam.transform.Find("2D Scene/Lost");
 
         playerRb.bodyType = RigidbodyType2D.Kinematic;
 
-        topSpawnpoint = cam.Find("2D Scene/Game/Top Spawnpoint");
-        midSpawnpoint = cam.Find("2D Scene/Game/Mid Spawnpoint");
-        bottomSpawnpoint = cam.Find("2D Scene/Game/Bottom Spawnpoint");
-        playerSpawnpoint = cam.Find("2D Scene/Game/Player Spawnpoint");
+        topSpawnpoint = cam.transform.Find("2D Scene/Game/Top Spawnpoint");
+        midSpawnpoint = cam.transform.Find("2D Scene/Game/Mid Spawnpoint");
+        bottomSpawnpoint = cam.transform.Find("2D Scene/Game/Bottom Spawnpoint");
+        playerSpawnpoint = cam.transform.Find("2D Scene/Game/Player Spawnpoint");
 
-        cam.parent = null;
 
 
         SwitchState(PintoBoyState.MainMenu);
