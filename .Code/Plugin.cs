@@ -16,7 +16,6 @@ using System.Reflection;
 using LethalLib.Modules;
 using Object = UnityEngine.Object;
 using HarmonyLib.Tools;
-using UnityEngine.Yoga;
 using BepInEx.Configuration;
 using PintoMod.Assets.Scripts;
 
@@ -25,19 +24,16 @@ namespace PintoMod
     [BepInPlugin(MODGUID, MODNAME, MODVERSION)]
     public class Pinto_ModBase : BaseUnityPlugin
     {
-        public const string MODGUID = "LCMOD.Pinto_Mod";
-        public const string MODNAME = "Pinto_Mod";
-        public const string MODVERSION = "1.0.0";
+        public const string MODGUID = "Pinta.PintoBoy";
+        public const string MODNAME = "PintoBoy";
+        public const string MODVERSION = "1.0.2";
 
         private readonly Harmony harmony = new Harmony(MODGUID);
 
         public ManualLogSource logger;
 
         public static ConfigEntry<float>
-            config_PushCooldown,
-            config_PushForce,//
-            config_PushRange,
-            config_PushCost;
+            config_PintoboyRarity;
 
         public static readonly Lazy<Pinto_ModBase> Instance = new Lazy<Pinto_ModBase>(() => new Pinto_ModBase());
         public static GameObject pintoPrefab;
@@ -58,15 +54,15 @@ namespace PintoMod
 
         private void Awake()
         {
-            logger = BepInEx.Logging.Logger.CreateLogSource(PluginInfo.PLUGIN_GUID);
+            logger = BepInEx.Logging.Logger.CreateLogSource(MyPluginInfo.PLUGIN_GUID);
+
+
 
             ConfigSetup();
             LoadBundle();
             SetVariables();
 
             harmony.PatchAll(typeof(Pinto_ModBase));
-            harmony.PatchAll(typeof(PlayerControllerB_Patches));
-            harmony.PatchAll(typeof(NetworkHandler));
 
             // Unity Netcode Weaver
             var types = Assembly.GetExecutingAssembly().GetTypes();
@@ -83,15 +79,12 @@ namespace PintoMod
                 }
             }
 
-            logger.LogInfo($"Pintoboy has initialized!");
+            Debug.Log("Pintoboy initialized");
         }
 
         private void ConfigSetup()
         {
-            //config_PushCooldown = Config.Bind("Push Cooldown", "Value", 0.025f, "How long until the player can push again");
-            //config_PushForce = Config.Bind("Push Force", "Value", 12.5f, "How strong the player pushes.");
-            //config_PushRange = Config.Bind("Push Range", "Value", 3.0f, "The distance the player is able to push.");
-            //config_PushCost = Config.Bind("Push Cost", "Value", 0.08f, "The energy cost of each push.");
+            config_PintoboyRarity = Config.Bind("Pintoboy Rarity", "Value", 25f, "How rare is the PintoBoy");
         }
 
         private void SetVariables()
@@ -119,13 +112,11 @@ namespace PintoMod
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(slimePrefab);
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(lootbugPrefab);
             //LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(screenPrefab);
-
-
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(pintoGrab.spawnPrefab);
-            LethalLib.Modules.Items.RegisterScrap(pintoGrab, 100, Levels.LevelTypes.All);
 
+            Items.RegisterScrap(pintoGrab, (int) config_PintoboyRarity.Value, Levels.LevelTypes.All);
 
-            Items.RegisterScrap(pintoGrab, 100, Levels.LevelTypes.All);
+            Debug.Log("Scrapitems: "+Items.scrapItems.Count + ": " + Items.scrapItems[0].modName + " rarity:"+ Items.scrapItems[0].rarity);
         }
 
         private void LoadBundle()
@@ -135,8 +126,8 @@ namespace PintoMod
                 pintoBundle = AssetBundle.LoadFromMemory(Properties.Resources.pintobund);
                 if (pintoBundle == null) throw new Exception("Failed to load Pinto Bundle!");
 
-                string[] assetNames = pintoBundle.GetAllAssetNames();
-                Debug.Log("Asset Names: \n" + string.Join("\n", assetNames));
+                //string[] assetNames = pintoBundle.GetAllAssetNames();
+                //Debug.Log("Asset Names: \n" + string.Join("\n", assetNames));
 
                 pintoPrefab = pintoBundle.LoadAsset<GameObject>("assets/pintoboy/pintoboy.prefab");
                 if (pintoPrefab == null) throw new Exception("Failed to load Pinto Prefab!");
@@ -210,26 +201,6 @@ namespace PintoMod
                 pinto.MakeScreenNOTSpawnable();
                 Debug.Log("PintoBoy added to ship and screen not spawned");
             }
-        }
-
-        public void InstantiateScreenWithUniqueRenderTexture(GameObject prefab, Vector3 spawnPosition, Quaternion spawnRotation, int textureWidth, int textureHeight, int textureDepth)
-        {
-            // Step 1: Create a Render Texture
-            RenderTexture uniqueRenderTexture = new RenderTexture(textureWidth, textureHeight, textureDepth);
-
-            // Step 2: Instantiate the Prefab
-            GameObject prefabInstance = Instantiate(prefab, spawnPosition, spawnRotation);
-
-            // Step 3: Assign the Unique Render Texture to the Prefab Instance
-            prefabInstance.GetComponent<Camera>().targetTexture = uniqueRenderTexture;
-
-            // Step 4: Use Render Texture in Shader or Camera
-            Material material = prefabInstance.GetComponent<Renderer>().material;
-            material.SetTexture("_MainTex", uniqueRenderTexture);
-
-            // Or if using a camera:
-            // Camera camera = prefabInstance.GetComponent<Camera>();
-            // camera.targetTexture = uniqueRenderTexture;
         }
     }
 }

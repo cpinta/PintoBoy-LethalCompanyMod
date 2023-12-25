@@ -13,7 +13,7 @@ namespace PintoMod.Assets.Scripts
         {
             if (__instance.name == "Pinto")
             {
-                Pinto_ModBase.Instance.Value.logger.LogInfo("Instance is Pinto");
+                //Pinto_ModBase.Instance.Value.logger.LogInfo("Instance is Pinto");
                 Debug.Log("Instance is Pinto");
                 PintoBoy pinto = (PintoBoy)__instance;
             }

@@ -1,6 +1,5 @@
 ﻿//using LC_API.GameInterfaceAPI;
-//using LethalLib.Modules;
-//using PintoMod;
+using LethalLib.Modules;
 using PintoMod;
 using System.Collections;
 using System.Collections.Generic;
@@ -1205,7 +1204,7 @@ public class PintoBoy : GrabbableObject
         {
             Debug.Log("SpawnScreenServerRpc Called");
             boys[i].screenId.Value = i;
-        }
+        }//
         Pinto_ModBase.Instance.Value.currentId += boys.Length;
         SpawnScreenClientRpc();
     }

@@ -17,10 +17,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
+        <PackageReference Include="BepInEx.Analyzers" Version="1.0.8" PrivateAssets="all" />
         <PackageReference Include="BepInEx.Core" Version="5.*" />
-        <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
-        <PackageReference Include="UnityEngine.Modules" Version="2022.3.9" IncludeAssets="compile" />
+        <PackageReference Include="BepInEx.PluginInfoProps" Version="2.1.0" />
+        <PackageReference Include="UnityEngine.Modules" Version="2023.2.3" IncludeAssets="compile" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
@@ -29,25 +29,22 @@
 
     <ItemGroup>
       <Reference Include="Assembly-CSharp">
-        <HintPath>E:\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Assembly-CSharp-nstrip.dll</HintPath>
+        <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Assembly-CSharp.dll</HintPath>
       </Reference>
       <Reference Include="LethalLib">
-        <HintPath>E:\Games\Steam\steamapps\common\Lethal Company\BepInEx\plugins\Evaisa-LethalLib\LethalLib\LethalLib.dll</HintPath>
+        <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Lethal Company\BepInEx\plugins\Evaisa-LethalLib\LethalLib\LethalLib.dll</HintPath>
       </Reference>
       <Reference Include="Unity.InputSystem">
-        <HintPath>E:\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.InputSystem.dll</HintPath>
+        <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.InputSystem.dll</HintPath>
       </Reference>
       <Reference Include="Unity.Netcode.Runtime">
-        <HintPath>E:\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Netcode.Runtime.dll</HintPath>
+        <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Netcode.Runtime.dll</HintPath>
       </Reference>
       <Reference Include="Unity.TextMeshPro">
-        <HintPath>E:\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+        <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.TextMeshPro.dll</HintPath>
       </Reference>
       <Reference Include="UnityEngine">
-        <HintPath>E:\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.dll</HintPath>
-      </Reference>
-      <Reference Include="UnityEngine.InputModule">
-        <HintPath>E:\Games\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.InputModule.dll</HintPath>
+        <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.dll</HintPath>
       </Reference>
     </ItemGroup>
 
@@ -67,6 +64,6 @@
     </ItemGroup>
 
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-      <Exec Command="cd &quot;D:\_\Code\Lethal Company\Unity Template\NetcodePatcher-2.4.0&quot;&#xD;&#xA;NetcodePatcher.dll &quot;D:\_\Code\Lethal Company\Pinto Mod\bin\Debug\netstandard2.1&quot; deps" />
+      <Exec Command="cd ..\..\NetcodePatcher-2.4.0&#xD;&#xA;NetcodePatcher.dll &quot;..\PintoBoy-LethalCompanyMod\.Code\bin\Debug\netstandard2.1&quot; deps&#xD;&#xA;cd ..\PintoBoy-LethalCompanyMod\.Code\bin\Debug\netstandard2.1&#xD;&#xA;copy /Y &quot;Pinto Mod.dll&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\BepInEx\plugins\Pinta-PintoBoy\PintoBoy.dll&quot;&#xD;&#xA;" />
     </Target>
 </Project>

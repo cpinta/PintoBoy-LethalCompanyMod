@@ -1,6 +1,6 @@
 {
     "name": "PintoBoy",
-    "version_number": "1.0.1",
+    "version_number": "1.0.3",
     "website_url": "https://github.com/cpinta/PintoBoy-LethalCompanyMod",
     "description": "Adds a scrap with a minigame reminiscent of 80s handhelds",
     "dependencies": [

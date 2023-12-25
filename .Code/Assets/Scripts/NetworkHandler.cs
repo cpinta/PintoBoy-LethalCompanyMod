@@ -17,7 +17,7 @@ namespace PintoMod.Assets.Scripts
             //Pinto_ModBase.Instance.Value.logger.LogError("Pintoboy NetworkHandler Init starting");
             Debug.Log("Pintoboy NetworkHandler Init starting");
             //NetworkManager.Singleton.AddNetworkPrefab(Pinto_ModBase.pintoPrefab);
-            //Pinto_ModBase.Instance.Value.logger.LogError("Pintoboy NetworkHandler Init ending");
+            Debug.Log("Pintoboy NetworkHandler Init ending");
         }
 
         [HarmonyPostfix]
