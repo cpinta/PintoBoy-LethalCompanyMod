@@ -26,7 +26,7 @@ namespace PintoMod
     {
         public const string MODGUID = "Pinta.PintoBoy";
         public const string MODNAME = "PintoBoy";
-        public const string MODVERSION = "1.0.2";
+        public const string MODVERSION = "1.0.3";
 
         private readonly Harmony harmony = new Harmony(MODGUID);
 
@@ -146,20 +146,20 @@ namespace PintoMod
 
                 GameObject spider = pintoBundle.LoadAsset<GameObject>("assets/pintoboy/2d/spider/spider.prefab");
                 if (spider == null) throw new Exception("Failed to load Spider Prefab Object!");
-                spider.AddComponent<JumpanyEnemy>();
+                spider.AddComponent<LJEnemy>();
                 spiderPrefab = spider;
 
                 if (spiderPrefab == null) throw new Exception("Failed to load Spider Prefab!");
 
                 GameObject slime = pintoBundle.LoadAsset<GameObject>("assets/pintoboy/2d/slime/slime.prefab");
                 if (slime == null) throw new Exception("Failed to load Slime Prefab Object!");
-                slime.AddComponent<JumpanyEnemy>();
+                slime.AddComponent<LJEnemy>();
                 slimePrefab = slime;
                 if (slimePrefab == null) throw new Exception("Failed to load Slime Prefab!");
 
                 GameObject lootbug = pintoBundle.LoadAsset<GameObject>("assets/pintoboy/2d/loot bug/loot bug.prefab");
                 if (lootbug == null) throw new Exception("Failed to load Lootbug Prefab Object!");
-                lootbug.AddComponent<JumpanyEnemy>();
+                lootbug.AddComponent<LJEnemy>();
                 lootbugPrefab = lootbug;
                 if (lootbugPrefab == null) throw new Exception("Failed to load Lootbug Prefab!");
 

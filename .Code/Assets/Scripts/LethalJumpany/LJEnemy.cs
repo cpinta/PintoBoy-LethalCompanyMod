@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using PintoMod.Assets.Scripts.LethalJumpany;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
@@ -11,14 +12,14 @@ public enum PintoEnemyType
     Lootbug = 2
 }
 
-public class JumpanyEnemy : NetworkBehaviour
+public class LJEnemy : NetworkBehaviour
 {
     public PintoEnemyType enemyType;
     public float speed = 5f;
     float startX;
     float distance;
-    public PintoBoy pintoBoy;
-    public UnityEvent<JumpanyEnemy> onDeath = new UnityEvent<JumpanyEnemy>();
+    public LethalJumpany game;
+    public UnityEvent<LJEnemy> onDeath = new UnityEvent<LJEnemy>();
 
     public Animator animator;
     public bool paused = false;
@@ -41,7 +42,7 @@ public class JumpanyEnemy : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (pintoBoy.isTurnedOff)
+        if (game.isTurnedOff)
         {
             return;
         }
@@ -70,7 +71,7 @@ public class JumpanyEnemy : NetworkBehaviour
         currentMovementSoundTimer -= Time.deltaTime;
         if (currentMovementSoundTimer < 0)
         {
-            pintoBoy.PlaySound(movementSounds[currentMovementSoundIndex]);
+            game.PlaySound(movementSounds[currentMovementSoundIndex]);
             currentMovementSoundIndex++;
             if (currentMovementSoundIndex >= movementSounds.Length)
             {
@@ -84,9 +85,9 @@ public class JumpanyEnemy : NetworkBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            if(pintoBoy != null)
+            if(game != null)
             {
-                pintoBoy.PlayerGotHit();
+                game.PlayerGotHit();
             }
         }
     }
