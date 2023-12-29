@@ -18,6 +18,7 @@ using Object = UnityEngine.Object;
 using HarmonyLib.Tools;
 using BepInEx.Configuration;
 using PintoMod.Assets.Scripts;
+using PintoMod.Assets.Scripts.LethalJumpany;
 
 namespace PintoMod
 {
@@ -36,21 +37,30 @@ namespace PintoMod
             config_PintoboyRarity;
 
         public static readonly Lazy<Pinto_ModBase> Instance = new Lazy<Pinto_ModBase>(() => new Pinto_ModBase());
-        public static GameObject pintoPrefab;
-        //public static GameObject screenPrefab;
-        public static Item pintoGrab;
-        public static GameObject spiderPrefab;
-        public static GameObject slimePrefab;
-        public static GameObject lootbugPrefab;
 
+        public static AssetBundle pintoBundle; 
+
+        public static Item itemPintoBoyPrefab;
         public static Material matOffScreen;
         public static Material matOnScreen;
 
-        public static AssetBundle pintoBundle;
+        public static Item itemLJCartridgePrefab;
+        public static LethalJumpany gameLethalJumpanyPrefab;
+        public static GameObject ljSpiderPrefab;
+        public static GameObject ljSlimePrefab;
+        public static GameObject ljLootbugPrefab;
+
+
 
         public int currentId = 0;
 
-        static string audioPath = "assets/pintoboy/audio/";
+
+        public static string basePath = "assets/pintoboy";
+        public static string devicePath = $"{basePath}/device";
+        public static string gamesPath = $"{basePath}/games";
+        public static string ljBasePath = $"{gamesPath}/lethal jumpany";
+        public static string ljAudioPath = $"{ljBasePath}/audio/";
+        public static string ljSpritesPath = $"{ljBasePath}/2d";
 
         private void Awake()
         {
@@ -90,31 +100,33 @@ namespace PintoMod
         private void SetVariables()
         {
 
-            pintoGrab.canBeGrabbedBeforeGameStart = true;
-            pintoGrab.isScrap = true;
-            pintoGrab.canBeInspected = true;
-            pintoGrab.allowDroppingAheadOfPlayer = true;
-            pintoGrab.rotationOffset = new Vector3(0, 0, 0);
-            pintoGrab.positionOffset = new Vector3(0, 0, 0);
-            pintoGrab.restingRotation = new Vector3(-30, 0, 0);
-            pintoGrab.verticalOffset = -0.1f;
+            itemPintoBoyPrefab.canBeGrabbedBeforeGameStart = true;
+            itemPintoBoyPrefab.isScrap = true;
+            itemPintoBoyPrefab.canBeInspected = true;
+            itemPintoBoyPrefab.allowDroppingAheadOfPlayer = true;
+            itemPintoBoyPrefab.rotationOffset = new Vector3(0, 0, 0);
+            itemPintoBoyPrefab.positionOffset = new Vector3(0, 0, 0);
+            itemPintoBoyPrefab.restingRotation = new Vector3(-30, 0, 0);
+            itemPintoBoyPrefab.verticalOffset = -0.1f;
 
             //Battery
-            pintoGrab.requiresBattery = true;
-            pintoGrab.batteryUsage = 600;
+            itemPintoBoyPrefab.requiresBattery = true;
+            itemPintoBoyPrefab.batteryUsage = 600;
 
-            pintoGrab.syncInteractLRFunction = true;
-
-
+            itemPintoBoyPrefab.syncInteractLRFunction = true;
 
 
-            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(spiderPrefab);
-            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(slimePrefab);
-            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(lootbugPrefab);
+
+
+            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(ljSpiderPrefab);
+            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(ljSlimePrefab);
+            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(ljLootbugPrefab);
             //LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(screenPrefab);
-            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(pintoGrab.spawnPrefab);
+            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(itemPintoBoyPrefab.spawnPrefab);
+            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(itemLJCartridgePrefab.spawnPrefab);
 
-            Items.RegisterScrap(pintoGrab, (int) config_PintoboyRarity.Value, Levels.LevelTypes.All);
+            Items.RegisterScrap(itemPintoBoyPrefab, (int) config_PintoboyRarity.Value, Levels.LevelTypes.All);
+            Items.RegisterScrap(itemLJCartridgePrefab, (int)config_PintoboyRarity.Value, Levels.LevelTypes.All);
 
             Debug.Log("Scrapitems: "+Items.scrapItems.Count + ": " + Items.scrapItems[0].modName + " rarity:"+ Items.scrapItems[0].rarity);
         }
@@ -123,51 +135,59 @@ namespace PintoMod
         {
             try
             {
+
                 pintoBundle = AssetBundle.LoadFromMemory(Properties.Resources.pintobund);
                 if (pintoBundle == null) throw new Exception("Failed to load Pinto Bundle!");
 
-                //string[] assetNames = pintoBundle.GetAllAssetNames();
-                //Debug.Log("Asset Names: \n" + string.Join("\n", assetNames));
 
-                pintoPrefab = pintoBundle.LoadAsset<GameObject>("assets/pintoboy/pintoboy.prefab");
-                if (pintoPrefab == null) throw new Exception("Failed to load Pinto Prefab!");
-
-                pintoGrab = pintoBundle.LoadAsset<Item>("assets/pintoboy/pintoboy.asset");
-                if (pintoGrab == null) throw new Exception("Failed to load Pinto Item!");
-
-                PintoBoy pintoBoy = pintoGrab.spawnPrefab.AddComponent<PintoBoy>();
+                // PintoBoy prefabs
+                itemPintoBoyPrefab = pintoBundle.LoadAsset<Item>($"{basePath}/pintoboy.asset");
+                if (itemPintoBoyPrefab == null) throw new Exception("Failed to load Pinto Item!");
+                PintoBoy pintoBoy = itemPintoBoyPrefab.spawnPrefab.AddComponent<PintoBoy>();
                 if (pintoBoy == null) throw new Exception("Failed to load Pinto Boy!");
+                pintoBoy.itemProperties = itemPintoBoyPrefab;
 
-                pintoBoy.itemProperties = pintoGrab;
-
-                //screenPrefab = pintoBundle.LoadAsset<GameObject>("assets/pintoboy/2d cam.prefab");
-                //if (screenPrefab == null) throw new Exception("Failed to load Screen for Pinto!");
-                ////screenPrefab.AddComponent<NetworkObject>();
-
-                GameObject spider = pintoBundle.LoadAsset<GameObject>("assets/pintoboy/2d/spider/spider.prefab");
-                if (spider == null) throw new Exception("Failed to load Spider Prefab Object!");
-                spider.AddComponent<LJEnemy>();
-                spiderPrefab = spider;
-
-                if (spiderPrefab == null) throw new Exception("Failed to load Spider Prefab!");
-
-                GameObject slime = pintoBundle.LoadAsset<GameObject>("assets/pintoboy/2d/slime/slime.prefab");
-                if (slime == null) throw new Exception("Failed to load Slime Prefab Object!");
-                slime.AddComponent<LJEnemy>();
-                slimePrefab = slime;
-                if (slimePrefab == null) throw new Exception("Failed to load Slime Prefab!");
-
-                GameObject lootbug = pintoBundle.LoadAsset<GameObject>("assets/pintoboy/2d/loot bug/loot bug.prefab");
-                if (lootbug == null) throw new Exception("Failed to load Lootbug Prefab Object!");
-                lootbug.AddComponent<LJEnemy>();
-                lootbugPrefab = lootbug;
-                if (lootbugPrefab == null) throw new Exception("Failed to load Lootbug Prefab!");
-
-                matOffScreen = pintoBundle.LoadAsset<Material>("assets/pintoboy/off screen.mat");
+                matOffScreen = pintoBundle.LoadAsset<Material>($"{devicePath}/off screen.mat");
                 if (matOffScreen == null) throw new Exception("Failed to load off screen material!");
 
-                matOnScreen = pintoBundle.LoadAsset<Material>("assets/pintoboy/Screen Mat.mat");
+                matOnScreen = pintoBundle.LoadAsset<Material>($"{devicePath}/Screen Mat.mat");
                 if (matOnScreen == null) throw new Exception("Failed to load Screen Mat material!");
+
+
+                Debug.Log("milestone 1");
+                // Lethal Jumpany prefabs
+                // Cartridge
+                itemLJCartridgePrefab = pintoBundle.LoadAsset<Item>($"{ljBasePath}/lethaljumpany.asset");
+                if (itemLJCartridgePrefab == null) throw new Exception("Failed to load LethalJumpany Item!");
+                LJCartridge ljCart = itemLJCartridgePrefab.spawnPrefab.AddComponent<LJCartridge>();
+                ljCart.itemProperties = itemLJCartridgePrefab;
+
+                Debug.Log("milestone 2");
+
+                gameLethalJumpanyPrefab = pintoBundle.LoadAsset<GameObject>($"{ljBasePath}/game.prefab").AddComponent<LethalJumpany>();
+                if (gameLethalJumpanyPrefab == null) throw new Exception($"Failed to load gameLethalJumpanyPrefab at {ljBasePath}/2d.prefab");
+                ljCart.game = gameLethalJumpanyPrefab;
+
+                Debug.Log("milestone 3");
+                // Enemies
+                GameObject spider = pintoBundle.LoadAsset<GameObject>($"{ljSpritesPath}/spider/spider.prefab");
+                if (spider == null) throw new Exception("Failed to load Spider Prefab Object!");
+                spider.AddComponent<LJEnemy>();
+                ljSpiderPrefab = spider;
+                if (ljSpiderPrefab == null) throw new Exception("Failed to load Spider Prefab!");
+
+                GameObject slime = pintoBundle.LoadAsset<GameObject>($"{ljSpritesPath}/slime/slime.prefab");
+                if (slime == null) throw new Exception("Failed to load Slime Prefab Object!");
+                slime.AddComponent<LJEnemy>();
+                ljSlimePrefab = slime;
+                if (ljSlimePrefab == null) throw new Exception("Failed to load Slime Prefab!");
+
+                GameObject lootbug = pintoBundle.LoadAsset<GameObject>($"{ljSpritesPath}/loot bug/loot bug.prefab");
+                if (lootbug == null) throw new Exception("Failed to load Lootbug Prefab Object!");
+                lootbug.AddComponent<LJEnemy>();
+                ljLootbugPrefab = lootbug;
+                if (ljLootbugPrefab == null) throw new Exception("Failed to load Lootbug Prefab!");
+
             }
             catch (Exception e)
             {
@@ -177,14 +197,14 @@ namespace PintoMod
 
         public static AudioClip GetAudioClip(string path)
         {
-            AudioClip clip = pintoBundle.LoadAsset<AudioClip>(audioPath + path + ".wav");
+            AudioClip clip = pintoBundle.LoadAsset<AudioClip>(path + ".wav");
             if (clip == null)
             {
-                clip = pintoBundle.LoadAsset<AudioClip>(audioPath + path + ".mp3");
+                clip = pintoBundle.LoadAsset<AudioClip>(path + ".mp3");
             }
             if (clip == null)
             {
-                throw new Exception($"Failed to load Audio Clip {path}. Full Path: {audioPath + path}");
+                throw new Exception($"Failed to load Audio Clip {path}");
             }
 
             return clip;

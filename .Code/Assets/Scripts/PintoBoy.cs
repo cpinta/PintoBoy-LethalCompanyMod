@@ -36,6 +36,7 @@ public class PintoBoy : GrabbableObject
 
     GameObject cam;
     GameObject modelScreen;
+    Transform cartridgeLocation;
     Animator buttonAnim;
 
     ScanNodeProperties scanNodeProperties;
@@ -93,6 +94,8 @@ public class PintoBoy : GrabbableObject
 
         insertedBattery = new Battery(false, 100);
         EnableItemMeshes(true);
+
+        cartridgeLocation = mainObjectRenderer.transform.Find("Cartridge");
     }
 
     void LateUpdate()
@@ -205,6 +208,10 @@ public class PintoBoy : GrabbableObject
         if (!right)
         {
             ToggleOnOff();
+        }
+        else
+        {
+            InsertGame((PintoBoyCartridge)playerHeldBy.ItemSlots[FirstItemSlotWithGame()]);
         }
     }
 
@@ -440,10 +447,8 @@ public class PintoBoy : GrabbableObject
 
         if (currentGame != null)
         {
-            currentGame.IntializeObjects(cam.transform);
+            currentGame.IntializeObjects(cam.transform.Find("2D Scene/Game"));
         }
-
-
 
         spawnScreen = false;
     }
@@ -497,8 +502,54 @@ public class PintoBoy : GrabbableObject
         rendModelScreen.material = Pinto_ModBase.matOffScreen;
     }
 
-    public void Destroy(GameObject obj)
+    public void InsertGame(PintoBoyCartridge cart)
     {
-        Destroy(obj);
+        if(currentGame != null)
+        {
+            RemoveCurrentGame();
+        }
+
+        currentGame = cart.game;
+        cart.transform.parent = cartridgeLocation;
+        cart.parentObject = cartridgeLocation;
+        cart.game.InsertedIntoPintoBoy(this);
+    }
+
+    public void RemoveCurrentGame()
+    {
+        if(playerHeldBy.FirstEmptyItemSlot() == -1)
+        {
+            Transform parent = ((((!(playerHeldBy != null) || !playerHeldBy.isInElevator) && !StartOfRound.Instance.inShipPhase) || !(RoundManager.Instance.spawnedScrapContainer != null)) ? StartOfRound.Instance.elevatorTransform : RoundManager.Instance.spawnedScrapContainer);
+
+            currentGame.cartridge.startFallingPosition = base.transform.position + Vector3.up * 0.25f;
+            currentGame.cartridge.targetFloorPosition = currentGame.cartridge.GetItemFloorPosition(base.transform.position);
+            currentGame.cartridge.transform.parent = parent;
+            if (playerHeldBy != null && playerHeldBy.isInHangarShipRoom)
+            {
+                playerHeldBy.SetItemInElevator(droppedInShipRoom: true, droppedInElevator: true, currentGame.cartridge);
+            }
+        }
+        else
+        {
+            playerHeldBy.ItemSlots[playerHeldBy.FirstEmptyItemSlot()] = currentGame.cartridge;
+        }
+        currentGame = null;
+    }
+
+    int FirstItemSlotWithGame()
+    {
+        if (playerHeldBy == null)
+        {
+            return -1;
+        }
+
+        for(int i=0;i<playerHeldBy.ItemSlots.Length;i++)
+        {
+            if (playerHeldBy.ItemSlots[i] is PintoBoyCartridge)
+            {
+                return i;
+            }
+        }
+        return -1;
     }
 }

@@ -157,33 +157,33 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
         void Awake()
         {
 
-            acPlayerStep1 = Pinto_ModBase.GetAudioClip("21_walk1 (player step 1)");
-            acPlayerStep2 = Pinto_ModBase.GetAudioClip("22_walk2 (player step 2)");
-            acPlayerJump = Pinto_ModBase.GetAudioClip("23_ladder (player land)");
+            acPlayerStep1 = Pinto_ModBase.GetAudioClip(Pinto_ModBase.ljAudioPath + "21_walk1 (player step 1)");
+            acPlayerStep2 = Pinto_ModBase.GetAudioClip(Pinto_ModBase.ljAudioPath + "22_walk2 (player step 2)");
+            acPlayerJump = Pinto_ModBase.GetAudioClip(Pinto_ModBase.ljAudioPath + "23_ladder (player land)");
 
-            acSnapNeck = Pinto_ModBase.GetAudioClip("12_exchange (snap neck)");
-            acSnapNeckLand = Pinto_ModBase.GetAudioClip("67_knock (fall after neck snap)");
+            acSnapNeck = Pinto_ModBase.GetAudioClip(Pinto_ModBase.ljAudioPath + "12_exchange (snap neck)");
+            acSnapNeckLand = Pinto_ModBase.GetAudioClip(Pinto_ModBase.ljAudioPath + "67_knock (fall after neck snap)");
 
-            acSpiderStep1 = Pinto_ModBase.GetAudioClip("52_step1 (spider movement)");
-            acSpiderStep2 = Pinto_ModBase.GetAudioClip("53_step2 (spider movement)");
-            acSpiderStep3 = Pinto_ModBase.GetAudioClip("54_step3 (spider movement)");
-            acSpiderStep4 = Pinto_ModBase.GetAudioClip("55_step4 (spider movement)");
+            acSpiderStep1 = Pinto_ModBase.GetAudioClip(Pinto_ModBase.ljAudioPath + "52_step1 (spider movement)");
+            acSpiderStep2 = Pinto_ModBase.GetAudioClip(Pinto_ModBase.ljAudioPath + "53_step2 (spider movement)");
+            acSpiderStep3 = Pinto_ModBase.GetAudioClip(Pinto_ModBase.ljAudioPath + "54_step3 (spider movement)");
+            acSpiderStep4 = Pinto_ModBase.GetAudioClip(Pinto_ModBase.ljAudioPath + "55_step4 (spider movement)");
 
-            acLootbugStep = Pinto_ModBase.GetAudioClip("47_grass (lootbug movement)");
+            acLootbugStep = Pinto_ModBase.GetAudioClip(Pinto_ModBase.ljAudioPath + "47_grass (lootbug movement)");
 
-            acSlimeStep = Pinto_ModBase.GetAudioClip("30_triangle (slime movement)");
+            acSlimeStep = Pinto_ModBase.GetAudioClip(Pinto_ModBase.ljAudioPath + "30_triangle (slime movement)");
 
-            acConfirm = Pinto_ModBase.GetAudioClip("59_confirm (start game)");
+            acConfirm = Pinto_ModBase.GetAudioClip(Pinto_ModBase.ljAudioPath + "59_confirm (start game)");
 
-            acNewHighscore = Pinto_ModBase.GetAudioClip("24_levelclear (new highscore)");
-            acNoHighscore = Pinto_ModBase.GetAudioClip("64_lose2 (no highscore)");
+            acNewHighscore = Pinto_ModBase.GetAudioClip(Pinto_ModBase.ljAudioPath + "24_levelclear (new highscore)");
+            acNoHighscore = Pinto_ModBase.GetAudioClip(Pinto_ModBase.ljAudioPath + "64_lose2 (no highscore)");
 
-            acBackgroundSong = Pinto_ModBase.GetAudioClip("danger_streets");
+            acBackgroundSong = Pinto_ModBase.GetAudioClip(Pinto_ModBase.ljAudioPath + "danger_streets");
             backgroundMusicTime = acBackgroundSong.length;
 
-            spiderPrefab = Pinto_ModBase.spiderPrefab;
-            lootbugPrefab = Pinto_ModBase.lootbugPrefab;
-            slimePrefab = Pinto_ModBase.slimePrefab;
+            spiderPrefab = Pinto_ModBase.ljSpiderPrefab;
+            lootbugPrefab = Pinto_ModBase.ljLootbugPrefab;
+            slimePrefab = Pinto_ModBase.ljSlimePrefab;
 
             mainmenuWaitTimer = mainmenuWaitTime;
         }
@@ -375,13 +375,13 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
             switch (enemyType)
             {
                 case PintoEnemyType.Spider:
-                    newPrefab = Pinto_ModBase.spiderPrefab.GetComponent<LJEnemy>();
+                    newPrefab = Pinto_ModBase.ljSpiderPrefab.GetComponent<LJEnemy>();
                     break;
                 case PintoEnemyType.Slime:
-                    newPrefab = Pinto_ModBase.slimePrefab.GetComponent<LJEnemy>();
+                    newPrefab = Pinto_ModBase.ljSlimePrefab.GetComponent<LJEnemy>();
                     break;
                 case PintoEnemyType.Lootbug:
-                    newPrefab = Pinto_ModBase.lootbugPrefab.GetComponent<LJEnemy>();
+                    newPrefab = Pinto_ModBase.ljLootbugPrefab.GetComponent<LJEnemy>();
                     break;
             }
             return newPrefab;
@@ -833,16 +833,14 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
             }
         }
 
-        public void IntializeObjects(Transform screenRoot)
+        public void IntializeObjects(Transform gameRoot)
         {
-            base.IntializeObjects(screenRoot);
+            base.IntializeObjects(gameRoot);
 
-            Transform currGameTransform = screenRoot.transform.Find("2D Scene/CurrentGame");
-
-            mainMenu = currGameTransform.transform.Find("Main Menu");
+            mainMenu = gameRoot.transform.Find("Main Menu");
             mainMenuAnim = mainMenu.transform.Find("Main Menu Sprite").GetComponent<Animator>();
 
-            inGame = currGameTransform.transform.Find("Game");
+            inGame = gameRoot.transform.Find("Game");
 
             player = inGame.transform.Find("PintoEmployee").gameObject;
             playerStart = player.transform.localPosition;
@@ -861,7 +859,7 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
             scoreText = inGame.transform.Find("UI/Score").GetComponent<TMP_Text>();
             endScreenText = inGame.transform.Find("UI/Death Screen/Text").GetComponent<TMP_Text>();
 
-            paused = currGameTransform.transform.Find("Paused");
+            paused = gameRoot.transform.Find("Paused");
 
             playerRb.bodyType = RigidbodyType2D.Kinematic;
 
