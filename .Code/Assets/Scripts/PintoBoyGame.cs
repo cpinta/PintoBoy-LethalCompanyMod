@@ -28,9 +28,14 @@ namespace PintoMod.Assets.Scripts
 
         public void InsertedIntoPintoBoy(PintoBoy pintoBoy)
         {
-            transform.localPosition = Vector3.zero;
-            transform.localRotation = Quaternion.identity;
-            this.pintoBoy = pintoBoy;
+            try
+            {
+                this.pintoBoy = pintoBoy;
+            }
+            catch(Exception e)
+            {
+                Debug.Log($"{e}: PintoBoyGame.InsertedIntoPintoBoy() failed: {pintoBoy}");
+            }
         }
     }
 }

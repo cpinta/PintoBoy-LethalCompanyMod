@@ -5,8 +5,10 @@ using UnityEngine;
 
 namespace PintoMod.Assets.Scripts
 {
-    public class PintoBoyCartridge : GrabbableObject
+    public abstract class PintoBoyCartridge : GrabbableObject
     {
+        public ScanNodeProperties scanNodeProperties;
+
         public PintoBoyGame game;
     }
 }

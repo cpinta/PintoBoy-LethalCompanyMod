@@ -9,6 +9,7 @@ namespace PintoMod.Assets.Scripts
     public class NetworkHandler
     {
         private static GameObject pintoObject;
+        static GameObject ljObject;
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(GameNetworkManager), "Start")]
@@ -28,9 +29,18 @@ namespace PintoMod.Assets.Scripts
             {
                 if (NetworkManager.Singleton.IsServer)
                 {
-                    //pintoObject = Object.Instantiate(Pinto_ModBase.pintoPrefab);
-                    //pintoObject.GetComponent<NetworkObject>().Spawn(true);
-                    //pintoObject.transform.position = new Vector3(0, 1.7927f, -13.9836f);
+
+                    Debug.Log("Trying to spawn PintoBoy test objs");
+                    pintoObject = Object.Instantiate(Pinto_ModBase.itemPintoBoyPrefab.spawnPrefab);
+                    pintoObject.GetComponent<NetworkObject>().Spawn(true);
+                    pintoObject.transform.position = new Vector3(3.0792f, 0.2899f, -14.6918f);
+                    Debug.Log("PintoBoy test obj 1 hopefully spawned");
+
+                    ljObject = Object.Instantiate(Pinto_ModBase.itemLJCartridgePrefab.spawnPrefab);
+                    ljObject.GetComponent<NetworkObject>().Spawn(true);
+                    ljObject.transform.position = new Vector3(2.6302f, 0.2875f, -14.4498f);
+
+                    Debug.Log("PintoBoy test objs hopefully spawned");
                 }
             }
             catch

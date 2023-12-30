@@ -12,6 +12,8 @@ using UnityEngine.UIElements.UIR;
 using System;
 using Random = UnityEngine.Random;
 using PintoMod.Assets.Scripts;
+using static UnityEngine.UIElements.StylePropertyAnimationSystem;
+//using System.Numerics;
 
 
 
@@ -54,7 +56,7 @@ public class PintoBoy : GrabbableObject
     Material matRenderTex = null;
     RenderTexture texRenderTex = null;
 
-    public bool isTurnedOff = false;
+    public bool isTurnedOff = true;
     public bool isPaused = false;
 
     Renderer rendModelScreen;
@@ -177,6 +179,15 @@ public class PintoBoy : GrabbableObject
             insertedBattery.charge -= batteryDischargeRate * Time.deltaTime;
         }
 
+        if(fadeAnim == null)
+        {
+            Debug.Log("FadeAnim is null");
+        }
+        else
+        {
+            Debug.Log("FadeAnim isnt null");
+        }
+
         if (fadeAnim.GetBool(DoAnimString))
         {
             fadeAnim.SetBool(DoAnimString, false);
@@ -211,7 +222,11 @@ public class PintoBoy : GrabbableObject
         }
         else
         {
-            InsertGame((PintoBoyCartridge)playerHeldBy.ItemSlots[FirstItemSlotWithGame()]);
+            int firstSlotWGame = FirstItemSlotWithGame();
+            if (firstSlotWGame > -1 && firstSlotWGame < playerHeldBy.ItemSlots.Length)
+            {
+                InsertGame((PintoBoyCartridge)playerHeldBy.ItemSlots[firstSlotWGame], firstSlotWGame);
+            }
         }
     }
 
@@ -442,7 +457,7 @@ public class PintoBoy : GrabbableObject
         SetScreenToRenderTexture();
 
 
-        fadeAnim = cam.transform.Find("2D Scene/CurrentGame/Fade").GetComponent<Animator>();
+        fadeAnim = cam.transform.Find("2D Scene/Fade").GetComponent<Animator>();
         fadeAnim.gameObject.SetActive(true);
 
         if (currentGame != null)
@@ -502,36 +517,84 @@ public class PintoBoy : GrabbableObject
         rendModelScreen.material = Pinto_ModBase.matOffScreen;
     }
 
-    public void InsertGame(PintoBoyCartridge cart)
+    public void InsertGame(PintoBoyCartridge cart, int slotIndex)
     {
-        if(currentGame != null)
+        try
         {
-            RemoveCurrentGame();
-        }
 
-        currentGame = cart.game;
-        cart.transform.parent = cartridgeLocation;
-        cart.parentObject = cartridgeLocation;
-        cart.game.InsertedIntoPintoBoy(this);
+            Debug.Log("Inserting game: " + cart);
+
+
+            Debug.Log("currentGame = " + currentGame);
+            PintoBoyCartridge newCart = PintoBoyCartridge.Instantiate(cart, cart.transform.position, cart.transform.rotation, cart.transform.parent);
+
+            Debug.Log($"scrapvalues: old:{cart.scrapValue}, new:{newCart.scrapValue}");
+            Debug.Log($"playerheldby: old:{cart.playerHeldBy.name}, new:{newCart.playerHeldBy.name}");
+
+            currentGame = newCart.game;
+            newCart.scanNodeProperties = cart.scanNodeProperties;
+
+            newCart.transform.parent = cartridgeLocation;
+            Debug.Log("currentGame = " + currentGame);
+            newCart.parentObject = cartridgeLocation;
+            newCart.transform.position = Vector3.zero;
+            newCart.transform.rotation = Quaternion.identity;
+            Debug.Log($"position and rotation set. game:{newCart.game}");
+            newCart.game.InsertedIntoPintoBoy(this);
+
+
+            Debug.Log($"about to spawn Networkwide: {newCart.NetworkObject}");
+
+            newCart.NetworkObject.Spawn();
+            Debug.Log("currentGame inserted. Removing and Destorying");
+
+            playerHeldBy.DestroyItemInSlotAndSync(slotIndex);
+            
+            Debug.Log("destroyed item in slot");
+            if (currentGame != null)
+            {
+                RemoveCurrentGame();
+            }
+            currentGame = cart.game;
+
+
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e+" Insert Game Failed");
+        }
     }
 
     public void RemoveCurrentGame()
     {
         if(playerHeldBy.FirstEmptyItemSlot() == -1)
         {
+            int value = currentGame.cartridge.scrapValue;
+            Debug.Log("trying to drop item. Getting parent");
             Transform parent = ((((!(playerHeldBy != null) || !playerHeldBy.isInElevator) && !StartOfRound.Instance.inShipPhase) || !(RoundManager.Instance.spawnedScrapContainer != null)) ? StartOfRound.Instance.elevatorTransform : RoundManager.Instance.spawnedScrapContainer);
 
-            currentGame.cartridge.startFallingPosition = base.transform.position + Vector3.up * 0.25f;
-            currentGame.cartridge.targetFloorPosition = currentGame.cartridge.GetItemFloorPosition(base.transform.position);
-            currentGame.cartridge.transform.parent = parent;
+            Debug.Log("got parent:"+parent);
+
+            Vector3 vector = base.transform.position + Vector3.up * 0.25f;
+
+            GameObject gameObject = GameObject.Instantiate(Pinto_ModBase.itemLJCartridgePrefab.spawnPrefab, vector, Quaternion.identity, parent);
+            GrabbableObject component = gameObject.GetComponent<GrabbableObject>();
+            component.startFallingPosition = vector;
+            component.targetFloorPosition = component.GetItemFloorPosition(base.transform.position);
+
             if (playerHeldBy != null && playerHeldBy.isInHangarShipRoom)
             {
                 playerHeldBy.SetItemInElevator(droppedInShipRoom: true, droppedInElevator: true, currentGame.cartridge);
             }
+
+            component.SetScrapValue(value);
+            component.NetworkObject.Spawn();
         }
         else
         {
             playerHeldBy.ItemSlots[playerHeldBy.FirstEmptyItemSlot()] = currentGame.cartridge;
+            currentGame.cartridge.playerHeldBy = playerHeldBy;
+            currentGame.cartridge.EquipItem();
         }
         currentGame = null;
     }
