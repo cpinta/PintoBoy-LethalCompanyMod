@@ -37,6 +37,7 @@ public class PintoBoy : GrabbableObject
     string DoAnimString = "DoAnim";
 
     GameObject cam;
+    Transform trCam2DScene;
     GameObject modelScreen;
     Transform cartridgeLocation;
     Animator buttonAnim;
@@ -109,34 +110,6 @@ public class PintoBoy : GrabbableObject
         catch (System.Exception ex)
         {
             Debug.Log("Error in PintoBoy LateUpdate: "+ex);
-        }
-    }
-
-
-    void VerifyScreen()
-    {
-        if(cam != null)
-        {
-            Debug.Log("Need to verify screen");
-            if (cam.name != "PintoBoy Screen " + screenId.Value.ToString())
-            {
-                cam = GameObject.Find("PintoBoy Screen " + screenId.Value.ToString());
-                if (cam == null)
-                {
-                    Debug.Log("no cam matching id. Spawning one");
-                    SpawnScreen();
-                }
-                if (!isTurnedOff)
-                {
-                    Debug.Log("cam found, setting render texture");
-                    SetScreenToRenderTexture();
-                }
-            }
-        }
-        else
-        {
-            Debug.Log("verify: cam == null, spawning");
-            SpawnScreen();
         }
     }
 
@@ -456,9 +429,11 @@ public class PintoBoy : GrabbableObject
 
         SetScreenToRenderTexture();
 
+        trCam2DScene = cam.transform.Find("2D Scene");
 
-        fadeAnim = cam.transform.Find("2D Scene/Fade").GetComponent<Animator>();
+        fadeAnim = trCam2DScene.transform.Find("Fade").GetComponent<Animator>();
         fadeAnim.gameObject.SetActive(true);
+
 
         if (currentGame != null)
         {
@@ -537,10 +512,10 @@ public class PintoBoy : GrabbableObject
             newCart.transform.parent = cartridgeLocation;
             Debug.Log("currentGame = " + currentGame);
             newCart.parentObject = cartridgeLocation;
-            newCart.transform.position = Vector3.zero;
-            newCart.transform.rotation = Quaternion.identity;
+            newCart.transform.localPosition = Vector3.zero;
+            newCart.transform.localRotation = Quaternion.Euler(0, 0, 270);
             Debug.Log($"position and rotation set. game:{newCart.game}");
-            newCart.game.InsertedIntoPintoBoy(this);
+            newCart.game.InsertedIntoPintoBoy(this, trCam2DScene);
 
 
             Debug.Log($"about to spawn Networkwide: {newCart.NetworkObject}");
@@ -549,6 +524,7 @@ public class PintoBoy : GrabbableObject
             Debug.Log("currentGame inserted. Removing and Destorying");
 
             playerHeldBy.DestroyItemInSlotAndSync(slotIndex);
+            Destroy(playerHeldBy.ItemSlots[slotIndex]);
             
             Debug.Log("destroyed item in slot");
             if (currentGame != null)

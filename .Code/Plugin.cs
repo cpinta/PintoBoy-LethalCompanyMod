@@ -161,12 +161,13 @@ namespace PintoMod
                 if (itemLJCartridgePrefab == null) throw new Exception("Failed to load LethalJumpany Item!");
                 LJCartridge ljCart = itemLJCartridgePrefab.spawnPrefab.AddComponent<LJCartridge>();
                 ljCart.itemProperties = itemLJCartridgePrefab;
+                
 
                 Debug.Log("milestone 2");
 
-                gameLethalJumpanyPrefab = pintoBundle.LoadAsset<GameObject>($"{ljBasePath}/game.prefab").AddComponent<LethalJumpany>();
-                if (gameLethalJumpanyPrefab == null) throw new Exception($"Failed to load gameLethalJumpanyPrefab at {ljBasePath}/2d.prefab");
-                ljCart.game = gameLethalJumpanyPrefab;
+                //gameLethalJumpanyPrefab = pintoBundle.LoadAsset<GameObject>($"{ljBasePath}/game.prefab").AddComponent<LethalJumpany>();
+                //if (gameLethalJumpanyPrefab == null) throw new Exception($"Failed to load gameLethalJumpanyPrefab at {ljBasePath}/2d.prefab");
+                //ljCart.gamePrefab = gameLethalJumpanyPrefab;
 
                 Debug.Log("milestone 3");
                 // Enemies

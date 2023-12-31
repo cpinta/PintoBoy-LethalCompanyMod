@@ -26,11 +26,15 @@ namespace PintoMod.Assets.Scripts
 
         public void IntializeObjects(Transform gameRoot) { }
 
-        public void InsertedIntoPintoBoy(PintoBoy pintoBoy)
+        public void InsertedIntoPintoBoy(PintoBoy pintoBoy, Transform gameRoot)
         {
             try
             {
                 this.pintoBoy = pintoBoy;
+                transform.parent = gameRoot;
+                transform.localPosition = Vector3.zero;
+                transform.localRotation = Quaternion.identity;
+                transform.localScale = Vector3.one;
             }
             catch(Exception e)
             {

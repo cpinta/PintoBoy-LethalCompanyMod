@@ -9,6 +9,8 @@ namespace PintoMod.Assets.Scripts
     {
         public ScanNodeProperties scanNodeProperties;
 
+        public PintoBoyGame gamePrefab;
         public PintoBoyGame game;
+
     }
 }

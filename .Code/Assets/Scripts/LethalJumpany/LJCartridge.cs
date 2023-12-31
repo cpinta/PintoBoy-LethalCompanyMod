@@ -27,8 +27,18 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
             targetFloorPosition = new Vector3(0, 0, 0);
             EnableItemMeshes(true);
 
-            game = Pinto_ModBase.gameLethalJumpanyPrefab;
-            game.cartridge = this;
+            Debug.Log("LJCartrdige: About to find Game transform");
+            transform.Find("Game");
+            Debug.Log("LJCartrdige: About to add component to game transform");
+
+            transform.Find("Game").gameObject.AddComponent<LethalJumpany>();
+            Debug.Log("LJCartrdige: About to get game component");
+
+            game = transform.Find("Game").gameObject.GetComponent<LethalJumpany>();
+
+
+
+            game.transform.parent = null;
         }
     }
 }
