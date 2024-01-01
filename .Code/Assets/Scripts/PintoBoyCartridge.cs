@@ -11,9 +11,13 @@ namespace PintoMod.Assets.Scripts
 
         public PintoBoyGame gamePrefab;
         public PintoBoyGame game;
+        public PintoBoy pintoBoy;
 
         void Awake()
         {
+            targetFloorPosition = transform.position;
+            startFallingPosition = transform.position;
+            
             CartridgeAwake();
         }
 
@@ -22,10 +26,25 @@ namespace PintoMod.Assets.Scripts
 
         }
 
+        virtual protected void LateUpdate()
+        {
+            base.LateUpdate();
+
+            if(pintoBoy != null)
+            {
+                //Debug.Log("Setting rotation");
+                transform.localRotation = Quaternion.Euler(0, 0, 270);
+            }
+
+        }
+
         public void InsertedIntoPintoBoy(PintoBoy pintoBoy, Transform gameRoot)
         {
             transform.position = Vector3.zero;
             transform.rotation = Quaternion.Euler(0, 0, 270);
+            itemProperties.restingRotation = new Vector3(0, 0, 270);
+            this.pintoBoy = pintoBoy;
+
 
             game.InsertedIntoPintoBoy(pintoBoy, gameRoot, this);
         }

@@ -690,7 +690,7 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
 
         public override void TurnedOff()
         {
-            DisableAllAnimators();
+            //DisableAllAnimators();
         }
 
         void EnableAllAnimators()
@@ -710,46 +710,10 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
 
         void DisableAllAnimators()
         {
-            if (groundAnim != null)
-            {
-                Debug.Log("groundAnim.enabled = false;");
-                groundAnim.enabled = false;
-            }
-            else
-            {
-                Debug.LogWarning("groundAnim is null.");
-            }
-
-            if (brackenAnim != null)
-            {
-                Debug.Log("brackenAnim.enabled = false;");
-                brackenAnim.enabled = false;
-            }
-            else
-            {
-                Debug.LogWarning("brackenAnim is null.");
-            }
-
-            if (mainMenuAnim != null)
-            {
-                Debug.Log("mainMenuAnim.enabled = false;");
-                mainMenuAnim.enabled = false;
-            }
-            else
-            {
-                Debug.LogWarning("mainMenuAnim is null.");
-            }
-
-            if (playerAnim != null)
-            {
-                Debug.Log("playerAnim.enabled = false;");
-                playerAnim.enabled = false;
-            }
-            else
-            {
-                Debug.LogWarning("playerAnim is null.");
-            }
-
+            groundAnim.enabled = false;
+            brackenAnim.enabled = false;
+            mainMenuAnim.enabled = false;
+            playerAnim.enabled = false;
 
             pintoBoy.EnableFade(false);
 

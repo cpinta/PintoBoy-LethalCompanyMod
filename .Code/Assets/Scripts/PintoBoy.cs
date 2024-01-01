@@ -110,6 +110,7 @@ public class PintoBoy : GrabbableObject
         {
             currentGame = null;
         }
+
     }
 
     void LateUpdate()
@@ -149,7 +150,10 @@ public class PintoBoy : GrabbableObject
                 cam.transform.position = new Vector3(Random.Range(-500f, 500f), cam.transform.position.y, Random.Range(-500f, 500f));
             }
 
+            SetScreenToOffTexture();
 
+            isTurnedOff = false;
+            TurnOff();
         }
 
 
@@ -344,7 +348,7 @@ public class PintoBoy : GrabbableObject
 
         if(currentGame != null)
         {
-            currentGame.TurnedOn();
+            currentGame.TurnedOff();
         }
 
         audioSource.Stop();
@@ -362,7 +366,7 @@ public class PintoBoy : GrabbableObject
 
         if(currentGame != null)
         {
-            currentGame.TurnedOff();
+            currentGame.TurnedOn();
         }
     }
 
@@ -512,9 +516,7 @@ public class PintoBoy : GrabbableObject
     {
         try
         {
-
             Debug.Log("Inserting game: " + cart);
-
 
             Debug.Log("currentGame = " + currentGame);
             PintoBoyCartridge newCart = PintoBoyCartridge.Instantiate(cart, cart.transform.position, cart.transform.rotation, cart.transform.parent);
@@ -531,12 +533,12 @@ public class PintoBoy : GrabbableObject
             newCart.parentObject = cartridgeLocation;
             Debug.Log($"position and rotation set. game:{newCart.game}");
 
-            newCart.InsertedIntoPintoBoy(this, trCam2DScene);
 
 
             Debug.Log($"about to spawn Networkwide: {newCart.NetworkObject}");
 
             newCart.NetworkObject.Spawn();
+            newCart.InsertedIntoPintoBoy(this, trCam2DScene);
             Debug.Log("currentGame inserted. Removing and Destorying");
 
             playerHeldBy.DestroyItemInSlotAndSync(slotIndex);
