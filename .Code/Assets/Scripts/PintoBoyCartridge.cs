@@ -12,13 +12,22 @@ namespace PintoMod.Assets.Scripts
         public PintoBoyGame gamePrefab;
         public PintoBoyGame game;
 
+        void Awake()
+        {
+            CartridgeAwake();
+        }
+
+        public virtual void CartridgeAwake()
+        {
+
+        }
 
         public void InsertedIntoPintoBoy(PintoBoy pintoBoy, Transform gameRoot)
         {
-            transform.localPosition = Vector3.zero;
-            transform.localRotation = Quaternion.Euler(0, 0, 270);
+            transform.position = Vector3.zero;
+            transform.rotation = Quaternion.Euler(0, 0, 270);
 
-            game.InsertedIntoPintoBoy(pintoBoy, gameRoot);
+            game.InsertedIntoPintoBoy(pintoBoy, gameRoot, this);
         }
     }
 }

@@ -30,12 +30,13 @@ namespace PintoMod.Assets.Scripts
             wasInitialized = true;
         }
 
-        public virtual void InsertedIntoPintoBoy(PintoBoy pintoBoy, Transform gameRoot)
+        public virtual void InsertedIntoPintoBoy(PintoBoy pintoBoy, Transform gameRoot, PintoBoyCartridge cartridge)
         {
             try
             {
                 Debug.Log("Inserted Game");
                 this.pintoBoy = pintoBoy;
+                this.cartridge = cartridge;
                 transform.parent = gameRoot;
                 transform.localPosition = Vector3.zero;
                 transform.localRotation = Quaternion.identity;

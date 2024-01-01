@@ -177,7 +177,7 @@ public class PintoBoy : GrabbableObject
             fadeAnim.SetBool(DoAnimString, false);
         }
 
-        if(currentGame != null)
+        if(currentGame != null && currentGame.cartridge != null)
         {
             InGameUpdate();
         }
@@ -559,6 +559,7 @@ public class PintoBoy : GrabbableObject
 
     public void RemoveCurrentGame(PintoBoyCartridge cart)
     {
+        Debug.Log("Removing Current Game");
         if(playerHeldBy.FirstEmptyItemSlot() == -1)
         {
             int value = currentGame.cartridge.scrapValue;

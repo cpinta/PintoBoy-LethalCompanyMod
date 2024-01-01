@@ -23,6 +23,8 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
 
     public class LethalJumpany : PintoBoyGame
     {
+        public LJCartridge ljCart;
+
 
         LJState gameState = LJState.MainMenu;
 
@@ -86,11 +88,7 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
         float lootbugSpeed = 3f;
         float slimeSpeed = 2f;
 
-        NetworkVariable<float> highScore = new NetworkVariable<float>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-        NetworkVariable<float> currentScore = new NetworkVariable<float>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         float scoreIncreaseRate = 15f;     //how much score is added every second
-        NetworkVariable<int> lives = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-        public NetworkVariable<int> screenId = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
         float increaseSpeedAddition = 0.25f;    //how much speed is added every increaseAdditionRate score
         float increaseAdditionRate = 100;
@@ -190,6 +188,12 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
         public override void GameUpdate()
         {
             base.GameUpdate();
+
+            if(ljCart == null && cartridge != null)
+            {
+                ljCart = (LJCartridge)cartridge;
+            }
+
             switch (gameState)
             {
                 case LJState.MainMenu:
@@ -282,29 +286,29 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
             }
 
 
-            if (pintoBoy.IsOwner)
+            if (ljCart.IsOwner)
             {
-                Debug.Log("currentScore setting");
-                currentScore.Value += scoreIncreaseRate * Time.deltaTime;
-                Debug.Log("currentScore set");
+                //Debug.Log("currentScore setting: value:"+ ljCart.currentScore.Value);
+                ljCart.currentScore.Value += scoreIncreaseRate * Time.deltaTime;
+                //Debug.Log("currentScore set");
             }
 
-            if (currentScore.Value > speedAdditionMultiplier * increaseAdditionRate && speedAdditionMultiplier > timesIncreased)
+            if (ljCart.currentScore.Value > speedAdditionMultiplier * increaseAdditionRate && speedAdditionMultiplier > timesIncreased)
             {
                 timesIncreased++;
                 speedAdditionMultiplier++;
             }
 
-            if (pintoBoy.IsOwner)
+            if (ljCart.IsOwner)
             {
-                if (currentScore.Value > lastTimeSpawned + Random.Range(spawnEnemyEveryMin, spawnEnemyEveryMax))
+                if (ljCart.currentScore.Value > lastTimeSpawned + Random.Range(spawnEnemyEveryMin, spawnEnemyEveryMax))
                 {
                     SpawnRandomEnemyServerRpc();
-                    lastTimeSpawned = currentScore.Value;
+                    lastTimeSpawned = ljCart.currentScore.Value;
                 }
             }
 
-            scoreText.text = Mathf.Round(currentScore.Value).ToString();
+            scoreText.text = Mathf.Round(ljCart.currentScore.Value).ToString();
 
             if (player.transform.localPosition.y < playerStart.y - 0.5f || player.transform.localPosition.y > playerStart.y + 100)
             {
@@ -326,14 +330,14 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
                 }
             }
 
-            if (lives.Value > -1)
+            if (ljCart.lives.Value > -1)
             {
-                player.transform.localPosition = new Vector3(playerSpawnpoint.localPosition.x + playerPositions[lives.Value], player.transform.localPosition.y, 0);
-                bracken.transform.localPosition = new Vector3(playerSpawnpoint.localPosition.x - playerPositions[lives.Value] * 3, brackenStart.y, 0);
+                player.transform.localPosition = new Vector3(playerSpawnpoint.localPosition.x + playerPositions[ljCart.lives.Value], player.transform.localPosition.y, 0);
+                bracken.transform.localPosition = new Vector3(playerSpawnpoint.localPosition.x - playerPositions[ljCart.lives.Value] * 3, brackenStart.y, 0);
             }
             else
             {
-                Debug.Log($"Lives less than 0: {lives}");
+                Debug.Log($"Lives less than 0: {ljCart.lives}");
             }
 
             if (isGrounded)
@@ -348,7 +352,14 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
             else
             {
                 backgroundMusicTimer = backgroundMusicTime;
-                PlaySound(acBackgroundSong);
+                if(acBackgroundSong != null)
+                {
+                    PlaySound(acBackgroundSong);
+                }
+                else
+                {
+                    Debug.Log("acBackgroundSong is null");
+                }
             }
         }
 
@@ -554,10 +565,10 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
             endScreenShown = false;
             deathAnimTimer = 0f;
 
-            if (pintoBoy.IsOwner)
+            if (ljCart.IsOwner)
             {
-                lives.Value = 3;
-                currentScore.Value = 0f;
+                ljCart.lives.Value = 3;
+                ljCart.currentScore.Value = 0f;
             }
 
             timesIncreased = 0;
@@ -751,7 +762,7 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
 
         public void PlayerGotHit()
         {
-            if (!pintoBoy.IsOwner)
+            if (!ljCart.IsOwner)
             {
                 return;
             }
@@ -762,9 +773,9 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
             }
 
 
-            lives.Value--;
+            ljCart.lives.Value--;
 
-            if (lives.Value <= 0)
+            if (ljCart.lives.Value <= 0)
             {
                 DieServerRpc();
             }
@@ -818,24 +829,24 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
 
         void ShowEndScreen()
         {
-            if (currentScore.Value > highScore.Value)
+            if (ljCart.currentScore.Value > ljCart.highScore.Value)
             {
                 endScreenText.text = $"New Best!\n" +
-                                     $"{Mathf.Round(currentScore.Value)}\n" +
+                                     $"{Mathf.Round(ljCart.currentScore.Value)}\n" +
                                      $"Last Best:\n" +
-                                     $"{Mathf.Round(highScore.Value)}";
-                if (pintoBoy.IsOwner)
+                                     $"{Mathf.Round(ljCart.highScore.Value)}";
+                if (ljCart.IsOwner)
                 {
-                    highScore.Value = currentScore.Value;
+                    ljCart.highScore.Value = ljCart.currentScore.Value;
                 }
                 PlaySound(acNewHighscore);
             }
             else
             {
                 endScreenText.text = $"Score:\n" +
-                                     $"{Mathf.Round(currentScore.Value)}\n" +
+                                     $"{Mathf.Round(ljCart.currentScore.Value)}\n" +
                                      $"Best:\n" +
-                                     $"{Mathf.Round(highScore.Value)}";
+                                     $"{Mathf.Round(ljCart.highScore.Value)}";
                 PlaySound(acNoHighscore);
             }
             endScreenShown = true;
@@ -884,6 +895,7 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
             playerStart = player.transform.localPosition;
             playerRb = player.GetComponent<Rigidbody2D>();
             playerAnim = player.GetComponent<Animator>();
+            Debug.Log("playerAnim:"+playerAnim);
             playerCol = player.GetComponent<Collider2D>();
             playerSprite = player.GetComponent<SpriteRenderer>();
 
