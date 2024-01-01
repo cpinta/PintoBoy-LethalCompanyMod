@@ -70,7 +70,6 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
         bool doOnce = false;
 
         Transform paused;
-        Transform lost;
 
         Transform playerSpawnpoint;
         Transform topSpawnpoint;
@@ -188,7 +187,7 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
             mainmenuWaitTimer = mainmenuWaitTime;
         }
 
-        public void GameUpdate()
+        public override void GameUpdate()
         {
             base.GameUpdate();
             switch (gameState)
@@ -285,7 +284,9 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
 
             if (pintoBoy.IsOwner)
             {
+                Debug.Log("currentScore setting");
                 currentScore.Value += scoreIncreaseRate * Time.deltaTime;
+                Debug.Log("currentScore set");
             }
 
             if (currentScore.Value > speedAdditionMultiplier * increaseAdditionRate && speedAdditionMultiplier > timesIncreased)
@@ -467,9 +468,11 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
             SpawnEnemyServerRpc(slimeSpeed, PintoEnemyType.Slime.ToString());
         }
 
-        public void ButtonPress()
+        public override void ButtonPress()
         {
             base.ButtonPress();
+
+            Debug.Log("Pressed Button LJ");
 
             switch (gameState)
             {
@@ -615,26 +618,22 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
                     mainMenu.gameObject.SetActive(true);
                     inGame.gameObject.SetActive(false);
                     paused.gameObject.SetActive(false);
-                    lost.gameObject.SetActive(false);
                     doOnce = false;
                     break;
                 case LJState.InGame:
                     mainMenu.gameObject.SetActive(false);
                     inGame.gameObject.SetActive(true);
                     paused.gameObject.SetActive(false);
-                    lost.gameObject.SetActive(false);
                     break;
                 case LJState.Paused:
                     mainMenu.gameObject.SetActive(false);
                     inGame.gameObject.SetActive(false);
                     paused.gameObject.SetActive(true);
-                    lost.gameObject.SetActive(false);
                     break;
                 case LJState.Lost:
                     mainMenu.gameObject.SetActive(false);
                     inGame.gameObject.SetActive(false);
                     paused.gameObject.SetActive(false);
-                    lost.gameObject.SetActive(true);
                     break;
             }
             gameState = newState;
@@ -654,13 +653,13 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
             }
         }
 
-        public void Pause()
+        public override void Pause()
         {
             base.Pause();
             DisableAllAnimators();
         }
 
-        public void UnPause()
+        public override void UnPause()
         {
             base.UnPause();
             EnableAllAnimators();
@@ -670,7 +669,7 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
             }
         }
 
-        public void TurnedOn()
+        public override void TurnedOn()
         {
             EnableAllAnimators();
 
@@ -678,7 +677,7 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
             ShowTitleScreen();
         }
 
-        public void TurnedOff()
+        public override void TurnedOff()
         {
             DisableAllAnimators();
         }
@@ -700,10 +699,47 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
 
         void DisableAllAnimators()
         {
-            groundAnim.enabled = false;
-            brackenAnim.enabled = false;
-            mainMenuAnim.enabled = false;
-            playerAnim.enabled = false;
+            if (groundAnim != null)
+            {
+                Debug.Log("groundAnim.enabled = false;");
+                groundAnim.enabled = false;
+            }
+            else
+            {
+                Debug.LogWarning("groundAnim is null.");
+            }
+
+            if (brackenAnim != null)
+            {
+                Debug.Log("brackenAnim.enabled = false;");
+                brackenAnim.enabled = false;
+            }
+            else
+            {
+                Debug.LogWarning("brackenAnim is null.");
+            }
+
+            if (mainMenuAnim != null)
+            {
+                Debug.Log("mainMenuAnim.enabled = false;");
+                mainMenuAnim.enabled = false;
+            }
+            else
+            {
+                Debug.LogWarning("mainMenuAnim is null.");
+            }
+
+            if (playerAnim != null)
+            {
+                Debug.Log("playerAnim.enabled = false;");
+                playerAnim.enabled = false;
+            }
+            else
+            {
+                Debug.LogWarning("playerAnim is null.");
+            }
+
+
             pintoBoy.EnableFade(false);
 
             for (int i = 0; i < enemies.Count; i++)
@@ -833,9 +869,11 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
             }
         }
 
-        public void IntializeObjects(Transform gameRoot)
+        public override void InitializeObjects(Transform gameRoot)
         {
-            base.IntializeObjects(gameRoot);
+            base.InitializeObjects(gameRoot);
+
+            Debug.Log("intiializing LethalJumpany");
 
             mainMenu = gameRoot.transform.Find("Main Menu");
             mainMenuAnim = mainMenu.transform.Find("Main Menu Sprite").GetComponent<Animator>();

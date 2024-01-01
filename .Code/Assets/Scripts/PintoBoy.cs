@@ -72,14 +72,18 @@ public class PintoBoy : GrabbableObject
         mainObjectRenderer = transform.Find("Model").GetComponent<MeshRenderer>();
 
         scanNodeProperties = this.GetComponentInChildren<ScanNodeProperties>();
+        if(scanNodeProperties == null)
+        {
+            Debug.Log("scanNodePoperties null af tbh");
+        }
 
         useCooldown = 0.1f;
 
         grabbable = true;
         parentObject = this.transform;
 
+        Debug.Log("scannode start");
         grabbableToEnemies = true;
-
         scanNodeProperties.maxRange = 100;
         scanNodeProperties.minRange = 1;
         scanNodeProperties.requiresLineOfSight = true;
@@ -89,6 +93,7 @@ public class PintoBoy : GrabbableObject
         scanNodeProperties.nodeType = 2;
 
 
+        Debug.Log("scannode done");
         modelScreen = transform.Find("Model/Screen").gameObject;
         buttonAnim = transform.Find("Model/Button").GetComponent<Animator>();
 
@@ -99,6 +104,12 @@ public class PintoBoy : GrabbableObject
         EnableItemMeshes(true);
 
         cartridgeLocation = mainObjectRenderer.transform.Find("Cartridge");
+
+        Debug.Log("cartLoc.childcount:" + cartridgeLocation.childCount);
+        if(cartridgeLocation.childCount == 0)
+        {
+            currentGame = null;
+        }
     }
 
     void LateUpdate()
@@ -152,14 +163,14 @@ public class PintoBoy : GrabbableObject
             insertedBattery.charge -= batteryDischargeRate * Time.deltaTime;
         }
 
-        if(fadeAnim == null)
-        {
-            Debug.Log("FadeAnim is null");
-        }
-        else
-        {
-            Debug.Log("FadeAnim isnt null");
-        }
+        //if(fadeAnim == null)
+        //{
+        //    Debug.Log("FadeAnim is null");
+        //}
+        //else
+        //{
+        //    Debug.Log("FadeAnim isnt null");
+        //}
 
         if (fadeAnim.GetBool(DoAnimString))
         {
@@ -246,14 +257,19 @@ public class PintoBoy : GrabbableObject
 
     void ButtonPress()
     {
+
+        Debug.Log("Button Press PintoBoy. isTurnedOff = " + isTurnedOff);
         buttonAnim.SetTrigger("Press");
         if (isTurnedOff)
         {
             return;
         }
 
+        Debug.Log("Button Press PintoBoy. Currentgame = "+currentGame);
+
         if(currentGame != null)
         {
+            Debug.Log("Button Press PintoBoy. Currentgame = " + currentGame);
             currentGame.ButtonPress();
         }
 
@@ -261,7 +277,7 @@ public class PintoBoy : GrabbableObject
 
     void TogglePause()
     {
-        if (isTurnedOff)
+        if (isPaused)
         {
             UnPause();
         }
@@ -316,7 +332,7 @@ public class PintoBoy : GrabbableObject
         }
     }
 
-    void TurnOn()
+    void TurnOff()
     {
         if (isTurnedOff)
         {
@@ -328,13 +344,13 @@ public class PintoBoy : GrabbableObject
 
         if(currentGame != null)
         {
-            currentGame.Pause();
+            currentGame.TurnedOn();
         }
 
         audioSource.Stop();
     }
 
-    void TurnOff()
+    void TurnOn()
     {
         if (!isTurnedOff)
         {
@@ -437,7 +453,7 @@ public class PintoBoy : GrabbableObject
 
         if (currentGame != null)
         {
-            currentGame.IntializeObjects(cam.transform.Find("2D Scene/Game"));
+            currentGame.InitializeObjects(cam.transform.Find("2D Scene/Game"));
         }
 
         spawnScreen = false;
@@ -506,16 +522,16 @@ public class PintoBoy : GrabbableObject
             Debug.Log($"scrapvalues: old:{cart.scrapValue}, new:{newCart.scrapValue}");
             Debug.Log($"playerheldby: old:{cart.playerHeldBy.name}, new:{newCart.playerHeldBy.name}");
 
-            currentGame = newCart.game;
+            newCart.game = cart.game;
+
             newCart.scanNodeProperties = cart.scanNodeProperties;
 
             newCart.transform.parent = cartridgeLocation;
             Debug.Log("currentGame = " + currentGame);
             newCart.parentObject = cartridgeLocation;
-            newCart.transform.localPosition = Vector3.zero;
-            newCart.transform.localRotation = Quaternion.Euler(0, 0, 270);
             Debug.Log($"position and rotation set. game:{newCart.game}");
-            newCart.game.InsertedIntoPintoBoy(this, trCam2DScene);
+
+            newCart.InsertedIntoPintoBoy(this, trCam2DScene);
 
 
             Debug.Log($"about to spawn Networkwide: {newCart.NetworkObject}");
@@ -529,9 +545,9 @@ public class PintoBoy : GrabbableObject
             Debug.Log("destroyed item in slot");
             if (currentGame != null)
             {
-                RemoveCurrentGame();
+                RemoveCurrentGame(cart);
             }
-            currentGame = cart.game;
+            currentGame = newCart.game;
 
 
         }
@@ -541,7 +557,7 @@ public class PintoBoy : GrabbableObject
         }
     }
 
-    public void RemoveCurrentGame()
+    public void RemoveCurrentGame(PintoBoyCartridge cart)
     {
         if(playerHeldBy.FirstEmptyItemSlot() == -1)
         {
@@ -568,9 +584,25 @@ public class PintoBoy : GrabbableObject
         }
         else
         {
-            playerHeldBy.ItemSlots[playerHeldBy.FirstEmptyItemSlot()] = currentGame.cartridge;
-            currentGame.cartridge.playerHeldBy = playerHeldBy;
-            currentGame.cartridge.EquipItem();
+            Debug.Log("starting picking up item. Cartridge:"+ cart);
+            playerHeldBy.currentlyGrabbingObject = cart;
+            playerHeldBy.grabInvalidated = false;
+            playerHeldBy.currentlyGrabbingObject.InteractItem();
+
+            Debug.Log("picking up item Interacted with. Cartridge:" + currentGame.cartridge);
+
+            if (!playerHeldBy.isTestingPlayer)
+            {
+                playerHeldBy.GrabObjectServerRpc(currentGame.cartridge.NetworkObject);
+            }
+            Debug.Log("picking up item ServerRpc. Cartridge:" + currentGame.cartridge);
+            if (playerHeldBy.grabObjectCoroutine != null)
+            {
+                StopCoroutine(playerHeldBy.grabObjectCoroutine);
+            }
+            Debug.Log("picking up item Starting Coroutine. Cartridge:" + currentGame.cartridge);
+            playerHeldBy.grabObjectCoroutine = StartCoroutine(playerHeldBy.GrabObject());
+            Debug.Log("picking up item Coroutine started. Cartridge:" + currentGame.cartridge);
         }
         currentGame = null;
     }

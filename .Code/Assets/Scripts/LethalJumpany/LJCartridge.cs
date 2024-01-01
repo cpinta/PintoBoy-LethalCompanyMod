@@ -28,7 +28,12 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
             EnableItemMeshes(true);
 
             Debug.Log("LJCartrdige: About to find Game transform");
-            transform.Find("Game");
+            Transform gameTr = transform.Find("Game");
+            if(gameTr == null)
+            {
+                return;
+            }
+
             Debug.Log("LJCartrdige: About to add component to game transform");
 
             transform.Find("Game").gameObject.AddComponent<LethalJumpany>();
