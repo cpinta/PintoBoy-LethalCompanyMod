@@ -64,6 +64,8 @@ public class PintoBoy : GrabbableObject
 
     float batteryDischargeRate = 0.002f;
 
+    float newGameOffset = 20;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -385,11 +387,6 @@ public class PintoBoy : GrabbableObject
         TurnOff();
     }
 
-    public float Remap(float from, float fromMin, float fromMax, float toMin, float toMax)
-    {
-        return 0;
-    }
-
     public void PlaySound(AudioClip clip)
     {
         audioSource.PlayOneShot(clip);
@@ -518,6 +515,12 @@ public class PintoBoy : GrabbableObject
         {
             Debug.Log("Inserting game: " + cart);
 
+            if(currentGame != null)
+            {
+                currentGame.transform.parent = null;
+                //currentGame.Pause();
+            }
+            
             Debug.Log("currentGame = " + currentGame);
             PintoBoyCartridge newCart = PintoBoyCartridge.Instantiate(cart, cart.transform.position, cart.transform.rotation, cart.transform.parent);
 
@@ -525,33 +528,39 @@ public class PintoBoy : GrabbableObject
             Debug.Log($"playerheldby: old:{cart.playerHeldBy.name}, new:{newCart.playerHeldBy.name}");
 
             newCart.game = cart.game;
-
+            
             newCart.scanNodeProperties = cart.scanNodeProperties;
-
+            
             newCart.transform.parent = cartridgeLocation;
             Debug.Log("currentGame = " + currentGame);
+
             newCart.parentObject = cartridgeLocation;
             Debug.Log($"position and rotation set. game:{newCart.game}");
 
 
-
             Debug.Log($"about to spawn Networkwide: {newCart.NetworkObject}");
-
             newCart.NetworkObject.Spawn();
+            
+
             newCart.InsertedIntoPintoBoy(this, trCam2DScene);
             Debug.Log("currentGame inserted. Removing and Destorying");
 
             playerHeldBy.DestroyItemInSlotAndSync(slotIndex);
             Destroy(playerHeldBy.ItemSlots[slotIndex]);
             
+
             Debug.Log("destroyed item in slot");
             if (currentGame != null)
             {
                 RemoveCurrentGame(cart);
+                
             }
+            cam.transform.position += Vector3.forward * newGameOffset;
+            
             currentGame = newCart.game;
+            
 
-
+            debugCamNum = 0;
         }
         catch (Exception e)
         {
@@ -559,10 +568,23 @@ public class PintoBoy : GrabbableObject
         }
     }
 
+    int debugCamNum = 0;
+
+    public string DebugGetCamChildren()
+    {
+        string ret = "ret #" + debugCamNum.ToString() + "\n";
+        for(int i=0;i< trCam2DScene.transform.childCount;i++)
+        {
+            ret += trCam2DScene.transform.GetChild(i) + "\n";
+        }
+        debugCamNum++;
+        return ret;
+    }
+
     public void RemoveCurrentGame(PintoBoyCartridge cart)
     {
         Debug.Log("Removing Current Game");
-        if(playerHeldBy.FirstEmptyItemSlot() == -1)
+        if(true)
         {
             int value = currentGame.cartridge.scrapValue;
             Debug.Log("trying to drop item. Getting parent");
@@ -607,6 +629,8 @@ public class PintoBoy : GrabbableObject
             playerHeldBy.grabObjectCoroutine = StartCoroutine(playerHeldBy.GrabObject());
             Debug.Log("picking up item Coroutine started. Cartridge:" + currentGame.cartridge);
         }
+        Debug.Log($"2nd this cart name: {cart.game.gameObject.name} cart's parent name: {cart.game.transform.parent}");
+        cart.game.TakenOutPintoBoy();
         currentGame = null;
     }
 

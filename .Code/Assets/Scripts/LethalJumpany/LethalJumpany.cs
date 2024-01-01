@@ -183,6 +183,8 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
             slimePrefab = Pinto_ModBase.ljSlimePrefab;
 
             mainmenuWaitTimer = mainmenuWaitTime;
+
+            DisableChildren();
         }
 
         public override void GameUpdate()

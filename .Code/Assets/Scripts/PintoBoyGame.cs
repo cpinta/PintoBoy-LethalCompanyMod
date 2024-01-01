@@ -34,6 +34,7 @@ namespace PintoMod.Assets.Scripts
         {
             try
             {
+                EnableChildren();
                 Debug.Log("Inserted Game");
                 this.pintoBoy = pintoBoy;
                 this.cartridge = cartridge;
@@ -55,6 +56,28 @@ namespace PintoMod.Assets.Scripts
             catch(Exception e)
             {
                 Debug.Log($"{e}: PintoBoyGame.InsertedIntoPintoBoy() failed: {pintoBoy}");
+            }
+        }
+
+        public virtual void TakenOutPintoBoy()
+        {
+            pintoBoy = null;
+            DisableChildren();
+        }
+
+        public virtual void DisableChildren()
+        {
+            for(int i = 0; i < transform.childCount; i++)
+            {
+                transform.GetChild(i).gameObject.SetActive(false);
+            }
+        }
+
+        public virtual void EnableChildren()
+        {
+            for(int i =0; i < transform.childCount; i++)
+            {
+                transform.GetChild(i).gameObject.SetActive(true);
             }
         }
     }
