@@ -25,6 +25,7 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
     {
         public LJCartridge ljCart;
 
+        Animator fadeAnim;
 
         LJState gameState = LJState.MainMenu;
 
@@ -61,7 +62,7 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
         string ResetString = "Reset";
 
 
-        public float jumpHeight = 9.75f;
+        public float jumpHeight = 7f;
         public float fastFallSpeed = 15f;
         public float rayCastDistance = 0.5f;
         public float rayCastOffset = -0.05f;
@@ -196,6 +197,11 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
                 ljCart = (LJCartridge)cartridge;
             }
 
+            if (fadeAnim.GetBool(DoAnimString))
+            {
+                fadeAnim.SetBool(DoAnimString, false);
+            }
+
             switch (gameState)
             {
                 case LJState.MainMenu:
@@ -210,14 +216,14 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
                     }
                     if (mainmenuTimer > 1 && !doOnce)
                     {
-                        pintoBoy.SetFade(FadeState.FadeOut);
+                        SetFade(FadeState.FadeOut);
                         doOnce = true;
                     }
                     if (mainmenuTimer <= 1 && mainmenuTimer > 0 && doOnce)
                     {
                         mainmenuTimer = 0f;
                         StartGame();
-                        pintoBoy.SetFade(FadeState.FadeIn);
+                        SetFade(FadeState.FadeIn);
                         doOnce = false;
                     }
                     break;
@@ -381,6 +387,34 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
                     SpawnSlime();
                     break;
             }
+        }
+
+        public void SetFade(FadeState state)
+        {
+            switch (state)
+            {
+                case FadeState.FadeOff:
+                    fadeAnim.SetInteger(FadeString, (int)FadeState.FadeOff);
+                    fadeAnim.SetBool(DoAnimString, true);
+                    break;
+                case FadeState.FadeOn:
+                    fadeAnim.SetInteger(FadeString, (int)FadeState.FadeOn);
+                    fadeAnim.SetBool(DoAnimString, true);
+                    break;
+                case FadeState.FadeIn:
+                    fadeAnim.SetInteger(FadeString, (int)FadeState.FadeIn);
+                    fadeAnim.SetBool(DoAnimString, true);
+                    break;
+                case FadeState.FadeOut:
+                    fadeAnim.SetInteger(FadeString, (int)FadeState.FadeOut);
+                    fadeAnim.SetBool(DoAnimString, true);
+                    break;
+            }
+        }
+
+        public void EnableFade(bool enabled)
+        {
+            fadeAnim.enabled = enabled;
         }
 
         LJEnemy EnumToJumpanyEnemy(PintoEnemyType enemyType)
@@ -701,7 +735,7 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
             brackenAnim.enabled = true;
             mainMenuAnim.enabled = true;
             playerAnim.enabled = true;
-            pintoBoy.EnableFade(true);
+            EnableFade(true);
 
             for (int i = 0; i < enemies.Count; i++)
             {
@@ -717,7 +751,7 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
             mainMenuAnim.enabled = false;
             playerAnim.enabled = false;
 
-            pintoBoy.EnableFade(false);
+            EnableFade(false);
 
             for (int i = 0; i < enemies.Count; i++)
             {
@@ -799,7 +833,7 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
             {
                 endScreenText.text = $"New Best!\n" +
                                      $"{Mathf.Round(ljCart.currentScore.Value)}\n" +
-                                     $"Last Best:\n" +
+                                     $"Last Best\n" +
                                      $"{Mathf.Round(ljCart.highScore.Value)}";
                 if (ljCart.IsOwner)
                 {
@@ -809,9 +843,9 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
             }
             else
             {
-                endScreenText.text = $"Score:\n" +
+                endScreenText.text = $"Score\n" +
                                      $"{Mathf.Round(ljCart.currentScore.Value)}\n" +
-                                     $"Best:\n" +
+                                     $"Best\n" +
                                      $"{Mathf.Round(ljCart.highScore.Value)}";
                 PlaySound(acNoHighscore);
             }
@@ -883,6 +917,9 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
             midSpawnpoint = inGame.transform.Find("Mid Spawnpoint");
             bottomSpawnpoint = inGame.transform.Find("Bottom Spawnpoint");
             playerSpawnpoint = inGame.transform.Find("Player Spawnpoint");
+
+            fadeAnim = gameRoot.transform.Find("Fade").GetComponent<Animator>();
+            fadeAnim.gameObject.SetActive(true);
 
             endScreenText.text = "";
         }

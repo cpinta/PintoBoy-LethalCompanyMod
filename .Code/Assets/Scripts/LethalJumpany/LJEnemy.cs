@@ -96,5 +96,6 @@ public class LJEnemy : NetworkBehaviour
     {
         movementSounds = audioClips;
         currentMovementSoundTimer = movementSounds[0].length;
+        game.PlaySound(movementSounds[0]);
     }
 }

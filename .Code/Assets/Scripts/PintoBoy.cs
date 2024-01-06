@@ -31,7 +31,6 @@ public class PintoBoy : GrabbableObject
 
     PintoBoyGame currentGame;
 
-    Animator fadeAnim;
 
     string FadeString = "Fade";
     string DoAnimString = "DoAnim";
@@ -140,7 +139,7 @@ public class PintoBoy : GrabbableObject
             spawnScreen = false;
 
             cam.transform.parent = null;
-            cam.GetComponent<Camera>().orthographicSize = 2;
+            cam.GetComponent<Camera>().orthographicSize = 1.5f;
 
 
             cam.transform.position = transform.position + (Vector3.down * 400);
@@ -178,10 +177,6 @@ public class PintoBoy : GrabbableObject
         //    Debug.Log("FadeAnim isnt null");
         //}
 
-        if (fadeAnim.GetBool(DoAnimString))
-        {
-            fadeAnim.SetBool(DoAnimString, false);
-        }
 
         if(currentGame != null && currentGame.cartridge != null)
         {
@@ -236,29 +231,6 @@ public class PintoBoy : GrabbableObject
         base.EquipItem();
         playerHeldBy.equippedUsableItemQE = true;
         ChangeOwnershipOfProp(playerHeldBy.playerClientId);
-    }
-
-    public void SetFade(FadeState state)
-    {
-        switch (state)
-        {
-            case FadeState.FadeOff:
-                fadeAnim.SetInteger(FadeString, (int)FadeState.FadeOff);
-                fadeAnim.SetBool(DoAnimString, true);
-                break;
-            case FadeState.FadeOn:
-                fadeAnim.SetInteger(FadeString, (int)FadeState.FadeOn);
-                fadeAnim.SetBool(DoAnimString, true);
-                break;
-            case FadeState.FadeIn:
-                fadeAnim.SetInteger(FadeString, (int)FadeState.FadeIn);
-                fadeAnim.SetBool(DoAnimString, true);
-                break;
-            case FadeState.FadeOut:
-                fadeAnim.SetInteger(FadeString, (int)FadeState.FadeOut);
-                fadeAnim.SetBool(DoAnimString, true);
-                break;
-        }
     }
 
     void ButtonPress()
@@ -397,10 +369,6 @@ public class PintoBoy : GrabbableObject
         audioSource.Stop();
     }
 
-    public void EnableFade(bool enabled)
-    {
-        fadeAnim.enabled = enabled;
-    }
 
     public void MakeScreenNOTSpawnable()
     {
@@ -448,8 +416,6 @@ public class PintoBoy : GrabbableObject
 
         trCam2DScene = cam.transform.Find("2D Scene");
 
-        fadeAnim = trCam2DScene.transform.Find("Fade").GetComponent<Animator>();
-        fadeAnim.gameObject.SetActive(true);
 
 
         if (currentGame != null)
@@ -467,7 +433,7 @@ public class PintoBoy : GrabbableObject
         {
 
             Debug.Log("SetScreenRendTex: texRenderTex is null. Setting");
-            texRenderTex = new RenderTexture(160, 160, 16);
+            texRenderTex = new RenderTexture(120, 120, 16);
 
             // Step 1: Create a Render Texture
             texRenderTex.name = "PintoBoyScreen";

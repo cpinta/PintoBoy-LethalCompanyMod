@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 961805418
+CRC: 467198345
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: c517687d6a8a5232ade609ad22b45d47
+    Hash: 947749d8e3d3d44f0467e32a987fb16e
   TypeTreeHash:
     serializedVersion: 2
     Hash: ac86a428403ffcd486ded392cd2c7a0c
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: c517687d6a8a5232ade609ad22b45d47
+    Hash: 947749d8e3d3d44f0467e32a987fb16e
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -137,10 +137,12 @@ Assets:
 - Assets/Pintoboy/Games/Lethal Jumpany/Audio/54_step3 (spider movement).wav
 - Assets/Pintoboy/Games/Lethal Jumpany/2D/Loot Bug/Loot Bug.prefab
 - Assets/Pintoboy/Games/Lethal Jumpany/Audio/55_step4 (spider movement).wav
+- Assets/Pintoboy/Device/Pintoboy.prefab
 - Assets/Pintoboy/Games/Lethal Jumpany/Audio/21_walk1 (player step 1).wav
 - Assets/Pintoboy/Games/Lethal Jumpany/2D/Bracken/Bracken.controller
 - Assets/Pintoboy/Device/Button_Press.anim
-- Assets/Pintoboy/Device/Pintoboy.prefab
+- Assets/Pintoboy/Device/Screen Mat.mat
+- Assets/Pintoboy/Materials/Render Texture.mat
 - Assets/Pintoboy/Games/Lethal Jumpany/Audio/53_step2 (spider movement).wav
 - Assets/Pintoboy/Games/Lethal Jumpany/2D/Employee/2DEmployee_Run.anim
 - Assets/Pintoboy/Games/Lethal Jumpany/2D/Slime/Slime_Idle.anim
@@ -159,7 +161,6 @@ Assets:
 - Assets/Pintoboy/Games/Lethal Jumpany/LethalJumpany.asset
 - Assets/Pintoboy/Games/Lethal Jumpany/2D/Menus/Fade_On.anim
 - Assets/Pintoboy/Games/Lethal Jumpany/2D/Spider/Spider.prefab
-- Assets/Pintoboy/Device/Screen Mat.mat
 - Assets/Pintoboy/Device/Button.controller
 - Assets/Pintoboy/Games/Lethal Jumpany/2D/Spider/Spider.controller
 - Assets/Pintoboy/Games/Lethal Jumpany/Audio/67_knock (fall after neck snap).wav
