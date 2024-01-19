@@ -10,25 +10,11 @@ Some units can still be found in facilities scattered around the solar system.
 
 ![](https://i.imgur.com/Jm7B8ZL.gif)
 
-## Releases
-### 1.0.3
-(Hopefully) fixed issue with PintoBoys not spawning correctly for non-host players
-- This would cause spawned PintoBoys to seem invisible until the host picked them up
-Added config for changing the PintoBoy rarity
-
-### 1.0.1
-(Hopefully) fixed issue with non-host players not being able to play
-
-### 1.0.0
-Initial Release
-
-
-## Known Bugs
-- Sometimes the PintoBoy will spawn outside of the facilities
 
 ## Future Updates
-- Adding a game box scrap item for Lethal Jumpany
-- Add ability to create new cartridges to put in the PintoBoy
+- Adding new games to the PintoBoy
+- Adding cartridges and cartridge swapping
+- Performance fixes
 
 ## Credits
 Thank you to Shiru/shiru8bit for the sound effects and background music: https://opengameart.org/content/nes-8-bit-sound-effects 
