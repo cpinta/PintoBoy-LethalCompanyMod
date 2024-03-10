@@ -19,6 +19,8 @@ using HarmonyLib.Tools;
 using BepInEx.Configuration;
 using PintoMod.Assets.Scripts;
 using PintoMod.Assets.Scripts.LethalJumpany;
+using PintoMod.Assets.Scripts.FacilityDash;
+using UnityEngine.UIElements.Layout;
 
 namespace PintoMod
 {
@@ -50,7 +52,14 @@ namespace PintoMod
         public static GameObject ljSlimePrefab;
         public static GameObject ljLootbugPrefab;
 
-
+        public static Item itemFDCartridgePrefab;
+        public static FacilityDash gameFacilityDashPrefab;
+        public static GameObject fdBrackenPrefab;
+        public static GameObject fdBunkerSpiderPrefab;
+        public static GameObject fdLootBugPrefab;
+        public static GameObject fdNutcrackerPrefab;
+        public static GameObject fdSnareFleaPrefab;
+        public static GameObject fdThumperPrefab;
 
         public int currentId = 0;
 
@@ -61,6 +70,11 @@ namespace PintoMod
         public static string ljBasePath = $"{gamesPath}/lethal jumpany";
         public static string ljAudioPath = $"{ljBasePath}/audio/";
         public static string ljSpritesPath = $"{ljBasePath}/2d";
+
+
+        public static string fdBasePath = $"{gamesPath}/facility dash";
+        public static string fdAudioPath = $"{fdBasePath}/audio/";
+        public static string fdSpritesPath = $"{fdBasePath}/sprites/monsters";
 
         private void Awake()
         {
@@ -161,9 +175,6 @@ namespace PintoMod
                 if (itemLJCartridgePrefab == null) throw new Exception("Failed to load LethalJumpany Item!");
                 LJCartridge ljCart = itemLJCartridgePrefab.spawnPrefab.AddComponent<LJCartridge>();
                 ljCart.itemProperties = itemLJCartridgePrefab;
-                
-
-                Debug.Log("milestone 2");
 
                 //gameLethalJumpanyPrefab = pintoBundle.LoadAsset<GameObject>($"{ljBasePath}/game.prefab").AddComponent<LethalJumpany>();
                 //if (gameLethalJumpanyPrefab == null) throw new Exception($"Failed to load gameLethalJumpanyPrefab at {ljBasePath}/2d.prefab");
@@ -171,29 +182,54 @@ namespace PintoMod
 
                 Debug.Log("milestone 3");
                 // Enemies
-                GameObject spider = pintoBundle.LoadAsset<GameObject>($"{ljSpritesPath}/spider/spider.prefab");
-                if (spider == null) throw new Exception("Failed to load Spider Prefab Object!");
-                spider.AddComponent<LJEnemy>();
-                ljSpiderPrefab = spider;
+                GameObject ljSpider = pintoBundle.LoadAsset<GameObject>($"{ljSpritesPath}/spider/spider.prefab");
+                if (ljSpider == null) throw new Exception("Failed to load Spider Prefab Object!");
+                ljSpider.AddComponent<LJEnemy>();
+                ljSpiderPrefab = ljSpider;
                 if (ljSpiderPrefab == null) throw new Exception("Failed to load Spider Prefab!");
 
-                GameObject slime = pintoBundle.LoadAsset<GameObject>($"{ljSpritesPath}/slime/slime.prefab");
-                if (slime == null) throw new Exception("Failed to load Slime Prefab Object!");
-                slime.AddComponent<LJEnemy>();
-                ljSlimePrefab = slime;
+                GameObject ljSlime = pintoBundle.LoadAsset<GameObject>($"{ljSpritesPath}/slime/slime.prefab");
+                if (ljSlime == null) throw new Exception("Failed to load Slime Prefab Object!");
+                ljSlime.AddComponent<LJEnemy>();
+                ljSlimePrefab = ljSlime;
                 if (ljSlimePrefab == null) throw new Exception("Failed to load Slime Prefab!");
 
-                GameObject lootbug = pintoBundle.LoadAsset<GameObject>($"{ljSpritesPath}/loot bug/loot bug.prefab");
-                if (lootbug == null) throw new Exception("Failed to load Lootbug Prefab Object!");
-                lootbug.AddComponent<LJEnemy>();
-                ljLootbugPrefab = lootbug;
+                GameObject ljLootbug = pintoBundle.LoadAsset<GameObject>($"{ljSpritesPath}/loot bug/loot bug.prefab");
+                if (ljLootbug == null) throw new Exception("Failed to load Lootbug Prefab Object!");
+                ljLootbug.AddComponent<LJEnemy>();
+                ljLootbugPrefab = ljLootbug;
                 if (ljLootbugPrefab == null) throw new Exception("Failed to load Lootbug Prefab!");
 
+
+                Debug.Log("milestone 2");
+
+                itemFDCartridgePrefab = pintoBundle.LoadAsset<Item>($"{fdBasePath}/facilitydash.asset");
+                if (itemFDCartridgePrefab == null) throw new Exception("Failed to load Facility Dash Item!");
+                LJCartridge fdCart = itemFDCartridgePrefab.spawnPrefab.AddComponent<LJCartridge>();
+                fdCart.itemProperties = itemFDCartridgePrefab;
+
+                // Enemies
+
+                LoadPrefabObject(fdBrackenPrefab, new FD_Bracken(), "bracken");
+                LoadPrefabObject(fdBunkerSpiderPrefab, new FD_BunkerSpider(), "bunker spider");
+                LoadPrefabObject(fdLootBugPrefab, new FD_LootBug(), "loot bug");
+                LoadPrefabObject(fdSnareFleaPrefab, new FD_SnareFlea(), "snare flea");
+                LoadPrefabObject(fdThumperPrefab, new FD_Thumper(), "thumper");
+                LoadPrefabObject(fdNutcrackerPrefab, new FD_Nutcracker(), "nutcracker");
             }
             catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
+        }
+
+        void LoadPrefabObject(GameObject prefab, MonoBehaviour component, string prefabName)
+        {
+            GameObject gameObject = pintoBundle.LoadAsset<GameObject>($"{fdSpritesPath}/{prefabName}.prefab");
+            if (gameObject == null) throw new Exception("Failed to load "+prefabName+" Prefab Object!");
+            gameObject.AddComponent(component.GetType());
+            prefab = gameObject;
+            if (prefab == null) throw new Exception("Failed to load "+prefabName+" Prefab!");
         }
 
         public static AudioClip GetAudioClip(string path)

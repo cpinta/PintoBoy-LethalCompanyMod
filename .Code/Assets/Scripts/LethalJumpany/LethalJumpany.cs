@@ -1,10 +1,8 @@
-﻿using LethalLib.Modules;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Xml.Linq;
 using TMPro;
 using UnityEngine;
-using HarmonyLib;
 using Unity.Netcode;
 using UnityEngine.UIElements.UIR;
 using System;
@@ -62,12 +60,11 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
         string ResetString = "Reset";
 
 
-        public float jumpHeight = 7f;
+        public float jumpHeight = 8f;
         public float fastFallSpeed = 15f;
         public float rayCastDistance = 0.5f;
         public float rayCastOffset = -0.05f;
 
-        public bool jump = false;
         bool isGrounded = false;
 
         bool doOnce = false;
@@ -151,6 +148,9 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
 
         bool firstPlay = true;
 
+        public bool jump = false;
+        public Transform trGameRoot;
+
         // Start is called before the first frame update
         void Awake()
         {
@@ -185,7 +185,19 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
 
             mainmenuWaitTimer = mainmenuWaitTime;
 
-            DisableChildren();
+            //DisableChildren();
+            InitializeObjects(trGameRoot);
+        }
+
+        private void Update()
+        {
+            if (jump)
+            {
+                ButtonPress();
+                jump = false;
+            }
+
+            GameUpdate();
         }
 
         public override void GameUpdate()
@@ -712,7 +724,7 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
             EnableAllAnimators();
             if (gameState == LJState.InGame && !dead)
             {
-                pintoBoy.PlaySound(acBackgroundSong);
+                PlaySound(acBackgroundSong);
             }
         }
 
@@ -824,7 +836,7 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
             deadAnimStarted = true;
             deadHitGround = false;
             deathAnimIndex = 0;
-            pintoBoy.StopSounds();
+            StopSounds();
         }
 
         void ShowEndScreen()
@@ -850,11 +862,6 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
                 PlaySound(acNoHighscore);
             }
             endScreenShown = true;
-        }
-
-        public void PlaySound(AudioClip clip)
-        {
-            pintoBoy.PlaySound(clip);
         }
 
         void PlayStepSound()

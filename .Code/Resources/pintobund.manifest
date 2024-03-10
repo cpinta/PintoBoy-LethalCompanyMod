@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 1395650980
+CRC: 773148135
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 1eee66970e54ce6bd7708023b1872c92
+    Hash: 6ecfbca304ddae72a8045ae90bc81eb3
   TypeTreeHash:
     serializedVersion: 2
-    Hash: ac86a428403ffcd486ded392cd2c7a0c
+    Hash: 268d9624f833d7962bf21f942877f1b1
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 1eee66970e54ce6bd7708023b1872c92
+    Hash: 6ecfbca304ddae72a8045ae90bc81eb3
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -55,7 +55,19 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
 - Class: 114
+  Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: 23c1ce4fb46143f46bc5cb5224c934f6, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: bb66b0060743431409c5bec87ac92b44, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 247133fcd2c053444a6cf81ee0958f39, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: cb143ad54bc7dd64986794a50f764332, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 725df5bbbc17b3f438bb096420b5840a, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 1e0dd31d5802058488a0a4bf1c77c040, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: c30496d6ae6d6f907456e10a94e01ec6, type: 3}
 - Class: 114
@@ -65,7 +77,15 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: 3c36d0a92cbb1f26a39169ef0eae393a, type: 3}
 - Class: 114
+  Script: {fileID: 11500000, guid: ae637a31aadc233459269f5a2cdc1c30, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: a8beffdcf56ae1143b5565526c663679, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 74c036a2654a08449a2b6ddb9d614f09, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 5bdef2f7b99057b4dbb9a37706dc682f, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
 - Class: 114
@@ -113,6 +133,10 @@ SerializeReferenceClassIdentifiers:
   ClassName: TMPro.VertexGradient
 - AssemblyName: UnityEngine.CoreModule
   ClassName: UnityEngine.Events.PersistentCallGroup
+- AssemblyName: UnityEngine.CoreModule
+  ClassName: UnityEngine.Events.UnityEvent
+- AssemblyName: UnityEngine.CoreModule
+  ClassName: UnityEngine.Events.UnityEvent`1[System.Int32]
 - AssemblyName: UnityEngine.TextCoreFontEngineModule
   ClassName: UnityEngine.TextCore.FaceInfo
 - AssemblyName: UnityEngine.TextCoreFontEngineModule
@@ -124,82 +148,218 @@ SerializeReferenceClassIdentifiers:
 - AssemblyName: UnityEngine.UI
   ClassName: UnityEngine.UI.MaskableGraphic/CullStateChangedEvent
 Assets:
-- Assets/Pintoboy/Device/screen.mat
-- Assets/Pintoboy/Device/off screen.mat
+- Assets/Pintoboy/Games/Facility Dash/Audio/monster sounds/Crack Neck.mp3
+- Assets/Pintoboy/Games/Facility Dash/FDCartridge icon.png
 - Assets/Pintoboy/Games/Lethal Jumpany/2D/Background/RailingGround.controller
-- Assets/Pintoboy/Games/Lethal Jumpany/2D/Employee/2DEmployee_Jump.anim
-- Assets/Pintoboy/Games/Lethal Jumpany/2D/Bracken/Bracken_Kill2.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/UI/Buttons_HideLoop.anim
+- Assets/Pintoboy/Games/Facility Dash/Audio/78_arrowhit (player attack 2).wav
 - Assets/Pintoboy/icon.png
-- Assets/Pintoboy/Games/Lethal Jumpany/Audio/59_confirm (start game).wav
-- Assets/Pintoboy/Games/Lethal Jumpany/Game.prefab
-- Assets/Pintoboy/VCR_OSD_MONO_1.asset
-- Assets/Pintoboy/Games/Lethal Jumpany/2D/Spider/Spider_Walk.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Weapons/aWeapon.controller
 - Assets/Pintoboy/Games/Lethal Jumpany/Audio/54_step3 (spider movement).wav
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Hallway/ExitHallway 10.anim
+- Assets/Pintoboy/Games/Lethal Jumpany/2D/Spider/Spider_Walk.anim
 - Assets/Pintoboy/Games/Lethal Jumpany/2D/Loot Bug/Loot Bug.prefab
-- Assets/Pintoboy/Games/Lethal Jumpany/Audio/55_step4 (spider movement).wav
-- Assets/Pintoboy/Device/Pintoboy.prefab
-- Assets/Pintoboy/Games/Lethal Jumpany/Audio/21_walk1 (player step 1).wav
-- Assets/Pintoboy/Games/Lethal Jumpany/2D/Bracken/Bracken.controller
 - Assets/Pintoboy/Device/Button_Press.anim
-- Assets/Pintoboy/Device/Screen Mat.mat
-- Assets/Pintoboy/Materials/Render Texture.mat
-- Assets/Pintoboy/Games/Lethal Jumpany/Audio/53_step2 (spider movement).wav
-- Assets/Pintoboy/Games/Lethal Jumpany/2D/Employee/2DEmployee_Run.anim
-- Assets/Pintoboy/Games/Lethal Jumpany/2D/Slime/Slime_Idle.anim
-- Assets/Pintoboy/Games/Lethal Jumpany/2D/Employee/2DEmployee.controller
-- Assets/Pintoboy/VCR_OSD_MONO_1.001.ttf
-- Assets/Pintoboy/Games/Lethal Jumpany/2D/Menus/Main Menu.controller
-- Assets/Pintoboy/Games/Lethal Jumpany/2D/Menus/Fade_Off.anim
-- Assets/Pintoboy/Games/Lethal Jumpany/2D/Background/RailingGround.png
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Hallway/ExitHallway 9.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Hallway/EnterHallway 2.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Snare Flea.prefab
+- Assets/Pintoboy/Games/Facility Dash/Sprites/UI/PlayerHealth.png
+- Assets/Pintoboy/Games/Facility Dash/Audio/monster sounds/nutcracker mad.wav
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Nutcracker_Attack.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Hallway/ExitHallway 12.anim
+- Assets/Pintoboy/Device/Darkness.mat
+- Assets/Pintoboy/Device/PintoBoy Body.mat
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Hallway/Hallway.controller
 - Assets/Pintoboy/Games/Lethal Jumpany/Audio/12_exchange (snap neck).wav
-- Assets/Pintoboy/Games/Lethal Jumpany/2D/Spider/Spider.png
-- Assets/Pintoboy/3270Condensed-Regular SDF.asset
-- Assets/Pintoboy/Games/Lethal Jumpany/2D/Bracken/Bracken_Run.anim
-- Assets/Pintoboy/Games/Lethal Jumpany/2D/Employee/EmployeeDeath.png
+- Assets/Pintoboy/Games/Facility Dash/Sprites/UI/Buttons_Attack.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Weapons/aWeapon_Dead.anim
 - Assets/Pintoboy/Games/Lethal Jumpany/2D/Menus/Fade_In.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Hallway/ExitHallway 17.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/FDGame_Dead.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/UI/PlayerHealth 1.anim
 - Assets/Pintoboy/Games/Lethal Jumpany/2D/Slime/Slime.png
-- Assets/Pintoboy/Games/Lethal Jumpany/LethalJumpany.asset
-- Assets/Pintoboy/Games/Lethal Jumpany/2D/Menus/Fade_On.anim
 - Assets/Pintoboy/Games/Lethal Jumpany/2D/Spider/Spider.prefab
 - Assets/Pintoboy/Device/Button.controller
-- Assets/Pintoboy/Games/Lethal Jumpany/2D/Spider/Spider.controller
-- Assets/Pintoboy/Games/Lethal Jumpany/Audio/67_knock (fall after neck snap).wav
-- Assets/Pintoboy/Device/player.mat
-- Assets/Pintoboy/Games/Lethal Jumpany/2D/Employee/2DEmployee_Death.anim
-- Assets/Pintoboy/Device/Pintoboy 2.fbx
-- Assets/Pintoboy/Games/Lethal Jumpany/2D/Menus/Fade.controller
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Hallway/EnterHallway 1.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/UI/Stamina.png
+- Assets/Pintoboy/Games/Facility Dash/Sprites/UI/PlayerHealth 3.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/UI/PlayerStamina.controller
 - Assets/Pintoboy/Games/Lethal Jumpany/Cartridge.prefab
-- Assets/Pintoboy/Device/Cartridge.png
+- Assets/Pintoboy/Games/Facility Dash/Sprites/UI/Buttons_Wait.anim
 - Assets/Pintoboy/Games/Lethal Jumpany/2D/Loot Bug/Loot Bug.png
-- Assets/Pintoboy/2D Cam.prefab
-- Assets/Pintoboy/Pintoboy.asset
 - Assets/Pintoboy/Games/Lethal Jumpany/2D/Menus/Main Menu.png
-- Assets/Pintoboy/Games/Lethal Jumpany/2D/Slime/Slime.prefab
 - Assets/Pintoboy/Games/Lethal Jumpany/2D/Background/RailingGround_Scroll.anim
-- Assets/Pintoboy/Device/Button_Idle.anim
-- Assets/Pintoboy/Games/Lethal Jumpany/2D/Bracken/Bracken.png
-- Assets/Pintoboy/Games/Lethal Jumpany/2D/Background/RailingGround_Stop.anim
-- Assets/Pintoboy/Games/Lethal Jumpany/2D/Employee/Employee.png
+- Assets/Pintoboy/Games/Lethal Jumpany/2D/Slime/Slime.prefab
 - Assets/Pintoboy/Games/Lethal Jumpany/2D/Loot Bug/Loot Bug.controller
-- Assets/Pintoboy/Games/Lethal Jumpany/Audio/30_triangle (slime movement).wav
-- Assets/Pintoboy/LJCartridge icon.png
-- Assets/Pintoboy/Games/Lethal Jumpany/2D/Loot Bug/Loot Bug_Idle.anim
-- Assets/Pintoboy/Games/Lethal Jumpany/2D/Menus/Main Menu_Selected.anim
-- Assets/Pintoboy/Games/Lethal Jumpany/2D/Menus/Fade_Out.anim
-- Assets/Pintoboy/Games/Lethal Jumpany/cartridgeLethalJumpany.fbx
+- Assets/Pintoboy/Games/Facility Dash/Audio/12_exchange (player attack).wav
+- Assets/Pintoboy/Games/Facility Dash/Audio/intruder_alert.mp3
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Hallway/ExitHallway 11.anim
+- Assets/Pintoboy/Games/Lethal Jumpany/LJCartridge icon.png
 - Assets/Pintoboy/Games/Lethal Jumpany/Audio/23_ladder (player land).wav
-- Assets/Pintoboy/Device/console logo.psd
-- Assets/Pintoboy/Games/Lethal Jumpany/2D/Background/Ceiling.png
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Hallway/Hallway 3.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Hallway/Hallway 0.anim
 - Assets/Pintoboy/Games/Lethal Jumpany/Audio/danger_streets.mp3
-- Assets/Pintoboy/Games/Lethal Jumpany/Audio/64_lose2 (no highscore).wav
-- Assets/Pintoboy/Games/Lethal Jumpany/Audio/22_walk2 (player step 2).wav
+- Assets/Pintoboy/Games/Facility Dash/Sprites/UI/Tooltips.controller
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Hallway/Hallway 1.anim
 - Assets/Pintoboy/Games/Lethal Jumpany/2D/Menus/Main Menu_Static.anim
+- Assets/Pintoboy/Games/Lethal Jumpany/Audio/52_step1 (spider movement).wav
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Hallway/Hallway 4.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Hallway/EnterHallway 6.anim
+- Assets/Pintoboy/Device/screen.mat
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Hallway/ExitHallway 8.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Loot Bug.png
+- Assets/Pintoboy/Games/Facility Dash/Sprites/UI/PlayerHealth.controller
+- Assets/Pintoboy/Games/Facility Dash/Audio/monster sounds/spider sound.wav
+- Assets/Pintoboy/Games/Facility Dash/Sprites/UI/PlayerHealth 2.anim
+- Assets/Pintoboy/Device/off screen.mat
+- Assets/Pintoboy/Games/Lethal Jumpany/Game.prefab
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Weapons/Shovel_Idle Deep.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/UI/Buttons.png
+- Assets/Pintoboy/Games/Facility Dash/cartridgeFacilityDash.fbx
+- Assets/Pintoboy/Games/Facility Dash/Sprites/UI/PlayerStamina 1.anim
+- Assets/Pintoboy/Games/Lethal Jumpany/Audio/21_walk1 (player step 1).wav
+- Assets/Pintoboy/Games/Lethal Jumpany/2D/Bracken/Bracken.controller
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Bracken_Idle.anim
+- Assets/Pintoboy/Device/Screen Mat.mat
+- Assets/Pintoboy/Games/Lethal Jumpany/2D/Employee/2DEmployee.controller
+- Assets/Pintoboy/Device/console logo.png
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Weapons/Shovel_Walk.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Bunker Spider.prefab
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Hallway/Hallway 5.anim
+- Assets/Pintoboy/Games/Lethal Jumpany/2D/Background/RailingGround.png
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Main Menu/Start.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/FDGame_BrackenDeath.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Nutcracker_Idle.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Loot Bug.prefab
+- Assets/Pintoboy/Games/Lethal Jumpany/LethalJumpany.asset
+- Assets/Pintoboy/Games/Lethal Jumpany/2D/Bracken/Bracken_Run.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Hallway/EnterHallway 3.anim
+- Assets/Pintoboy/Device/Pinto Blue.mat
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Nutcracker.prefab
+- Assets/Pintoboy/Device/player.mat
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Snare Flea_Idle.anim
+- Assets/Pintoboy/Games/Facility Dash/Audio/monster sounds/shotgun.wav
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Loot Bug_Idle.anim
+- Assets/Pintoboy/Pintoboy.asset
+- Assets/Pintoboy/Games/Facility Dash/Audio/67_knock (Player hit).wav
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Bracken.controller
+- Assets/Pintoboy/Device/Button_Idle.anim
+- Assets/Pintoboy/Games/Facility Dash/Audio/monster sounds/Snare Flea walk.wav
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Main Menu/FD_TitleScreen.controller
+- Assets/Pintoboy/Games/Lethal Jumpany/2D/Background/Ceiling.png
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Thumper.png
+- Assets/Pintoboy/Games/Lethal Jumpany/Audio/64_lose2 (no highscore).wav
+- Assets/Pintoboy/Games/Facility Dash/Sprites/UI/PlayerStamina 0.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Hallway/ExitHallway 13.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/UI/Buttons_HideStart.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Default/FDEnemy_Idle.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Nutcracker.png
+- Assets/Pintoboy/Games/Facility Dash/Audio/monster sounds/loot bug walk.wav
+- Assets/Pintoboy/Games/Facility Dash/Sprites/UI/PlayerStamina 4.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Weapons/Shovel_Hit.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Main Menu/TitleScreen.png
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Bracken.png
+- Assets/Pintoboy/console body.png
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Thumper.prefab
+- Assets/Pintoboy/Games/Lethal Jumpany/2D/Employee/2DEmployee_Jump.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/UI/PlayerHealth 0.anim
+- Assets/Pintoboy/Games/Lethal Jumpany/2D/Bracken/Bracken_Kill2.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Default/FDEnemy.controller
+- Assets/Pintoboy/Games/Facility Dash/Audio/encounter.mp3
+- Assets/Pintoboy/Games/Lethal Jumpany/Audio/55_step4 (spider movement).wav
+- Assets/Pintoboy/Device/Pintoboy.prefab
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Hallway/Hallway.png
+- Assets/Pintoboy/Games/Facility Dash/Sprites/FDGame_Hide.anim
+- Assets/Pintoboy/VCR_OSD_MONO_1.001.ttf
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Weapons/Shovel_GotHit.anim
+- Assets/Pintoboy/Games/Lethal Jumpany/2D/Menus/Fade_Off.anim
+- Assets/Pintoboy/Games/Lethal Jumpany/2D/Spider/Spider.png
+- Assets/Pintoboy/3270Condensed-Regular SDF.asset
+- Assets/Pintoboy/Games/Lethal Jumpany/2D/Employee/EmployeeDeath.png
+- Assets/Pintoboy/Games/Lethal Jumpany/Audio/67_knock (fall after neck snap).wav
+- Assets/Pintoboy/Games/Facility Dash/Audio/monster sounds/Snare Flea on head.wav
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Loot Bug.controller
+- Assets/Pintoboy/Device/PintoBoy Border.mat
+- Assets/Pintoboy/Games/Lethal Jumpany/2D/Menus/Fade_On.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Snare Flea.png
+- Assets/Pintoboy/Games/Facility Dash/Audio/monster sounds/Bracken Angered.wav
+- Assets/Pintoboy/Games/Lethal Jumpany/2D/Spider/Spider.controller
+- Assets/Pintoboy/Games/Lethal Jumpany/2D/Employee/2DEmployee_Death.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Weapons/Shovel_Dead.anim
+- Assets/Pintoboy/Games/Facility Dash/Audio/monster sounds/Bracken snap neck.wav
+- Assets/Pintoboy/Games/Lethal Jumpany/2D/Menus/Fade.controller
+- Assets/Pintoboy/Games/Facility Dash/Audio/monster sounds/Bracken found.wav
+- Assets/Pintoboy/Games/Lethal Jumpany/2D/Menus/Main Menu_Selected.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Hallway/EnterHallway 4.anim
+- Assets/Pintoboy/Games/Lethal Jumpany/2D/Bracken/Bracken.png
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Default/FDEnemy_GotHit.anim
+- Assets/Pintoboy/Games/Lethal Jumpany/2D/Background/RailingGround_Stop.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Hallway/ExitHallway 15.anim
+- Assets/Pintoboy/Games/Lethal Jumpany/2D/Loot Bug/Loot Bug_Idle.anim
+- Assets/Pintoboy/Games/Facility Dash/Audio/17_drop (hit sound).wav
+- Assets/Pintoboy/Games/Facility Dash/FacilityDash.asset
+- Assets/Pintoboy/Games/Facility Dash/Audio/monster sounds/loot bug dead.wav
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Hallway/EnterHallway 0.anim
+- Assets/Pintoboy/Games/Facility Dash/Audio/57_drop (Enemy killed).wav
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Weapons/Shovel.png
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Hallway/EnterHallway 7.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/UI/PlayerStamina 3.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/FDGame_Idle.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Weapons/Shovel_Idle.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/FDGame_UnHiding.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Hallway/Hallway Hide.png
+- Assets/Pintoboy/Games/Facility Dash/Sprites/UI/PlayerStamina 2.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Default/FDEnemy_Attack.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Weapons/aWeapon_Idle.anim
 - Assets/Pintoboy/Render Texture.renderTexture
+- Assets/Pintoboy/Games/Facility Dash/Audio/80_chaindone (highscore).wav
+- Assets/Pintoboy/Games/Lethal Jumpany/Audio/47_grass (lootbug movement).wav
+- Assets/Pintoboy/Games/Facility Dash/Audio/monster sounds/thumper yell.wav
+- Assets/Pintoboy/Games/Facility Dash/Audio/28_jingle (Facility Cleared).wav
+- Assets/Pintoboy/Games/Lethal Jumpany/Audio/59_confirm (start game).wav
+- Assets/Pintoboy/VCR_OSD_MONO_1.asset
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Bracken_Attack.anim
+- Assets/Pintoboy/Games/Facility Dash/Audio/37_level (no highscore).wav
+- Assets/Pintoboy/Device/Pintoboy model.fbx
+- Assets/Pintoboy/Materials/Render Texture.mat
+- Assets/Pintoboy/Games/Lethal Jumpany/Audio/53_step2 (spider movement).wav
+- Assets/Pintoboy/Games/Facility Dash/FacilityDashCartridge.png
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Hallway/HallwayExitEnter.png
+- Assets/Pintoboy/Games/Lethal Jumpany/2D/Employee/2DEmployee_Run.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Default/FDEnemy_Leave.anim
+- Assets/Pintoboy/Games/Lethal Jumpany/2D/Slime/Slime_Idle.anim
+- Assets/Pintoboy/Games/Lethal Jumpany/2D/Menus/Main Menu.controller
+- Assets/Pintoboy/Games/Facility Dash/Sprites/FDGame.controller
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Bracken.prefab
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Main Menu/Idle.anim
+- Assets/Pintoboy/Games/Facility Dash/Cartridge.prefab
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Snare Flea.controller
+- Assets/Pintoboy/Device/PintoBoy Body Lower front.mat
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Weapons/Shovel_Idle Down.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Weapons/Shovel.controller
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Hallway/EnterHallway 5.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Bunker Spider.png
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Nutcracker.controller
+- Assets/Pintoboy/Device/Cartridge.png
+- Assets/Pintoboy/2D Cam.prefab
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Hallway/Hallway 2.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Hallway/ExitHallway 14.anim
+- Assets/Pintoboy/Games/Lethal Jumpany/2D/Employee/Employee.png
+- Assets/Pintoboy/Games/Lethal Jumpany/2D/Menus/Fade_Out.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Loot Bug_Attack.anim
+- Assets/Pintoboy/Games/Lethal Jumpany/Audio/30_triangle (slime movement).wav
+- Assets/Pintoboy/Games/Facility Dash/Sprites/UI/Buttons_Blank.anim
+- Assets/Pintoboy/Games/Lethal Jumpany/cartridgeLethalJumpany.fbx
+- Assets/Pintoboy/Device/console body.png
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Snare Flea_Latching.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Hallway/ExitHallway 16.anim
+- Assets/Pintoboy/Games/Facility Dash/Sprites/Weapons/aWeapon_GotHit.anim
+- Assets/Pintoboy/Games/Lethal Jumpany/Audio/22_walk2 (player step 2).wav
+- Assets/Pintoboy/Device/Pinto Red.mat
+- Assets/Pintoboy/Games/Facility Dash/Audio/monster sounds/nutcracker entrance.wav
 - Assets/Pintoboy/3270Condensed-Regular.otf
 - Assets/Pintoboy/Games/Lethal Jumpany/Audio/24_levelclear (new highscore).wav
-- Assets/Pintoboy/Games/Lethal Jumpany/Audio/52_step1 (spider movement).wav
+- Assets/Pintoboy/Games/Facility Dash/Game.prefab
 - Assets/Pintoboy/Games/Lethal Jumpany/2D/Bracken/Bracken_Kill.anim
 - Assets/Pintoboy/Games/Lethal Jumpany/2D/Slime/Slime.controller
-- Assets/Pintoboy/Device/boy color.mat
-- Assets/Pintoboy/Games/Lethal Jumpany/Audio/47_grass (lootbug movement).wav
 Dependencies: []

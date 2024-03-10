@@ -80,5 +80,14 @@ namespace PintoMod.Assets.Scripts
                 transform.GetChild(i).gameObject.SetActive(true);
             }
         }
+
+        public virtual void StopSounds()
+        {
+            pintoBoy.StopSounds();
+        }
+        public void PlaySound(AudioClip clip)
+        {
+            pintoBoy.PlaySound(clip);
+        }
     }
 }
