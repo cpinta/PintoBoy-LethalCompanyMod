@@ -27,6 +27,7 @@ namespace PintoMod.Assets.Scripts
 
         public virtual void InitializeObjects(Transform gameRoot) 
         {
+            Debug.Log("Intiailizing PintoBoyGame: "+this.name);
             wasInitialized = true;
         }
 

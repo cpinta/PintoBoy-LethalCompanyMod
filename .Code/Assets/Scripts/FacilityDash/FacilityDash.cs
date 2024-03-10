@@ -270,12 +270,6 @@ namespace PintoMod.Assets.Scripts.FacilityDash
                 pressButton = false;
             }
 
-
-            if (gameState == FDState.InGame)
-            {
-                GameUpdate();
-            }
-
             if (startWaitTimer > 0)
             {
                 startWaitTimer -= Time.deltaTime;
@@ -374,6 +368,11 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         public override void GameUpdate()
         {
             base.GameUpdate();
+
+            if (gameState != FDState.InGame)
+            {
+                return;
+            }
 
             if (fdCart == null && cartridge != null)
             {
@@ -907,11 +906,6 @@ namespace PintoMod.Assets.Scripts.FacilityDash
                                      $"{Mathf.Round(highscore)}";
                 PlaySound(acNoHighscore);
             }
-        }
-
-        public void PlaySound(AudioClip clip)
-        {
-            pintoBoy.PlaySound(clip);
         }
 
         public override void InitializeObjects(Transform gameRoot)

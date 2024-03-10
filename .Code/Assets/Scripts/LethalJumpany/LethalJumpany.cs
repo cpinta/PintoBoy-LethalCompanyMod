@@ -151,6 +151,8 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
         public bool jump = false;
         public Transform trGameRoot;
 
+        bool debug = true;
+
         // Start is called before the first frame update
         void Awake()
         {
@@ -186,7 +188,6 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
             mainmenuWaitTimer = mainmenuWaitTime;
 
             //DisableChildren();
-            InitializeObjects(trGameRoot);
         }
 
         private void Update()
@@ -196,8 +197,6 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
                 ButtonPress();
                 jump = false;
             }
-
-            GameUpdate();
         }
 
         public override void GameUpdate()
@@ -206,7 +205,9 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
 
             if(ljCart == null && cartridge != null)
             {
+                Debug.Log("setting ljcart");
                 ljCart = (LJCartridge)cartridge;
+                Debug.Log("set ljcart");
             }
 
             if (fadeAnim.GetBool(DoAnimString))
@@ -308,7 +309,7 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
 
             if (ljCart.IsOwner)
             {
-                //Debug.Log("currentScore setting: value:"+ ljCart.currentScore.Value);
+                //Debug.Log("currentScore setting: value:" + ljCart.currentScore.Value);
                 ljCart.currentScore.Value += scoreIncreaseRate * Time.deltaTime;
                 //Debug.Log("currentScore set");
             }
@@ -892,6 +893,14 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
             base.InitializeObjects(gameRoot);
 
             Debug.Log("intiializing LethalJumpany");
+            if(gameRoot != null)
+            {
+                Debug.Log("root name: " + gameRoot.name);
+            }
+            else
+            {
+                Debug.Log("gameRoot null");
+            }
 
             mainMenu = gameRoot.transform.Find("Main Menu");
             mainMenuAnim = mainMenu.transform.Find("Main Menu Sprite").GetComponent<Animator>();

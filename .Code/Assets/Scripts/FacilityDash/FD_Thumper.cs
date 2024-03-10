@@ -8,25 +8,24 @@ using UnityEngine;
 using UnityEngine.Events;
 using Random = UnityEngine.Random;
 
-public class FD_Thumper : FD_Enemy
+
+namespace PintoMod.Assets.Scripts.FacilityDash
 {
-
-
-    void Awake()
+    public class FD_Thumper : FD_Enemy
     {
-        Initialize();
-        EnemyName = "Thumper";
-        Health = 4;
-        AttackSpeeed = 3;
+        void Awake()
+        {
+            Initialize();
+            EnemyName = "Thumper";
+            Health = 4;
+            AttackSpeeed = 3;
 
-        acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/thumper yell");
+            acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/thumper yell");
+        }
+
+        void Update()
+        {
+            base.GameUpdate();
+        }
     }
-
-    void Update()
-    {
-        base.GameUpdate();
-
-    }
-
-
 }

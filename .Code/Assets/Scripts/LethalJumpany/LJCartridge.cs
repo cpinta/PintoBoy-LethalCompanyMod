@@ -36,6 +36,7 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
             Transform gameTr = transform.Find("Game");
             if(gameTr == null)
             {
+                Debug.Log("LJCartrdige: Game transform was null");
                 return;
             }
 

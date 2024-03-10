@@ -138,6 +138,7 @@ namespace PintoMod
             //LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(screenPrefab);
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(itemPintoBoyPrefab.spawnPrefab);
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(itemLJCartridgePrefab.spawnPrefab);
+            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(itemFDCartridgePrefab.spawnPrefab);
 
             Items.RegisterScrap(itemPintoBoyPrefab, (int) config_PintoboyRarity.Value, Levels.LevelTypes.All);
             Items.RegisterScrap(itemLJCartridgePrefab, (int)config_PintoboyRarity.Value, Levels.LevelTypes.All);
@@ -205,7 +206,7 @@ namespace PintoMod
 
                 itemFDCartridgePrefab = pintoBundle.LoadAsset<Item>($"{fdBasePath}/facilitydash.asset");
                 if (itemFDCartridgePrefab == null) throw new Exception("Failed to load Facility Dash Item!");
-                LJCartridge fdCart = itemFDCartridgePrefab.spawnPrefab.AddComponent<LJCartridge>();
+                FDCartridge fdCart = itemFDCartridgePrefab.spawnPrefab.AddComponent<FDCartridge>();
                 fdCart.itemProperties = itemFDCartridgePrefab;
 
                 // Enemies

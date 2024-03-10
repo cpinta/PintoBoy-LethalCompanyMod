@@ -112,6 +112,15 @@ public class PintoBoy : GrabbableObject
             currentGame = null;
         }
 
+        float rand = Random.value;
+        if(rand > 0.5f)
+        {
+
+        }
+        else
+        {
+
+        }
     }
 
     void LateUpdate()
@@ -180,7 +189,10 @@ public class PintoBoy : GrabbableObject
 
         if(currentGame != null && currentGame.cartridge != null)
         {
-            InGameUpdate();
+            if (!isTurnedOff)
+            {
+                InGameUpdate();
+            }
         }
 
 
@@ -242,8 +254,6 @@ public class PintoBoy : GrabbableObject
         {
             return;
         }
-
-        Debug.Log("Button Press PintoBoy. Currentgame = "+currentGame);
 
         if(currentGame != null)
         {
@@ -380,7 +390,7 @@ public class PintoBoy : GrabbableObject
     {
         Debug.Log("SpawnScreenServerRpc Called");
         int currentId = Pinto_ModBase.Instance.Value.currentId;
-        PintoBoy[] boys = (PintoBoy[])FindObjectsOfType(typeof(PintoBoy));
+        PintoBoy[] boys = (PintoBoy[])FindObjectsByType(typeof(PintoBoy), FindObjectsSortMode.None);
         for(int i = currentId; i < boys.Length + currentId; i++)
         {
             Debug.Log("SpawnScreenServerRpc Called");
@@ -418,9 +428,14 @@ public class PintoBoy : GrabbableObject
 
 
 
+        Debug.Log("Initializing currentGame");
         if (currentGame != null)
         {
             currentGame.InitializeObjects(cam.transform.Find("2D Scene/Game"));
+        }
+        else
+        {
+            Debug.Log("currentGame null when intializing");
         }
 
         spawnScreen = false;
@@ -446,6 +461,7 @@ public class PintoBoy : GrabbableObject
         {
             Debug.Log("SetScreenRendTex: matRenderTex is null. Setting");
             matRenderTex = Instantiate(Pinto_ModBase.matOnScreen);
+            matRenderTex.color = new Color(155,188,15);
             // Step 3: Assign the Unique Render Texture to the Prefab Instance
             matRenderTex.SetTexture("_MainTex", texRenderTex);
             matRenderTex.mainTexture = texRenderTex;

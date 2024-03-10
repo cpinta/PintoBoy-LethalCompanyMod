@@ -8,22 +8,27 @@ using UnityEngine;
 using UnityEngine.Events;
 
 
-public class FD_BunkerSpider : FD_Enemy
+namespace PintoMod.Assets.Scripts.FacilityDash
 {
-    void Awake()
+
+
+    public class FD_BunkerSpider : FD_Enemy
     {
-        Initialize();
-        EnemyName = "Spider";
-        Health = 5;
-        AttackSpeeed = 4;
+        void Awake()
+        {
+            Initialize();
+            EnemyName = "Spider";
+            Health = 5;
+            AttackSpeeed = 4;
 
-        acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "spider sound");
+            acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "spider sound");
+        }
+
+        void Update()
+        {
+            base.GameUpdate();
+
+        }
+
     }
-
-    void Update()
-    {
-        base.GameUpdate();
-
-    }
-
 }
