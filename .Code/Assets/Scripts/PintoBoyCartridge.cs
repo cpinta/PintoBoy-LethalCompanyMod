@@ -35,7 +35,6 @@ namespace PintoMod.Assets.Scripts
                 //Debug.Log("Setting rotation");
                 transform.localRotation = Quaternion.Euler(0, 0, 270);
             }
-
         }
 
         public void InsertedIntoPintoBoy(PintoBoy pintoBoy, Transform gameRoot)

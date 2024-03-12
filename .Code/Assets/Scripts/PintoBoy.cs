@@ -461,7 +461,6 @@ public class PintoBoy : GrabbableObject
         {
             Debug.Log("SetScreenRendTex: matRenderTex is null. Setting");
             matRenderTex = Instantiate(Pinto_ModBase.matOnScreen);
-            matRenderTex.color = new Color(155,188,15);
             // Step 3: Assign the Unique Render Texture to the Prefab Instance
             matRenderTex.SetTexture("_MainTex", texRenderTex);
             matRenderTex.mainTexture = texRenderTex;

@@ -165,7 +165,7 @@ namespace PintoMod
                 matOffScreen = pintoBundle.LoadAsset<Material>($"{devicePath}/off screen.mat");
                 if (matOffScreen == null) throw new Exception("Failed to load off screen material!");
 
-                matOnScreen = pintoBundle.LoadAsset<Material>($"{devicePath}/Screen Mat.mat");
+                matOnScreen = pintoBundle.LoadAsset<Material>($"Screen Mat.mat");
                 if (matOnScreen == null) throw new Exception("Failed to load Screen Mat material!");
 
 
