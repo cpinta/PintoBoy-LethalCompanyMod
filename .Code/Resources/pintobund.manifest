@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 459124313
+CRC: 4156025349
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 09d2b57407ce966c6137e96b80292706
+    Hash: 6d54897f29fc0d5cbb2627a2532e9e99
   TypeTreeHash:
     serializedVersion: 2
     Hash: 268d9624f833d7962bf21f942877f1b1
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 09d2b57407ce966c6137e96b80292706
+    Hash: 6d54897f29fc0d5cbb2627a2532e9e99
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -212,6 +212,7 @@ Assets:
 - Assets/Pintoboy/Games/Facility Dash/Audio/monster sounds/spider sound.wav
 - Assets/Pintoboy/Games/Facility Dash/Sprites/UI/PlayerHealth 2.anim
 - Assets/Pintoboy/Device/off screen.mat
+- Assets/Pintoboy/Insert Game.png
 - Assets/Pintoboy/Games/Lethal Jumpany/Game.prefab
 - Assets/Pintoboy/Games/Facility Dash/Sprites/Weapons/Shovel_Idle Deep.anim
 - Assets/Pintoboy/Games/Facility Dash/Sprites/UI/Buttons.png
