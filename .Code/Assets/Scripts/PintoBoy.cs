@@ -31,6 +31,7 @@ public class PintoBoy : GrabbableObject
 
     PintoBoyGame currentGame;
 
+    bool isHoldingButton = false;
 
     string FadeString = "Fade";
     string DoAnimString = "DoAnim";
@@ -56,14 +57,20 @@ public class PintoBoy : GrabbableObject
     Material matRenderTex = null;
     RenderTexture texRenderTex = null;
 
-    public bool isTurnedOff = true;
+    //public bool isTurnedOff = true;
     public bool isPaused = false;
 
     Renderer rendModelScreen;
 
-    float batteryDischargeRate = 0.002f;
+    float batteryDischargeRate = 0.02f;
 
     float newGameOffset = 20;
+
+    private Coroutine coroutineButtonBeingPressed;
+
+
+    //isBeingUsed means that the item is on and using battery
+
 
     // Start is called before the first frame update
     void Awake()
@@ -85,14 +92,6 @@ public class PintoBoy : GrabbableObject
 
         Debug.Log("scannode start");
         grabbableToEnemies = true;
-        scanNodeProperties.maxRange = 100;
-        scanNodeProperties.minRange = 1;
-        scanNodeProperties.requiresLineOfSight = true;
-        scanNodeProperties.headerText = "PintoBoy";
-        scanNodeProperties.subText = "PintoBoy Subtext";
-        scanNodeProperties.creatureScanID = -1;
-        scanNodeProperties.nodeType = 2;
-
 
         Debug.Log("scannode done");
         modelScreen = transform.Find("Model/Screen").gameObject;
@@ -101,7 +100,7 @@ public class PintoBoy : GrabbableObject
         startFallingPosition = new Vector3(0, 0, 0);
         targetFloorPosition = new Vector3(0, 0, 0);
 
-        insertedBattery = new Battery(false, 100);
+        insertedBattery = new Battery(false, 1);
         EnableItemMeshes(true);
 
         cartridgeLocation = mainObjectRenderer.transform.Find("Cartridge");
@@ -128,6 +127,7 @@ public class PintoBoy : GrabbableObject
         try
         {
             base.LateUpdate();
+            Debug.Log("charge:" + insertedBattery.charge);
         }
         catch (System.Exception ex)
         {
@@ -162,34 +162,24 @@ public class PintoBoy : GrabbableObject
 
             SetScreenToOffTexture();
 
-            isTurnedOff = false;
+            isBeingUsed = true;
             TurnOff();
         }
 
 
 
-        if (isTurnedOff)
+        if (!isBeingUsed)
         {
             return;
         }
         else
         {
-            insertedBattery.charge -= batteryDischargeRate * Time.deltaTime;
+            //insertedBattery.charge -= batteryDischargeRate * Time.deltaTime;
         }
-
-        //if(fadeAnim == null)
-        //{
-        //    Debug.Log("FadeAnim is null");
-        //}
-        //else
-        //{
-        //    Debug.Log("FadeAnim isnt null");
-        //}
-
 
         if(currentGame != null && currentGame.cartridge != null)
         {
-            if (!isTurnedOff)
+            if (isBeingUsed)
             {
                 InGameUpdate();
             }
@@ -248,9 +238,9 @@ public class PintoBoy : GrabbableObject
     void ButtonPress()
     {
 
-        Debug.Log("Button Press PintoBoy. isTurnedOff = " + isTurnedOff);
+        Debug.Log("Button Press PintoBoy. isBeingUsed = " + isBeingUsed);
         buttonAnim.SetTrigger("Press");
-        if (isTurnedOff)
+        if (!isBeingUsed)
         {
             return;
         }
@@ -261,6 +251,22 @@ public class PintoBoy : GrabbableObject
             currentGame.ButtonPress();
         }
 
+    }
+
+    public override void UseUpBatteries()
+    {
+        Debug.Log("battery used up");
+        base.UseUpBatteries();
+
+        isBeingUsed = false;
+        SetScreenToOffTexture();
+
+        if (currentGame != null)
+        {
+            currentGame.TurnedOff();
+        }
+
+        audioSource.Stop();
     }
 
     void TogglePause()
@@ -277,7 +283,7 @@ public class PintoBoy : GrabbableObject
 
     void Pause()
     {
-        if (isTurnedOff)
+        if (!isBeingUsed)
         {
             return;
         }
@@ -295,7 +301,7 @@ public class PintoBoy : GrabbableObject
 
     void UnPause()
     {
-        if(!isTurnedOff)
+        if(isBeingUsed)
         {
             return;
         }
@@ -310,7 +316,7 @@ public class PintoBoy : GrabbableObject
 
     void ToggleOnOff()
     {
-        if (isTurnedOff)
+        if (!isBeingUsed)
         {
             TurnOn();
         }
@@ -322,12 +328,12 @@ public class PintoBoy : GrabbableObject
 
     void TurnOff()
     {
-        if (isTurnedOff)
+        if (!isBeingUsed)
         {
             return;
         }
 
-        isTurnedOff = true;
+        isBeingUsed = false;
         SetScreenToOffTexture();
 
         if(currentGame != null)
@@ -340,12 +346,12 @@ public class PintoBoy : GrabbableObject
 
     void TurnOn()
     {
-        if (!isTurnedOff)
+        if (isBeingUsed)
         {
             return;
         }
 
-        isTurnedOff = false;
+        isBeingUsed = true;
         SetScreenToRenderTexture();
 
         if(currentGame != null)
@@ -356,17 +362,30 @@ public class PintoBoy : GrabbableObject
 
     public override void ItemActivate(bool used, bool buttonDown = true)
     {
+        Debug.Log("buttondown:" + buttonDown);
         base.ItemActivate(used, buttonDown);
+        isHoldingButton = buttonDown;
+
+        if(isBeingUsed && buttonDown)
+        {
+            if(coroutineButtonBeingPressed != null)
+            {
+                StopCoroutine(coroutineButtonBeingPressed);
+            }
+            Debug.Log("starting coroutine");
+            coroutineButtonBeingPressed = StartCoroutine(ButtonBeingPressed());
+        }
 
         ButtonPress();
 
         Debug.Log("Pinto Button pressed");
     }
 
-    public override void UseUpBatteries()
+    private IEnumerator ButtonBeingPressed()
     {
-        base.UseUpBatteries();
-        TurnOff();
+        //yield return new WaitForSeconds(0.2f);
+        Debug.Log("Pinto Button being pressed" + Time.deltaTime);
+        yield return new WaitUntil(() => !isHoldingButton || !isHeld || !isBeingUsed);
     }
 
     public void PlaySound(AudioClip clip)

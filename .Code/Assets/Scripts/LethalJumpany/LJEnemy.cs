@@ -42,7 +42,7 @@ public class LJEnemy : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (game.pintoBoy.isTurnedOff)
+        if (!game.pintoBoy.isBeingUsed)
         {
             return;
         }
