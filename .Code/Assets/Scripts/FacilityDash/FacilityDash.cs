@@ -90,6 +90,8 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         Animator animGame;
         string strHidingString = "Hiding";
         public bool isHiding = false;
+        float postHidingTime = 0.2f;        //the cooldown time between unhiding and being able to attack
+        float postHidingTimer = 0;          //the timer for that ^^^
         Animator animHallway;
         string strStateString = "State";
         string strEnterExitString = "EnterExit";
@@ -288,23 +290,36 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
         void Hide()
         {
-            animGame.SetBool(strHidingString, true);
-            playerState = FDPlayerState.Hiding;
-            isHiding = true;
+            if (playerState == FDPlayerState.Idle || playerState == FDPlayerState.Hiding)
+            {
+                if (playerStamina > 0 && !isHiding)
+                {
+                    animGame.SetBool(strHidingString, true);
+                    playerState = FDPlayerState.Hiding;
+                    isHiding = true;
+                }
+            }
         }
 
         void UnHide()
         {
-            animGame.SetBool(strHidingString, false);
-            if (currentEnemy != null)
+            if (playerState == FDPlayerState.Idle || playerState == FDPlayerState.Hiding)
             {
-                playerState = FDPlayerState.Idle;
+                if (isHiding)
+                {
+                    animGame.SetBool(strHidingString, false);
+                    if (currentEnemy != null)
+                    {
+                        playerState = FDPlayerState.Idle;
+                    }
+                    else
+                    {
+                        playerState = FDPlayerState.Walking;
+                    }
+                    postHidingTimer = postHidingTime;
+                    isHiding = false;
+                }
             }
-            else
-            {
-                playerState = FDPlayerState.Walking;
-            }
-            isHiding = false;
         }
 
         public override void ButtonPress()
@@ -312,6 +327,13 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             base.ButtonPress();
 
             Debug.Log("Pressed Button FD");
+
+
+        }
+
+        public override void ButtonRelease(float timeHeld)
+        {
+            base.ButtonRelease(timeHeld);
 
             switch (gameState)
             {
@@ -326,7 +348,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
                     startWaitTimer = startWaitTime;
                     break;
                 case FDState.InGame:
-                    if (!isHiding)
+                    if (!isHiding && postHidingTimer < 0)
                     {
                         ShovelAttackStart();
                     }
@@ -344,6 +366,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
                     break;
             }
         }
+
         void HideButtonPress()
         {
             if (playerState == FDPlayerState.Idle || playerState == FDPlayerState.Hiding)
@@ -535,6 +558,22 @@ namespace PintoMod.Assets.Scripts.FacilityDash
                 hasEnemyBeenRolled = false;
             }
 
+
+            if(isHoldingButton)
+            {
+                Hide();
+            }
+            else
+            {
+                if (isHiding)
+                {
+                    UnHide();
+                }
+                else
+                {
+                    postHidingTimer -= Time.deltaTime;
+                }
+            }
 
             if (hideButton)
             {

@@ -31,7 +31,8 @@ public class PintoBoy : GrabbableObject
 
     PintoBoyGame currentGame;
 
-    bool isHoldingButton = false;
+    bool isButtonPressing = false;      //when the button is being pressed but isnt seen as a hold
+    bool isHoldingButton = false;       //when the button is being pressed and it is seen as a hold
 
     string FadeString = "Fade";
     string DoAnimString = "DoAnim";
@@ -40,13 +41,16 @@ public class PintoBoy : GrabbableObject
     Transform trCam2DScene;
     GameObject modelScreen;
     Transform cartridgeLocation;
-    Animator buttonAnim;
+    Animator animButton;
 
     ScanNodeProperties scanNodeProperties;
     public float jumpHeight = 9.75f;
     public float fastFallSpeed = 15f;
     public float rayCastDistance = 0.5f;
     public float rayCastOffset = -0.05f;
+
+    float hideStartHoldTime = 0.2f; //when a button hold is considered started
+    float hideStartHoldTimer = 0;
 
     public bool pressButton = false;
 
@@ -95,7 +99,7 @@ public class PintoBoy : GrabbableObject
 
         Debug.Log("scannode done");
         modelScreen = transform.Find("Model/Screen").gameObject;
-        buttonAnim = transform.Find("Model/Button").GetComponent<Animator>();
+        animButton = transform.Find("Model/Button").GetComponent<Animator>();
 
         startFallingPosition = new Vector3(0, 0, 0);
         targetFloorPosition = new Vector3(0, 0, 0);
@@ -175,11 +179,24 @@ public class PintoBoy : GrabbableObject
         {
             //insertedBattery.charge -= batteryDischargeRate * Time.deltaTime;
         }
+        isHoldingButton = false;
 
         if (currentGame != null && currentGame.cartridge != null)
         {
             if (isBeingUsed)
             {
+                if(isButtonPressing)
+                {
+                    if(hideStartHoldTimer > 0)
+                    {
+                        hideStartHoldTimer -= Time.deltaTime;
+                    }
+                    else
+                    {
+                        isHoldingButton = true;
+                    }
+                }
+                currentGame.isHoldingButton = this.isHoldingButton;
                 InGameUpdate();
             }
         }
@@ -238,7 +255,6 @@ public class PintoBoy : GrabbableObject
     {
 
         Debug.Log("Button Press PintoBoy. isBeingUsed = " + isBeingUsed);
-        buttonAnim.SetTrigger("Press");
         if (!isBeingUsed)
         {
             return;
@@ -363,10 +379,12 @@ public class PintoBoy : GrabbableObject
     {
         Debug.Log("buttondown:" + buttonDown);
         base.ItemActivate(used, buttonDown);
-        isHoldingButton = buttonDown;
+        isButtonPressing = buttonDown;
 
         if (isBeingUsed && buttonDown)
         {
+            animButton.SetBool("Press", true);
+            ButtonPress();
             if (coroutineButtonBeingPressed != null)
             {
                 StopCoroutine(coroutineButtonBeingPressed);
@@ -375,7 +393,6 @@ public class PintoBoy : GrabbableObject
             coroutineButtonBeingPressed = StartCoroutine(ButtonBeingPressed());
         }
 
-        ButtonPress();
 
         Debug.Log("Pinto Button pressed");
     }
@@ -383,12 +400,17 @@ public class PintoBoy : GrabbableObject
     private IEnumerator ButtonBeingPressed()
     {
         //yield return new WaitForSeconds(0.2f);
-        Debug.Log("Pinto Button being pressed" + Time.deltaTime);
-        Debug.Log("pressed vars: !isHoldingButton:" + !isHoldingButton+", !isHeld:"+!isHeld+", !isBeingUsed:"+!isBeingUsed);
-        yield return new WaitForSeconds(0.2f);
-        Debug.Log("waited 0.2 secs");
-        yield return new WaitUntil(() => !isHoldingButton || !isHeld || !isBeingUsed);
+        Debug.Log("Pinto Button being pressed" + Time.time);
+        float buttonStartPress = Time.time;
+        hideStartHoldTimer = hideStartHoldTime;
+        Debug.Log("pressed vars: !isHoldingButton:" + !isButtonPressing+", !isHeld:"+!isHeld+", !isBeingUsed:"+!isBeingUsed);
+        yield return new WaitUntil(() => !isButtonPressing || !isHeld || !isBeingUsed);
         Debug.Log("Pinto Button end press?" + Time.deltaTime);
+        animButton.SetBool("Press", false);
+        if(currentGame != null)
+        {
+            currentGame.ButtonRelease(Time.time - buttonStartPress);
+        }
     }
 
     public void PlaySound(AudioClip clip)

@@ -12,10 +12,13 @@ namespace PintoMod.Assets.Scripts
         public bool isActive;
         public bool isPaused;
         public bool isInGame;
+        public bool isHoldingButton;
         public bool wasInitialized = false;
 
 
         public virtual void ButtonPress() { }
+
+        public virtual void ButtonRelease(float timeHeld) { }
 
         public virtual void GameUpdate() { }
 

@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 3569318686
+CRC: 3285141613
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 0e0a2803e406d7c89b41121e352f5b9f
+    Hash: a280979b0d8dd12182ea07e5fe1adfff
   TypeTreeHash:
     serializedVersion: 2
     Hash: 0eb723cea71622d122c00a10ad0eff8b
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 0e0a2803e406d7c89b41121e352f5b9f
+    Hash: a280979b0d8dd12182ea07e5fe1adfff
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -238,6 +238,7 @@ Assets:
 - Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Nutcracker.png
 - Assets/Pintoboy/Games/Facility Dash/Audio/monster sounds/loot bug walk.wav
 - Assets/Pintoboy/Games/Facility Dash/Sprites/UI/PlayerStamina 4.anim
+- Assets/Pintoboy/Device/Button_Released.anim
 - Assets/Pintoboy/Games/Facility Dash/Sprites/Weapons/Shovel_Hit.anim
 - Assets/Pintoboy/Games/Facility Dash/Sprites/Main Menu/TitleScreen.png
 - Assets/Pintoboy/Games/Facility Dash/Sprites/Monsters/Bracken.png
