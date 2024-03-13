@@ -40,8 +40,8 @@ namespace PintoMod.Assets.Scripts
         public void InsertedIntoPintoBoy(PintoBoy pintoBoy, Transform gameRoot)
         {
             transform.position = Vector3.zero;
-            transform.rotation = Quaternion.Euler(0, 0, 270);
-            itemProperties.restingRotation = new Vector3(0, 0, 270);
+            transform.rotation = Quaternion.Euler(0, 0, 90);
+            itemProperties.restingRotation = new Vector3(0, 0, 90);
             this.pintoBoy = pintoBoy;
 
 

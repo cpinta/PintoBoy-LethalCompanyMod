@@ -141,7 +141,8 @@ namespace PintoMod
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(itemFDCartridgePrefab.spawnPrefab);
 
             Items.RegisterScrap(itemPintoBoyPrefab, (int) config_PintoboyRarity.Value, Levels.LevelTypes.All);
-            Items.RegisterScrap(itemLJCartridgePrefab, (int)config_PintoboyRarity.Value, Levels.LevelTypes.All);
+            Items.RegisterScrap(itemLJCartridgePrefab, 0, Levels.LevelTypes.All);
+            Items.RegisterScrap(itemFDCartridgePrefab, 0, Levels.LevelTypes.All);
 
             Debug.Log("Scrapitems: "+Items.scrapItems.Count + ": " + Items.scrapItems[0].modName + " rarity:"+ Items.scrapItems[0].rarity);
         }

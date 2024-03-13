@@ -115,7 +115,7 @@ public class PintoBoy : GrabbableObject
         if(rand > 0.5f)
         {
 
-        }
+    }
         else
         {
 
@@ -127,7 +127,6 @@ public class PintoBoy : GrabbableObject
         try
         {
             base.LateUpdate();
-            Debug.Log("charge:" + insertedBattery.charge);
         }
         catch (System.Exception ex)
         {
@@ -164,7 +163,7 @@ public class PintoBoy : GrabbableObject
 
             isBeingUsed = true;
             TurnOff();
-        }
+                }
 
 
 
