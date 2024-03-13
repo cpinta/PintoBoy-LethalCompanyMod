@@ -141,8 +141,8 @@ namespace PintoMod
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(itemFDCartridgePrefab.spawnPrefab);
 
             Items.RegisterScrap(itemPintoBoyPrefab, (int) config_PintoboyRarity.Value, Levels.LevelTypes.All);
-            Items.RegisterScrap(itemLJCartridgePrefab, 0, Levels.LevelTypes.All);
-            Items.RegisterScrap(itemFDCartridgePrefab, 0, Levels.LevelTypes.All);
+            Items.RegisterScrap(itemLJCartridgePrefab, 100, Levels.LevelTypes.All);
+            Items.RegisterScrap(itemFDCartridgePrefab, 100, Levels.LevelTypes.All);
 
             Debug.Log("Scrapitems: "+Items.scrapItems.Count + ": " + Items.scrapItems[0].modName + " rarity:"+ Items.scrapItems[0].rarity);
         }
@@ -212,25 +212,38 @@ namespace PintoMod
 
                 // Enemies
 
-                LoadPrefabObject(fdBrackenPrefab, new FD_Bracken(), "bracken");
-                LoadPrefabObject(fdBunkerSpiderPrefab, new FD_BunkerSpider(), "bunker spider");
-                LoadPrefabObject(fdLootBugPrefab, new FD_LootBug(), "loot bug");
-                LoadPrefabObject(fdSnareFleaPrefab, new FD_SnareFlea(), "snare flea");
-                LoadPrefabObject(fdThumperPrefab, new FD_Thumper(), "thumper");
-                LoadPrefabObject(fdNutcrackerPrefab, new FD_Nutcracker(), "nutcracker");
+                fdBrackenPrefab = LoadFDPrefab(new FD_Bracken(), "bracken");
+                if (fdBrackenPrefab == null) throw new Exception("Failed to load fdBrackenPrefab Prefab!");
+                fdBunkerSpiderPrefab = LoadFDPrefab(new FD_BunkerSpider(), "bunker spider");
+                if (fdBunkerSpiderPrefab == null) throw new Exception("Failed to load fdBunkerSpiderPrefab Prefab!");
+                fdLootBugPrefab = LoadFDPrefab(new FD_LootBug(), "loot bug");
+                if (fdLootBugPrefab == null) throw new Exception("Failed to load fdLootBugPrefab Prefab!");
+                fdSnareFleaPrefab = LoadFDPrefab(new FD_SnareFlea(), "snare flea");
+                if (fdSnareFleaPrefab == null) throw new Exception("Failed to load fdSnareFleaPrefab Prefab!");
+                fdThumperPrefab = LoadFDPrefab(new FD_Thumper(), "thumper");
+                if (fdThumperPrefab == null) throw new Exception("Failed to load fdThumperPrefab Prefab!");
+                fdNutcrackerPrefab = LoadFDPrefab(new FD_Nutcracker(), "nutcracker");
+                if (fdNutcrackerPrefab == null) throw new Exception("Failed to load fdNutcrackerPrefab Prefab!");
             }
             catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
         }
+        GameObject LoadFDPrefab(MonoBehaviour component, string prefabName)
+        {
+            GameObject gameObject = pintoBundle.LoadAsset<GameObject>($"{fdSpritesPath}/{prefabName}.prefab");
+            if (gameObject == null) throw new Exception("Failed to load " + prefabName + " Prefab Object!");
+            Debug.Log($"Loading {prefabName} Prefab. Component type is:"+component.GetType());
+            gameObject.AddComponent(component.GetType());
+            return gameObject;
+        }
 
         void LoadPrefabObject(GameObject prefab, MonoBehaviour component, string prefabName)
         {
-            GameObject gameObject = pintoBundle.LoadAsset<GameObject>($"{fdSpritesPath}/{prefabName}.prefab");
-            if (gameObject == null) throw new Exception("Failed to load "+prefabName+" Prefab Object!");
-            gameObject.AddComponent(component.GetType());
-            prefab = gameObject;
+            prefab = pintoBundle.LoadAsset<GameObject>($"{fdSpritesPath}/{prefabName}.prefab");
+            if (prefab == null) throw new Exception("Failed to load "+prefabName+" Prefab Object!");
+            prefab.AddComponent(component.GetType());
             if (prefab == null) throw new Exception("Failed to load "+prefabName+" Prefab!");
         }
 

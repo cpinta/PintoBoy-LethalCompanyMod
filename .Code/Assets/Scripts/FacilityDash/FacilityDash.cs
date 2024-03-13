@@ -1,5 +1,6 @@
 using PintoMod.Assets.Scripts;
 using PintoMod.Assets.Scripts.LethalJumpany;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -188,9 +189,8 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
         private void Awake()
         {
+            Debug.Log("FD Awake");
             mainmenuWaitTimer = mainmenuWaitTime;
-
-            InitializeObjects(trGameRoot);
 
             acNewHighscore = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "80_chaindone (highscore)");
             acNoHighscore = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "37_level (no highscore)");
@@ -203,11 +203,21 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             acSong1 = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "encounter");
             acSong2 = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "intruder_alert");
 
-            acSnapNeck = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "Bracken snap neck");
+            acSnapNeck = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/Bracken snap neck");
 
+            Debug.Log("Loaded Audio.");
+
+            Component[] components = Pinto_ModBase.fdBrackenPrefab.GetComponents(typeof(Component));
+
+            Debug.Log("Component Count:"+components.Length);
+            for (int i = 0; i < components.Length; i++)
+            {
+                Debug.Log(components[i].name);
+            }
+            Debug.Log("Components seen");
             prefabBracken = Pinto_ModBase.fdBrackenPrefab.GetComponent<FD_Bracken>();
             prefabBunkerSpider = Pinto_ModBase.fdBunkerSpiderPrefab.GetComponent<FD_BunkerSpider>();
-            prefabLootBug = Pinto_ModBase.fdBrackenPrefab.GetComponent<FD_LootBug>();
+            prefabLootBug = Pinto_ModBase.fdLootBugPrefab.GetComponent<FD_LootBug>();
             prefabNutcracker = Pinto_ModBase.fdNutcrackerPrefab.GetComponent<FD_Nutcracker>();
             prefabSnareFlea = Pinto_ModBase.fdSnareFleaPrefab.GetComponent<FD_SnareFlea>();
             prefabThumper = Pinto_ModBase.fdThumperPrefab.GetComponent<FD_Thumper>();
@@ -218,7 +228,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             enemyList.Add(new FD_EnemyWeight(prefabThumper, 100));
             enemyList.Add(new FD_EnemyWeight(prefabBunkerSpider, 30));
             enemyList.Add(new FD_EnemyWeight(prefabLootBug, 60));
-            enemyList.Add(new FD_EnemyWeight(prefabBracken, 500000000));
+            //enemyList.Add(new FD_EnemyWeight(prefabBracken, 500000000));
 
             int lvlIndex = 0;
             levels.Add(new FD_Level(lvlIndex, 4, 20, 1, enemyList.ToList()));
@@ -330,6 +340,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
                     gameState = FDState.MainMenu;
                     txtEndScreen.text = "";
                     startWaitTimer = startWaitTime;
+                    DestroyEnemy();
                     break;
             }
         }
@@ -663,7 +674,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
         void RollForMonsterSpawn(int distance)
         {
-            float rand = Random.value;
+            float rand = UnityEngine.Random.value;
             if (rand < currentMonsterSpawnChance)
             {
                 SpawnRandomEnemy(distance);
@@ -726,7 +737,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             {
                 //Debug.Log("attack connected:"+currentEnemy.name);
                 bool isDead = currentEnemy.TakeDamage();
-                float rand = Random.value;
+                float rand = UnityEngine.Random.value;
                 if (rand > 0.5f)
                 {
                     PlaySound(acPlayerAttack);
@@ -805,7 +816,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
         void SpawnRandomEnemy(int distance)
         {
-            int rand = Random.Range(0, totalWeight);
+            int rand = UnityEngine.Random.Range(0, totalWeight);
             int cumulativeWeight = 0;
 
             for (int i = 0; i < currentEnemyList.Count; i++)
@@ -872,10 +883,9 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             else
             {
                 animGame.SetBool(strDeadString, true);
-                animShovel.SetBool(strDeadString, true);
             }
+            animShovel.SetBool(strDeadString, true);
             startWaitTimer = startWaitTime / 2;
-            txtScore.text = "";
         }
 
         public void Dead()
@@ -886,6 +896,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
         void ShowEndScreen()
         {
+            Debug.Log("Showing end screen");
             if (distanceTraveled > highscore)
             {
                 txtEndScreen.text = $"New Best!\n" +
@@ -912,7 +923,17 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         {
             base.InitializeObjects(gameRoot);
 
-            Debug.Log("intiializing LethalJumpany");
+            Debug.Log("intializing FacilityDash");
+            if (gameRoot != null)
+            {
+                Debug.Log("root name: " + gameRoot.name);
+                Debug.Log("child name: " + gameRoot.GetChild(0).name);
+                Debug.Log("parent name: " + gameRoot.parent.name);
+            }
+            else
+            {
+                Debug.Log("gameRoot null");
+            }
 
             trMainMenu = gameRoot.transform.Find("Main Menu");
             trMainMenu.gameObject.SetActive(true);
@@ -924,13 +945,18 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
             animHallway = trInGame.transform.Find("Hallway").GetComponent<Animator>();
 
-            shovel = trInGame.transform.Find("Shovel").GetComponent<FD_Shovel>();
+            Debug.Log("initializing shovel");
+            trShovel = trInGame.transform.Find("Shovel");
+            Debug.Log("adding shovel script");
+            shovel = trShovel.gameObject.AddComponent<FD_Shovel>();
+            Debug.Log("added shovel script");
             shovel.hit.AddListener(ShovelAttackConnected);
             shovel.dead.AddListener(Dead);
-
             trShovelSpawnpoint = trInGame.transform.Find("Shovel Spawnpoint");
-            trShovel = trInGame.transform.Find("Shovel");
             animShovel = trShovel.GetComponent<Animator>();
+
+
+            Debug.Log("shovel done");
 
             trEnemySpawn = trInGame.transform.Find("Current Enemy");
 
@@ -947,6 +973,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             animFade.gameObject.SetActive(true);
 
             txtScore.text = "";
+            txtEndScreen.transform.parent.gameObject.SetActive(true);
             txtEndScreen.text = "";
             txtLevelEndScreen.text = "";
         }

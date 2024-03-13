@@ -32,7 +32,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             Initialize();
             leaveTimer = Random.Range(leaveTimerMin, leaveTimerMax);
             EnemyName = "Bracken";
-            Health = 3;
+            Health = 6;
             AttackSpeeed = 3f;
             AttackDamage = 5;
 
@@ -113,7 +113,10 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
         public override void Hurt()
         {
-            base.Hurt();
+            if(!snappingNeck)
+            {
+                base.Hurt();
+            }
             if (!aggressive)
             {
                 aggressive = true;

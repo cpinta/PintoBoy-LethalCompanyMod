@@ -80,7 +80,7 @@ public class PintoBoy : GrabbableObject
         mainObjectRenderer = transform.Find("Model").GetComponent<MeshRenderer>();
 
         scanNodeProperties = this.GetComponentInChildren<ScanNodeProperties>();
-        if(scanNodeProperties == null)
+        if (scanNodeProperties == null)
         {
             Debug.Log("scanNodePoperties null af tbh");
         }
@@ -106,16 +106,16 @@ public class PintoBoy : GrabbableObject
         cartridgeLocation = mainObjectRenderer.transform.Find("Cartridge");
 
         Debug.Log("cartLoc.childcount:" + cartridgeLocation.childCount);
-        if(cartridgeLocation.childCount == 0)
+        if (cartridgeLocation.childCount == 0)
         {
             currentGame = null;
         }
 
         float rand = Random.value;
-        if(rand > 0.5f)
+        if (rand > 0.5f)
         {
 
-    }
+        }
         else
         {
 
@@ -130,7 +130,7 @@ public class PintoBoy : GrabbableObject
         }
         catch (System.Exception ex)
         {
-            Debug.Log("Error in PintoBoy LateUpdate: "+ex);
+            Debug.Log("Error in PintoBoy LateUpdate: " + ex);
         }
     }
 
@@ -154,7 +154,7 @@ public class PintoBoy : GrabbableObject
             cam.transform.rotation = Quaternion.identity;
             cam.transform.localScale = new Vector3(0.25f, 0.25f, 0.25f);
 
-            if(cam.transform.position.x == 0 || cam.transform.position.z == 0)
+            if (cam.transform.position.x == 0 || cam.transform.position.z == 0)
             {
                 cam.transform.position = new Vector3(Random.Range(-500f, 500f), cam.transform.position.y, Random.Range(-500f, 500f));
             }
@@ -163,7 +163,7 @@ public class PintoBoy : GrabbableObject
 
             isBeingUsed = true;
             TurnOff();
-                }
+        }
 
 
 
@@ -176,7 +176,7 @@ public class PintoBoy : GrabbableObject
             //insertedBattery.charge -= batteryDischargeRate * Time.deltaTime;
         }
 
-        if(currentGame != null && currentGame.cartridge != null)
+        if (currentGame != null && currentGame.cartridge != null)
         {
             if (isBeingUsed)
             {
@@ -244,7 +244,7 @@ public class PintoBoy : GrabbableObject
             return;
         }
 
-        if(currentGame != null)
+        if (currentGame != null)
         {
             Debug.Log("Button Press PintoBoy. Currentgame = " + currentGame);
             currentGame.ButtonPress();
@@ -290,7 +290,7 @@ public class PintoBoy : GrabbableObject
         isPaused = true;
         SetScreenToOffTexture();
 
-        if(currentGame != null)
+        if (currentGame != null)
         {
             currentGame.Pause();
         }
@@ -300,7 +300,7 @@ public class PintoBoy : GrabbableObject
 
     void UnPause()
     {
-        if(isBeingUsed)
+        if (isBeingUsed)
         {
             return;
         }
@@ -335,7 +335,7 @@ public class PintoBoy : GrabbableObject
         isBeingUsed = false;
         SetScreenToOffTexture();
 
-        if(currentGame != null)
+        if (currentGame != null)
         {
             currentGame.TurnedOff();
         }
@@ -353,7 +353,7 @@ public class PintoBoy : GrabbableObject
         isBeingUsed = true;
         SetScreenToRenderTexture();
 
-        if(currentGame != null)
+        if (currentGame != null)
         {
             currentGame.TurnedOn();
         }
@@ -365,9 +365,9 @@ public class PintoBoy : GrabbableObject
         base.ItemActivate(used, buttonDown);
         isHoldingButton = buttonDown;
 
-        if(isBeingUsed && buttonDown)
+        if (isBeingUsed && buttonDown)
         {
-            if(coroutineButtonBeingPressed != null)
+            if (coroutineButtonBeingPressed != null)
             {
                 StopCoroutine(coroutineButtonBeingPressed);
             }
@@ -384,7 +384,11 @@ public class PintoBoy : GrabbableObject
     {
         //yield return new WaitForSeconds(0.2f);
         Debug.Log("Pinto Button being pressed" + Time.deltaTime);
+        Debug.Log("pressed vars: !isHoldingButton:" + !isHoldingButton+", !isHeld:"+!isHeld+", !isBeingUsed:"+!isBeingUsed);
+        yield return new WaitForSeconds(0.2f);
+        Debug.Log("waited 0.2 secs");
         yield return new WaitUntil(() => !isHoldingButton || !isHeld || !isBeingUsed);
+        Debug.Log("Pinto Button end press?" + Time.deltaTime);
     }
 
     public void PlaySound(AudioClip clip)
@@ -409,7 +413,7 @@ public class PintoBoy : GrabbableObject
         Debug.Log("SpawnScreenServerRpc Called");
         int currentId = Pinto_ModBase.Instance.Value.currentId;
         PintoBoy[] boys = (PintoBoy[])FindObjectsByType(typeof(PintoBoy), FindObjectsSortMode.None);
-        for(int i = currentId; i < boys.Length + currentId; i++)
+        for (int i = currentId; i < boys.Length + currentId; i++)
         {
             Debug.Log("SpawnScreenServerRpc Called");
             boys[i].screenId.Value = i;
@@ -428,14 +432,14 @@ public class PintoBoy : GrabbableObject
 
     void SpawnScreen()
     {
-        if(cam != null)
+        if (cam != null)
         {
             return;
         }
 
         Debug.Log("Spawning Screen");
         cam = transform.Find("2D Cam").gameObject;
-        if(cam == null)
+        if (cam == null)
         {
             Debug.Log("Screen in Pintoboy is null even after instantiate");
         }
@@ -514,12 +518,12 @@ public class PintoBoy : GrabbableObject
         {
             Debug.Log("Inserting game: " + cart);
 
-            if(currentGame != null)
+            if (currentGame != null)
             {
                 currentGame.transform.parent = null;
                 //currentGame.Pause();
             }
-            
+
             Debug.Log("currentGame = " + currentGame);
             PintoBoyCartridge newCart = PintoBoyCartridge.Instantiate(cart, cart.transform.position, cart.transform.rotation, cart.transform.parent);
 
@@ -527,9 +531,9 @@ public class PintoBoy : GrabbableObject
             Debug.Log($"playerheldby: old:{cart.playerHeldBy.name}, new:{newCart.playerHeldBy.name}");
 
             newCart.game = cart.game;
-            
+
             newCart.scanNodeProperties = cart.scanNodeProperties;
-            
+
             newCart.transform.parent = cartridgeLocation;
             Debug.Log("currentGame = " + currentGame);
 
@@ -539,31 +543,31 @@ public class PintoBoy : GrabbableObject
 
             Debug.Log($"about to spawn Networkwide: {newCart.NetworkObject}");
             newCart.NetworkObject.Spawn();
-            
+
 
             newCart.InsertedIntoPintoBoy(this, trCam2DScene);
             Debug.Log("currentGame inserted. Removing and Destorying");
 
             playerHeldBy.DestroyItemInSlotAndSync(slotIndex);
             Destroy(playerHeldBy.ItemSlots[slotIndex]);
-            
+
 
             Debug.Log("destroyed item in slot");
             if (currentGame != null)
             {
                 RemoveCurrentGame(cart);
-                
+
             }
             cam.transform.position += Vector3.forward * newGameOffset;
-            
+
             currentGame = newCart.game;
-            
+
 
             debugCamNum = 0;
         }
         catch (Exception e)
         {
-            Debug.Log(e+" Insert Game Failed");
+            Debug.Log(e + " Insert Game Failed");
         }
     }
 
@@ -572,7 +576,7 @@ public class PintoBoy : GrabbableObject
     public string DebugGetCamChildren()
     {
         string ret = "ret #" + debugCamNum.ToString() + "\n";
-        for(int i=0;i< trCam2DScene.transform.childCount;i++)
+        for (int i = 0; i < trCam2DScene.transform.childCount; i++)
         {
             ret += trCam2DScene.transform.GetChild(i) + "\n";
         }
@@ -583,13 +587,13 @@ public class PintoBoy : GrabbableObject
     public void RemoveCurrentGame(PintoBoyCartridge cart)
     {
         Debug.Log("Removing Current Game");
-        if(true)
+        if (true)
         {
             int value = currentGame.cartridge.scrapValue;
             Debug.Log("trying to drop item. Getting parent");
             Transform parent = ((((!(playerHeldBy != null) || !playerHeldBy.isInElevator) && !StartOfRound.Instance.inShipPhase) || !(RoundManager.Instance.spawnedScrapContainer != null)) ? StartOfRound.Instance.elevatorTransform : RoundManager.Instance.spawnedScrapContainer);
 
-            Debug.Log("got parent:"+parent);
+            Debug.Log("got parent:" + parent);
 
             Vector3 vector = base.transform.position + Vector3.up * 0.25f;
 
@@ -608,7 +612,7 @@ public class PintoBoy : GrabbableObject
         }
         else
         {
-            Debug.Log("starting picking up item. Cartridge:"+ cart);
+            Debug.Log("starting picking up item. Cartridge:" + cart);
             playerHeldBy.currentlyGrabbingObject = cart;
             playerHeldBy.grabInvalidated = false;
             playerHeldBy.currentlyGrabbingObject.InteractItem();
@@ -640,7 +644,7 @@ public class PintoBoy : GrabbableObject
             return -1;
         }
 
-        for(int i=0;i<playerHeldBy.ItemSlots.Length;i++)
+        for (int i = 0; i < playerHeldBy.ItemSlots.Length; i++)
         {
             if (playerHeldBy.ItemSlots[i] is PintoBoyCartridge)
             {

@@ -32,16 +32,16 @@ namespace PintoMod.Assets.Scripts
 
             if(pintoBoy != null)
             {
+                transform.localRotation = Quaternion.Euler(0, 0, 0);
                 //Debug.Log("Setting rotation");
-                transform.localRotation = Quaternion.Euler(0, 0, 270);
             }
         }
 
         public void InsertedIntoPintoBoy(PintoBoy pintoBoy, Transform gameRoot)
         {
             transform.position = Vector3.zero;
-            transform.rotation = Quaternion.Euler(0, 0, 90);
-            itemProperties.restingRotation = new Vector3(0, 0, 90);
+            transform.localRotation = Quaternion.Euler(0, 0, 0);
+            itemProperties.restingRotation = new Vector3(0, 0, 0);
             this.pintoBoy = pintoBoy;
 
 

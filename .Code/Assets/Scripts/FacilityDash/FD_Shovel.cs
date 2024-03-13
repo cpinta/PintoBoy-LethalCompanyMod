@@ -18,6 +18,8 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         {
             animator = GetComponent<Animator>();
             spriteRenderer = GetComponent<SpriteRenderer>();
+            hit = new UnityEvent();
+            dead = new UnityEvent();
         }
 
         // Update is called once per frame

@@ -29,7 +29,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             targetFloorPosition = new Vector3(0, 0, 0);
             EnableItemMeshes(true);
 
-            Debug.Log("LJCartrdige: About to find Game transform");
+            Debug.Log("FDCartrdige: About to find Game transform");
             Transform gameTr = transform.Find("Game");
             if(gameTr == null)
             {
