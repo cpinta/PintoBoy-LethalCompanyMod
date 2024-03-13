@@ -381,7 +381,7 @@ public class PintoBoy : GrabbableObject
         base.ItemActivate(used, buttonDown);
         isButtonPressing = buttonDown;
 
-        if (isBeingUsed && buttonDown)
+        if (buttonDown)
         {
             animButton.SetBool("Press", true);
             ButtonPress();
@@ -407,7 +407,7 @@ public class PintoBoy : GrabbableObject
         yield return new WaitUntil(() => !isButtonPressing || !isHeld || !isBeingUsed);
         Debug.Log("Pinto Button end press?" + Time.deltaTime);
         animButton.SetBool("Press", false);
-        if(currentGame != null)
+        if(currentGame != null && isBeingUsed)
         {
             currentGame.ButtonRelease(Time.time - buttonStartPress);
         }
