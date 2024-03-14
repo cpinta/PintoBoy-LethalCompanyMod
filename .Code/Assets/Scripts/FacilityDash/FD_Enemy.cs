@@ -137,8 +137,8 @@ namespace PintoMod.Assets.Scripts.FacilityDash
                 }
                 else
                 {
-                    Attack();
-                    attackTimer = attackSpeed / (3 / game.gameSpeed);
+                    Attack(true);
+                    attackTimer = attackSpeed * (3 / game.gameSpeed);
                 }
             }
 
@@ -154,7 +154,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         public void IsInFront()
         {
             isCurrentEnemy = true;
-            attackTimer = attackSpeed;
+            attackTimer = attackSpeed * (3 / game.gameSpeed);
             game.PlaySound(acEntrance);
         }
 
@@ -185,7 +185,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             leaveTimer = leaveLengthTime;
         }
 
-        public virtual void Attack()
+        public virtual void Attack(bool isAttackBlockedByHiding)
         {
             if (usesDefaultAttackAnim)
             {
@@ -196,12 +196,12 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             {
                 game.PlaySound(acDefaultAttack);
             }
-            game.PlayerIsAttacked(attackDamage);
+            game.PlayerIsAttacked(attackDamage, isAttackBlockedByHiding);
         }
 
-        protected void InflictDamage(int amount)
+        protected void InflictDamage(int amount, bool isAttackBlockedByHiding)
         {
-            game.PlayerIsAttacked(amount);
+            game.PlayerIsAttacked(amount, isAttackBlockedByHiding);
         }
 
         //returns true if dead

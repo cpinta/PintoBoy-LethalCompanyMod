@@ -47,7 +47,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             }
         }
 
-        public override void Attack()
+        public override void Attack(bool isAttackBlockedByHiding)
         {
             if (latched) return;
             attacking = true;

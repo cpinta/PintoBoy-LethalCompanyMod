@@ -70,7 +70,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
                     {
                         if (postAggressionTimer > (postAggressionTimerMax * postAggressionTimerMultiplier) + postAggressionTimerMultiplier)
                         {
-                            InflictDamage(5);
+                            InflictDamage(5, false);
                             Dead();
                         }
                     }
@@ -107,7 +107,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             }
         }
 
-        public override void Attack()
+        public override void Attack(bool isAttackBlockedByHiding)
         {
         }
 

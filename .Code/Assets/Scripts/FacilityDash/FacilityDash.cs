@@ -169,7 +169,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         float currentLevelDistanceGoal = 0; //distance needed to move on to the next level
         public float startingGameSpeed = 4;
         public float gameSpeed = 4;
-        float gameSpeedIncrement = 0.5f;
+        float gameSpeedIncrement = 1;
 
         float damageOverTimeTimer = 0;
         float damageOverTimeTime = 2;
@@ -233,7 +233,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             //enemyList.Add(new FD_EnemyWeight(prefabBracken, 500000000));
 
             int lvlIndex = 0;
-            levels.Add(new FD_Level(lvlIndex, 4, 20, 1, enemyList.ToList()));
+            levels.Add(new FD_Level(lvlIndex, 5, 20, 1, enemyList.ToList()));
             lvlIndex++;
             enemyList.Clear();
 
@@ -242,7 +242,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             enemyList.Add(new FD_EnemyWeight(prefabLootBug, 60));
             enemyList.Add(new FD_EnemyWeight(prefabSnareFlea, 10));
 
-            levels.Add(new FD_Level(lvlIndex, 4.5f, 50, .75f, enemyList.ToList()));
+            levels.Add(new FD_Level(lvlIndex, 5.5f, 50, .75f, enemyList.ToList()));
             lvlIndex++;
             enemyList.Clear();
 
@@ -252,7 +252,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             enemyList.Add(new FD_EnemyWeight(prefabSnareFlea, 40));
             enemyList.Add(new FD_EnemyWeight(prefabBracken, 10));
 
-            levels.Add(new FD_Level(lvlIndex, 4.5f, 60, .75f, enemyList.ToList()));
+            levels.Add(new FD_Level(lvlIndex, 6f, 60, .75f, enemyList.ToList()));
             lvlIndex++;
             enemyList.Clear();
 
@@ -262,7 +262,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             enemyList.Add(new FD_EnemyWeight(prefabSnareFlea, 40));
             enemyList.Add(new FD_EnemyWeight(prefabBracken, 20));
 
-            levels.Add(new FD_Level(lvlIndex, 5, 80, .75f, enemyList.ToList()));
+            levels.Add(new FD_Level(lvlIndex, 6.5f, 80, .75f, enemyList.ToList()));
             lvlIndex++;
             enemyList.Clear();
         }
@@ -777,13 +777,13 @@ namespace PintoMod.Assets.Scripts.FacilityDash
                 //Debug.Log("attack connected:"+currentEnemy.name);
                 bool isDead = currentEnemy.TakeDamage();
                 float rand = UnityEngine.Random.value;
-                if (rand > 0.5f)
+                if (rand > 0)
                 {
                     PlaySound(acPlayerAttack);
                 }
                 else
                 {
-                    PlaySound(acPlayerAttack2);
+                    //PlaySound(acPlayerAttack2);
                 }
 
                 if (isDead)
@@ -884,9 +884,9 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             return (int)distanceTraveled;
         }
 
-        public void PlayerIsAttacked(int damage)
+        public void PlayerIsAttacked(int damage, bool isAttackBlockedByHiding)
         {
-            if (!isHiding)
+            if (!isHiding || !isAttackBlockedByHiding)
             {
                 animButtonTooltips.SetBool("Active", false);
                 animShovel.SetTrigger(strGotHitString);

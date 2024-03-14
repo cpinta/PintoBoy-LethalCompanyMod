@@ -46,7 +46,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             }
         }
 
-        public override void Attack()
+        public override void Attack(bool isAttackBlockedByHiding)
         {
             if (!aggressive) return;
             if (firstAttack)
@@ -54,7 +54,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
                 game.PlaySound(acAngered);
                 firstAttack = false;
             }
-            base.Attack();
+            base.Attack(true);
         }
 
         public override void Hurt()
@@ -64,7 +64,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             {
                 aggressive = true;
                 base.animator.SetBool(strAttackModeString, true);
-                Attack();
+                Attack(true);
             }
         }
     }

@@ -19,7 +19,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         void Awake()
         {
             Initialize();
-            leaveTimer = Random.Range(leaveTimerMin, leaveTimerMax);
+            leaveTimer = 3 / (game.gameSpeed / game.startingGameSpeed);
             EnemyName = "Nutcracker";
             Health = 5;
             AttackSpeeed = 2.5f;
@@ -51,7 +51,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             }
         }
 
-        public override void Attack()
+        public override void Attack(bool isAttackBlockedByHiding)
         {
             if (!aggressive) return;
             animator.SetBool(strAttackString, true);
@@ -63,7 +63,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
                 firstAttack = false;
             }
             game.PlaySound(acShotgun);
-            base.Attack();
+            base.Attack(true);
         }
 
         public override void Hurt()
