@@ -19,7 +19,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             Initialize();
             EnemyName = "Spider";
             Health = 5;
-            AttackSpeeed = 4;
+            AttackSpeeed = 6;
 
             acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/spider sound");
         }

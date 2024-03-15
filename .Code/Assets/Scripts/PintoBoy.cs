@@ -29,7 +29,7 @@ public class PintoBoy : GrabbableObject
 {
     AudioSource audioSource;
 
-    PintoBoyGame currentGame;
+    public PintoBoyGame currentGame;
 
     bool isButtonPressing = false;      //when the button is being pressed but isnt seen as a hold
     bool isHoldingButton = false;       //when the button is being pressed and it is seen as a hold
@@ -562,6 +562,9 @@ public class PintoBoy : GrabbableObject
             newCart.parentObject = cartridgeLocation;
             Debug.Log($"position and rotation set. game:{newCart.game}");
 
+            newCart.transform.position = Vector3.zero;
+            newCart.transform.localRotation = Quaternion.Euler(0, 0, 0);
+            newCart.itemProperties.restingRotation = new Vector3(0, 0, 0);
 
             Debug.Log($"about to spawn Networkwide: {newCart.NetworkObject}");
             newCart.NetworkObject.Spawn();

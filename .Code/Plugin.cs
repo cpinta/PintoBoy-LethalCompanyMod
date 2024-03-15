@@ -40,18 +40,20 @@ namespace PintoMod
 
         public static readonly Lazy<Pinto_ModBase> Instance = new Lazy<Pinto_ModBase>(() => new Pinto_ModBase());
 
-        public static AssetBundle pintoBundle; 
+        public static AssetBundle pintoBundle;
 
         public static Item itemPintoBoyPrefab;
         public static Material matOffScreen;
         public static Material matOnScreen;
 
+        public static Item itemPintoBoyLJ;
         public static Item itemLJCartridgePrefab;
         public static LethalJumpany gameLethalJumpanyPrefab;
         public static GameObject ljSpiderPrefab;
         public static GameObject ljSlimePrefab;
         public static GameObject ljLootbugPrefab;
 
+        public static Item itemPintoBoyFD;
         public static Item itemFDCartridgePrefab;
         public static FacilityDash gameFacilityDashPrefab;
         public static GameObject fdBrackenPrefab;
@@ -137,104 +139,156 @@ namespace PintoMod
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(ljLootbugPrefab);
             //LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(screenPrefab);
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(itemPintoBoyPrefab.spawnPrefab);
+            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(itemPintoBoyLJ.spawnPrefab);
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(itemLJCartridgePrefab.spawnPrefab);
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(itemFDCartridgePrefab.spawnPrefab);
 
-            Items.RegisterScrap(itemPintoBoyPrefab, (int) config_PintoboyRarity.Value, Levels.LevelTypes.All);
-            Items.RegisterScrap(itemLJCartridgePrefab, 100, Levels.LevelTypes.All);
-            Items.RegisterScrap(itemFDCartridgePrefab, 100, Levels.LevelTypes.All);
+            //Items.RegisterScrap(itemPintoBoyPrefab, (int) config_PintoboyRarity.Value, Levels.LevelTypes.All);
+            //Items.RegisterScrap(itemPintoBoyLJ, (int)config_PintoboyRarity.Value, Levels.LevelTypes.All);
+            Items.RegisterScrap(itemPintoBoyFD, (int)config_PintoboyRarity.Value, Levels.LevelTypes.All);
+            //Items.RegisterScrap(itemLJCartridgePrefab, 100, Levels.LevelTypes.All);
+            //Items.RegisterScrap(itemFDCartridgePrefab, 100, Levels.LevelTypes.All);
 
-            Debug.Log("Scrapitems: "+Items.scrapItems.Count + ": " + Items.scrapItems[0].modName + " rarity:"+ Items.scrapItems[0].rarity);
+            Debug.Log("Scrapitems: " + Items.scrapItems.Count + ": " + Items.scrapItems[0].modName + " rarity:" + Items.scrapItems[0].rarity);
         }
 
         private void LoadBundle()
         {
-            try
+            pintoBundle = AssetBundle.LoadFromMemory(Properties.Resources.pintobund);
+            if (pintoBundle == null) throw new Exception("Failed to load Pinto Bundle!");
+
+
+            // PintoBoy prefabs
+            itemPintoBoyPrefab = pintoBundle.LoadAsset<Item>($"{basePath}/pintoboy.asset");
+            if (itemPintoBoyPrefab == null) throw new Exception("Failed to load Pinto Item!");
+            PintoBoy pintoBoy = itemPintoBoyPrefab.spawnPrefab.AddComponent<PintoBoy>();
+            if (pintoBoy == null) throw new Exception("Failed to load Pinto Boy!");
+            pintoBoy.itemProperties = itemPintoBoyPrefab;
+
+            matOffScreen = pintoBundle.LoadAsset<Material>($"{devicePath}/off screen.mat");
+            if (matOffScreen == null) throw new Exception("Failed to load off screen material!");
+
+            matOnScreen = pintoBundle.LoadAsset<Material>($"Screen Mat.mat");
+            if (matOnScreen == null) throw new Exception("Failed to load Screen Mat material!");
+
+
+            Debug.Log("milestone 1");
+            // Lethal Jumpany prefabs
+            // Cartridge
+            itemLJCartridgePrefab = pintoBundle.LoadAsset<Item>($"{ljBasePath}/lethaljumpany.asset");
+            if (itemLJCartridgePrefab == null) throw new Exception("Failed to load LethalJumpany Item!");
+            LJCartridge ljCart = itemLJCartridgePrefab.spawnPrefab.AddComponent<LJCartridge>();
+            ljCart.itemProperties = itemLJCartridgePrefab;
+
+            //gameLethalJumpanyPrefab = pintoBundle.LoadAsset<GameObject>($"{ljBasePath}/game.prefab").AddComponent<LethalJumpany>();
+            //if (gameLethalJumpanyPrefab == null) throw new Exception($"Failed to load gameLethalJumpanyPrefab at {ljBasePath}/2d.prefab");
+            //ljCart.gamePrefab = gameLethalJumpanyPrefab;
+
+            Debug.Log("milestone 3");
+            // Enemies
+            GameObject ljSpider = pintoBundle.LoadAsset<GameObject>($"{ljSpritesPath}/spider/spider.prefab");
+            if (ljSpider == null) throw new Exception("Failed to load Spider Prefab Object!");
+            ljSpider.AddComponent<LJEnemy>();
+            ljSpiderPrefab = ljSpider;
+            if (ljSpiderPrefab == null) throw new Exception("Failed to load Spider Prefab!");
+
+            GameObject ljSlime = pintoBundle.LoadAsset<GameObject>($"{ljSpritesPath}/slime/slime.prefab");
+            if (ljSlime == null) throw new Exception("Failed to load Slime Prefab Object!");
+            ljSlime.AddComponent<LJEnemy>();
+            ljSlimePrefab = ljSlime;
+            if (ljSlimePrefab == null) throw new Exception("Failed to load Slime Prefab!");
+
+            GameObject ljLootbug = pintoBundle.LoadAsset<GameObject>($"{ljSpritesPath}/loot bug/loot bug.prefab");
+            if (ljLootbug == null) throw new Exception("Failed to load Lootbug Prefab Object!");
+            ljLootbug.AddComponent<LJEnemy>();
+            ljLootbugPrefab = ljLootbug;
+            if (ljLootbugPrefab == null) throw new Exception("Failed to load Lootbug Prefab!");
+
+
+            Debug.Log("milestone 2");
+
+            itemFDCartridgePrefab = pintoBundle.LoadAsset<Item>($"{fdBasePath}/facilitydash.asset");
+            if (itemFDCartridgePrefab == null) throw new Exception("Failed to load Facility Dash Item!");
+            FDCartridge fdCart = itemFDCartridgePrefab.spawnPrefab.AddComponent<FDCartridge>();
+            fdCart.itemProperties = itemFDCartridgePrefab;
+
+            // Enemies
+
+            fdBrackenPrefab = LoadFDPrefab(new FD_Bracken(), "bracken");
+            if (fdBrackenPrefab == null) throw new Exception("Failed to load fdBrackenPrefab Prefab!");
+            fdBunkerSpiderPrefab = LoadFDPrefab(new FD_BunkerSpider(), "bunker spider");
+            if (fdBunkerSpiderPrefab == null) throw new Exception("Failed to load fdBunkerSpiderPrefab Prefab!");
+            fdLootBugPrefab = LoadFDPrefab(new FD_LootBug(), "loot bug");
+            if (fdLootBugPrefab == null) throw new Exception("Failed to load fdLootBugPrefab Prefab!");
+            fdSnareFleaPrefab = LoadFDPrefab(new FD_SnareFlea(), "snare flea");
+            if (fdSnareFleaPrefab == null) throw new Exception("Failed to load fdSnareFleaPrefab Prefab!");
+            fdThumperPrefab = LoadFDPrefab(new FD_Thumper(), "thumper");
+            if (fdThumperPrefab == null) throw new Exception("Failed to load fdThumperPrefab Prefab!");
+            fdNutcrackerPrefab = LoadFDPrefab(new FD_Nutcracker(), "nutcracker");
+            if (fdNutcrackerPrefab == null) throw new Exception("Failed to load fdNutcrackerPrefab Prefab!");
+
+
+
+            itemPintoBoyLJ = pintoBundle.LoadAsset<Item>($"{basePath}/pintoboy lj.asset");
+            if (itemPintoBoyLJ == null) throw new Exception("Failed to load Pinto LJ Item!");
+            PintoBoy pintoBoyLJ = itemPintoBoyLJ.spawnPrefab.AddComponent<PintoBoy>();
+            if (pintoBoyLJ == null) throw new Exception("Failed to load Pinto Boy!");
+            pintoBoyLJ.itemProperties = itemPintoBoyPrefab;
+            LJCartridge cartLJ = pintoBoyLJ.transform.Find("Model/Cartridge/Cartridge").gameObject.AddComponent<LJCartridge>();
+            GetChildRecursive(pintoBoyLJ.transform.Find("2D Cam").gameObject, 1);
+            LethalJumpany gameLJ = pintoBoyLJ.transform.Find("2D Cam/2D Scene/Game").gameObject.AddComponent<LethalJumpany>();
+            gameLJ.cartridge = cartLJ;
+            gameLJ.pintoBoy = pintoBoyLJ;
+            cartLJ.game = gameLJ;
+            cartLJ.pintoBoy = pintoBoyLJ;
+            gameLJ.transform.localPosition = Vector3.zero;
+            gameLJ.transform.localRotation = Quaternion.identity;
+            gameLJ.transform.localScale = Vector3.one;
+            cartLJ.itemProperties = itemLJCartridgePrefab;
+            pintoBoyLJ.currentGame = gameLJ;
+            cartLJ.CartridgeAwake();
+
+            itemPintoBoyFD = pintoBundle.LoadAsset<Item>($"{basePath}/pintoboy fd.asset");
+            if (itemPintoBoyFD == null) throw new Exception("Failed to load Pinto FD Item!");
+            PintoBoy pintoBoyFD = itemPintoBoyFD.spawnPrefab.AddComponent<PintoBoy>();
+            if (pintoBoyFD == null) throw new Exception("Failed to load Pinto Boy!");
+            pintoBoyFD.itemProperties = itemPintoBoyPrefab;
+            FDCartridge cartFD = pintoBoyFD.transform.Find("Model/Cartridge/Cartridge").gameObject.AddComponent<FDCartridge>();
+            GetChildRecursive(pintoBoyFD.transform.Find("2D Cam").gameObject, 1);
+            FacilityDash gameFD = pintoBoyFD.transform.Find("2D Cam/2D Scene/Game").gameObject.AddComponent<FacilityDash>();
+            gameFD.cartridge = cartFD;
+            gameFD.pintoBoy = pintoBoyFD;
+            cartFD.game = gameFD;
+            cartFD.pintoBoy = pintoBoyFD;
+            gameFD.transform.localPosition = Vector3.zero;
+            gameFD.transform.localRotation = Quaternion.identity;
+            gameFD.transform.localScale = Vector3.one;
+            cartFD.itemProperties = itemFDCartridgePrefab;
+            pintoBoyFD.currentGame = gameFD;
+            cartFD.CartridgeAwake();
+        }
+
+
+        private void GetChildRecursive(GameObject obj, int level)
+        {
+            if (null == obj)
+                return;
+
+            foreach (Transform child in obj.transform)
             {
-
-                pintoBundle = AssetBundle.LoadFromMemory(Properties.Resources.pintobund);
-                if (pintoBundle == null) throw new Exception("Failed to load Pinto Bundle!");
-
-
-                // PintoBoy prefabs
-                itemPintoBoyPrefab = pintoBundle.LoadAsset<Item>($"{basePath}/pintoboy.asset");
-                if (itemPintoBoyPrefab == null) throw new Exception("Failed to load Pinto Item!");
-                PintoBoy pintoBoy = itemPintoBoyPrefab.spawnPrefab.AddComponent<PintoBoy>();
-                if (pintoBoy == null) throw new Exception("Failed to load Pinto Boy!");
-                pintoBoy.itemProperties = itemPintoBoyPrefab;
-
-                matOffScreen = pintoBundle.LoadAsset<Material>($"{devicePath}/off screen.mat");
-                if (matOffScreen == null) throw new Exception("Failed to load off screen material!");
-
-                matOnScreen = pintoBundle.LoadAsset<Material>($"Screen Mat.mat");
-                if (matOnScreen == null) throw new Exception("Failed to load Screen Mat material!");
-
-
-                Debug.Log("milestone 1");
-                // Lethal Jumpany prefabs
-                // Cartridge
-                itemLJCartridgePrefab = pintoBundle.LoadAsset<Item>($"{ljBasePath}/lethaljumpany.asset");
-                if (itemLJCartridgePrefab == null) throw new Exception("Failed to load LethalJumpany Item!");
-                LJCartridge ljCart = itemLJCartridgePrefab.spawnPrefab.AddComponent<LJCartridge>();
-                ljCart.itemProperties = itemLJCartridgePrefab;
-
-                //gameLethalJumpanyPrefab = pintoBundle.LoadAsset<GameObject>($"{ljBasePath}/game.prefab").AddComponent<LethalJumpany>();
-                //if (gameLethalJumpanyPrefab == null) throw new Exception($"Failed to load gameLethalJumpanyPrefab at {ljBasePath}/2d.prefab");
-                //ljCart.gamePrefab = gameLethalJumpanyPrefab;
-
-                Debug.Log("milestone 3");
-                // Enemies
-                GameObject ljSpider = pintoBundle.LoadAsset<GameObject>($"{ljSpritesPath}/spider/spider.prefab");
-                if (ljSpider == null) throw new Exception("Failed to load Spider Prefab Object!");
-                ljSpider.AddComponent<LJEnemy>();
-                ljSpiderPrefab = ljSpider;
-                if (ljSpiderPrefab == null) throw new Exception("Failed to load Spider Prefab!");
-
-                GameObject ljSlime = pintoBundle.LoadAsset<GameObject>($"{ljSpritesPath}/slime/slime.prefab");
-                if (ljSlime == null) throw new Exception("Failed to load Slime Prefab Object!");
-                ljSlime.AddComponent<LJEnemy>();
-                ljSlimePrefab = ljSlime;
-                if (ljSlimePrefab == null) throw new Exception("Failed to load Slime Prefab!");
-
-                GameObject ljLootbug = pintoBundle.LoadAsset<GameObject>($"{ljSpritesPath}/loot bug/loot bug.prefab");
-                if (ljLootbug == null) throw new Exception("Failed to load Lootbug Prefab Object!");
-                ljLootbug.AddComponent<LJEnemy>();
-                ljLootbugPrefab = ljLootbug;
-                if (ljLootbugPrefab == null) throw new Exception("Failed to load Lootbug Prefab!");
-
-
-                Debug.Log("milestone 2");
-
-                itemFDCartridgePrefab = pintoBundle.LoadAsset<Item>($"{fdBasePath}/facilitydash.asset");
-                if (itemFDCartridgePrefab == null) throw new Exception("Failed to load Facility Dash Item!");
-                FDCartridge fdCart = itemFDCartridgePrefab.spawnPrefab.AddComponent<FDCartridge>();
-                fdCart.itemProperties = itemFDCartridgePrefab;
-
-                // Enemies
-
-                fdBrackenPrefab = LoadFDPrefab(new FD_Bracken(), "bracken");
-                if (fdBrackenPrefab == null) throw new Exception("Failed to load fdBrackenPrefab Prefab!");
-                fdBunkerSpiderPrefab = LoadFDPrefab(new FD_BunkerSpider(), "bunker spider");
-                if (fdBunkerSpiderPrefab == null) throw new Exception("Failed to load fdBunkerSpiderPrefab Prefab!");
-                fdLootBugPrefab = LoadFDPrefab(new FD_LootBug(), "loot bug");
-                if (fdLootBugPrefab == null) throw new Exception("Failed to load fdLootBugPrefab Prefab!");
-                fdSnareFleaPrefab = LoadFDPrefab(new FD_SnareFlea(), "snare flea");
-                if (fdSnareFleaPrefab == null) throw new Exception("Failed to load fdSnareFleaPrefab Prefab!");
-                fdThumperPrefab = LoadFDPrefab(new FD_Thumper(), "thumper");
-                if (fdThumperPrefab == null) throw new Exception("Failed to load fdThumperPrefab Prefab!");
-                fdNutcrackerPrefab = LoadFDPrefab(new FD_Nutcracker(), "nutcracker");
-                if (fdNutcrackerPrefab == null) throw new Exception("Failed to load fdNutcrackerPrefab Prefab!");
-            }
-            catch (Exception e)
-            {
-                throw new Exception(e.Message);
+                if (null == child)
+                    continue;
+                //child.gameobject contains the current child you can do whatever you want like add it to an array
+                Debug.Log(String.Concat(Enumerable.Repeat("*", level)) + child.gameObject.name);
+                GetChildRecursive(child.gameObject, level + 1);
             }
         }
+
         GameObject LoadFDPrefab(MonoBehaviour component, string prefabName)
         {
             GameObject gameObject = pintoBundle.LoadAsset<GameObject>($"{fdSpritesPath}/{prefabName}.prefab");
             if (gameObject == null) throw new Exception("Failed to load " + prefabName + " Prefab Object!");
-            Debug.Log($"Loading {prefabName} Prefab. Component type is:"+component.GetType());
+            Debug.Log($"Loading {prefabName} Prefab. Component type is:" + component.GetType());
             gameObject.AddComponent(component.GetType());
             return gameObject;
         }
@@ -242,9 +296,9 @@ namespace PintoMod
         void LoadPrefabObject(GameObject prefab, MonoBehaviour component, string prefabName)
         {
             prefab = pintoBundle.LoadAsset<GameObject>($"{fdSpritesPath}/{prefabName}.prefab");
-            if (prefab == null) throw new Exception("Failed to load "+prefabName+" Prefab Object!");
+            if (prefab == null) throw new Exception("Failed to load " + prefabName + " Prefab Object!");
             prefab.AddComponent(component.GetType());
-            if (prefab == null) throw new Exception("Failed to load "+prefabName+" Prefab!");
+            if (prefab == null) throw new Exception("Failed to load " + prefabName + " Prefab!");
         }
 
         public static AudioClip GetAudioClip(string path)

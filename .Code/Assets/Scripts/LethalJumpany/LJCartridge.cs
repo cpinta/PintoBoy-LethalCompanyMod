@@ -14,19 +14,10 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
         public NetworkVariable<int> screenId = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         public override void CartridgeAwake()
         {
-
-            scanNodeProperties = this.GetComponentInChildren<ScanNodeProperties>();
-
-            grabbable = true;
+            grabbable = false;
             parentObject = this.transform;
 
-            grabbableToEnemies = true;
-
-            scanNodeProperties.maxRange = 100;
-            scanNodeProperties.minRange = 1;
-            scanNodeProperties.requiresLineOfSight = true;
-            scanNodeProperties.creatureScanID = -1;
-            scanNodeProperties.nodeType = 2;
+            grabbableToEnemies = false;
 
             startFallingPosition = new Vector3(0, 0, 0);
             targetFloorPosition = new Vector3(0, 0, 0);

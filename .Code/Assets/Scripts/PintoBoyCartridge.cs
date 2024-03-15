@@ -39,11 +39,7 @@ namespace PintoMod.Assets.Scripts
 
         public void InsertedIntoPintoBoy(PintoBoy pintoBoy, Transform gameRoot)
         {
-            transform.position = Vector3.zero;
-            transform.localRotation = Quaternion.Euler(0, 0, 0);
-            itemProperties.restingRotation = new Vector3(0, 0, 0);
             this.pintoBoy = pintoBoy;
-
 
             game.InsertedIntoPintoBoy(pintoBoy, gameRoot, this);
         }

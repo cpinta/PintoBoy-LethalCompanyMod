@@ -974,15 +974,22 @@ namespace PintoMod.Assets.Scripts.FacilityDash
                 Debug.Log("gameRoot null");
             }
 
+            Debug.Log("Debug 1");
             trMainMenu = gameRoot.transform.Find("Main Menu");
+            Debug.Log("Debug 1");
             trMainMenu.gameObject.SetActive(true);
+            Debug.Log("Debug 1");
             animMainMenu = trMainMenu.transform.Find("Main Menu Sprite").GetComponent<Animator>();
 
+            Debug.Log("Debug 1");
             trInGame = gameRoot.transform.Find("Game");
+            Debug.Log("Debug 1");
 
             animGame = trInGame.GetComponent<Animator>();
+            Debug.Log("Debug 1");
 
             animHallway = trInGame.transform.Find("Hallway").GetComponent<Animator>();
+            Debug.Log("Debug 1");
 
             Debug.Log("initializing shovel");
             trShovel = trInGame.transform.Find("Shovel");
