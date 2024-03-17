@@ -13,7 +13,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         public bool aggressive = false;
         bool firstAttack = true;
 
-        AudioClip acAngered;
+        public AudioClip acAngered;
 
         void Awake()
         {
@@ -23,8 +23,6 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             Health = 2;
             AttackSpeeed = 2;
 
-            acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/loot bug walk");
-            acAngered = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/loot bug dead");
         }
 
         void LateUpdate()

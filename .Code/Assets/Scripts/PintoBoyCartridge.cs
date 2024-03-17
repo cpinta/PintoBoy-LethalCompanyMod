@@ -23,7 +23,14 @@ namespace PintoMod.Assets.Scripts
 
         public virtual void CartridgeAwake()
         {
+            grabbable = false;
+            parentObject = this.transform;
 
+            grabbableToEnemies = false;
+
+            startFallingPosition = new Vector3(0, 0, 0);
+            targetFloorPosition = new Vector3(0, 0, 0);
+            EnableItemMeshes(true);
         }
 
         virtual protected void LateUpdate()

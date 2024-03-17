@@ -25,7 +25,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         bool oldAgressive = false;
         bool snappingNeck = false;
 
-        AudioClip acAngered;
+        public AudioClip acAngered;
 
         void Awake()
         {
@@ -38,8 +38,6 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
             animator = GetComponent<Animator>();
 
-            acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/Bracken found");
-            acAngered = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/Bracken Angered");
         }
 
         void Update()

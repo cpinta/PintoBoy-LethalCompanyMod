@@ -13,8 +13,8 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         public bool aggressive = false;
         bool firstAttack = true;
 
-        AudioClip acAngered;
-        AudioClip acShotgun;
+        public AudioClip acAngered;
+        public AudioClip acShotgun;
 
         void Awake()
         {
@@ -26,9 +26,6 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
             animator = GetComponent<Animator>();
 
-            acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/nutcracker entrance");
-            acAngered = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/nutcracker mad");
-            acShotgun = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/shotgun");
             usesDefaultAttackSound = false;
         }
 

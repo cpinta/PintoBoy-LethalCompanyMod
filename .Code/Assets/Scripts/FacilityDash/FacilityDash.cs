@@ -209,20 +209,12 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
             Debug.Log("Loaded Audio.");
 
-            Component[] components = Pinto_ModBase.fdBrackenPrefab.GetComponents(typeof(Component));
-
-            Debug.Log("Component Count:"+components.Length);
-            for (int i = 0; i < components.Length; i++)
-            {
-                Debug.Log(components[i].name);
-            }
-            Debug.Log("Components seen");
-            prefabBracken = Pinto_ModBase.fdBrackenPrefab.GetComponent<FD_Bracken>();
-            prefabBunkerSpider = Pinto_ModBase.fdBunkerSpiderPrefab.GetComponent<FD_BunkerSpider>();
-            prefabLootBug = Pinto_ModBase.fdLootBugPrefab.GetComponent<FD_LootBug>();
-            prefabNutcracker = Pinto_ModBase.fdNutcrackerPrefab.GetComponent<FD_Nutcracker>();
-            prefabSnareFlea = Pinto_ModBase.fdSnareFleaPrefab.GetComponent<FD_SnareFlea>();
-            prefabThumper = Pinto_ModBase.fdThumperPrefab.GetComponent<FD_Thumper>();
+            //prefabBracken = Pinto_ModBase.fdBrackenPrefab;
+            //prefabBunkerSpider = Pinto_ModBase.fdBunkerSpiderPrefab;
+            //prefabLootBug = Pinto_ModBase.fdLootBugPrefab;
+            //prefabNutcracker = Pinto_ModBase.fdNutcrackerPrefab;
+            //prefabSnareFlea = Pinto_ModBase.fdSnareFleaPrefab;
+            //prefabThumper = Pinto_ModBase.fdThumperPrefab;
 
             gameState = FDState.MainMenu;
 
@@ -871,6 +863,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
         void SpawnEnemy(FD_Enemy prefab, int distance)
         {
+            Debug.Log("Spawning " + prefab.name);
             FD_Enemy enemy = Instantiate(prefab, trEnemySpawn);
             enemy.distance = distance;
             enemy.game = this;

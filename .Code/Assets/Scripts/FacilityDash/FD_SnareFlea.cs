@@ -22,7 +22,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
         public bool latched = false;
 
-        AudioClip acAngered;
+        public AudioClip acAngered;
 
         void Awake()
         {
@@ -33,8 +33,6 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             AttackSpeeed = 8;
             animator = GetComponent<Animator>();
 
-            acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/Snare Flea walk");
-            acAngered = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/Snare Flea on head");
         }
 
         void LateUpdate()

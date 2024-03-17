@@ -19,7 +19,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         public UnityEvent dead;
         public UnityEvent<int> playerDamage;
 
-        protected AudioClip acEntrance;
+        public AudioClip acEntrance;
 
         protected string strAttackModeString = "AttackMode";
         protected string strAttackString = "Attack";

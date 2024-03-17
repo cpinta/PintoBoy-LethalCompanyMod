@@ -56,12 +56,12 @@ namespace PintoMod
         public static Item itemPintoBoyFD;
         public static Item itemFDCartridgePrefab;
         public static FacilityDash gameFacilityDashPrefab;
-        public static GameObject fdBrackenPrefab;
-        public static GameObject fdBunkerSpiderPrefab;
-        public static GameObject fdLootBugPrefab;
-        public static GameObject fdNutcrackerPrefab;
-        public static GameObject fdSnareFleaPrefab;
-        public static GameObject fdThumperPrefab;
+        public static FD_Bracken fdBrackenPrefab;
+        public static FD_BunkerSpider fdBunkerSpiderPrefab;
+        public static FD_LootBug fdLootBugPrefab;
+        public static FD_Nutcracker fdNutcrackerPrefab;
+        public static FD_SnareFlea fdSnareFleaPrefab;
+        public static FD_Thumper fdThumperPrefab;
 
         public int currentId = 0;
 
@@ -214,18 +214,34 @@ namespace PintoMod
 
             // Enemies
 
-            fdBrackenPrefab = LoadFDPrefab(new FD_Bracken(), "bracken");
+            fdBrackenPrefab = LoadFDPrefab(new FD_Bracken(), "bracken").GetComponent<FD_Bracken>();
             if (fdBrackenPrefab == null) throw new Exception("Failed to load fdBrackenPrefab Prefab!");
-            fdBunkerSpiderPrefab = LoadFDPrefab(new FD_BunkerSpider(), "bunker spider");
+            fdBrackenPrefab.acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/Bracken found");
+            fdBrackenPrefab.acAngered = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/Bracken Angered");
+
+            fdBunkerSpiderPrefab = LoadFDPrefab(new FD_BunkerSpider(), "bunker spider").GetComponent<FD_BunkerSpider>();
             if (fdBunkerSpiderPrefab == null) throw new Exception("Failed to load fdBunkerSpiderPrefab Prefab!");
-            fdLootBugPrefab = LoadFDPrefab(new FD_LootBug(), "loot bug");
+            fdBunkerSpiderPrefab.acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/spider sound");
+
+            fdLootBugPrefab = LoadFDPrefab(new FD_LootBug(), "loot bug").GetComponent<FD_LootBug>();
             if (fdLootBugPrefab == null) throw new Exception("Failed to load fdLootBugPrefab Prefab!");
-            fdSnareFleaPrefab = LoadFDPrefab(new FD_SnareFlea(), "snare flea");
+            fdLootBugPrefab.acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/loot bug walk");
+            fdLootBugPrefab.acAngered = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/loot bug dead");
+
+            fdSnareFleaPrefab = LoadFDPrefab(new FD_SnareFlea(), "snare flea").GetComponent<FD_SnareFlea>();
             if (fdSnareFleaPrefab == null) throw new Exception("Failed to load fdSnareFleaPrefab Prefab!");
-            fdThumperPrefab = LoadFDPrefab(new FD_Thumper(), "thumper");
+            fdSnareFleaPrefab.acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/Snare Flea walk");
+            fdSnareFleaPrefab.acAngered = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/Snare Flea on head");
+
+            fdThumperPrefab = LoadFDPrefab(new FD_Thumper(), "thumper").GetComponent<FD_Thumper>();
             if (fdThumperPrefab == null) throw new Exception("Failed to load fdThumperPrefab Prefab!");
-            fdNutcrackerPrefab = LoadFDPrefab(new FD_Nutcracker(), "nutcracker");
+            fdThumperPrefab.acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/thumper yell");
+
+            fdNutcrackerPrefab = LoadFDPrefab(new FD_Nutcracker(), "nutcracker").GetComponent<FD_Nutcracker>();
             if (fdNutcrackerPrefab == null) throw new Exception("Failed to load fdNutcrackerPrefab Prefab!");
+            fdNutcrackerPrefab.acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/nutcracker entrance");
+            fdNutcrackerPrefab.acAngered = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/nutcracker mad");
+            fdNutcrackerPrefab.acShotgun = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/shotgun");
 
 
 
@@ -263,6 +279,12 @@ namespace PintoMod
             gameFD.transform.localPosition = Vector3.zero;
             gameFD.transform.localRotation = Quaternion.identity;
             gameFD.transform.localScale = Vector3.one;
+            gameFD.prefabBracken = fdBrackenPrefab;
+            gameFD.prefabBunkerSpider = fdBunkerSpiderPrefab;
+            gameFD.prefabLootBug = fdLootBugPrefab;
+            gameFD.prefabNutcracker = fdNutcrackerPrefab;
+            gameFD.prefabSnareFlea = fdSnareFleaPrefab;
+            gameFD.prefabThumper = fdThumperPrefab;
             cartFD.itemProperties = itemFDCartridgePrefab;
             pintoBoyFD.currentGame = gameFD;
             cartFD.CartridgeAwake();

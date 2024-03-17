@@ -21,7 +21,6 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             Health = 5;
             AttackSpeeed = 6;
 
-            acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/spider sound");
         }
 
         void Update()
