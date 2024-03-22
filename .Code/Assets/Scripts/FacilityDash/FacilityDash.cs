@@ -126,12 +126,12 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         bool hasEnemyBeenRolled = false;
         float currentMonsterSpawnChance = .2f;
 
-        public FD_Enemy prefabSnareFlea;
-        public FD_Enemy prefabThumper;
-        public FD_Enemy prefabBunkerSpider;
-        public FD_Enemy prefabLootBug;
-        public FD_Enemy prefabNutcracker;
-        public FD_Enemy prefabBracken;
+        public GameObject prefabSnareFlea;
+        public GameObject prefabThumper;
+        public GameObject prefabBunkerSpider;
+        public GameObject prefabLootBug;
+        public GameObject prefabNutcracker;
+        public GameObject prefabBracken;
 
         //Levels
         int levelIndex = 0;
@@ -203,19 +203,6 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         {
             PintoAwake();
 
-            prefabBracken = Pinto_ModBase.fdBrackenPrefab;
-            prefabBracken.enemyName = "Bracken";
-            prefabBunkerSpider = Pinto_ModBase.fdBunkerSpiderPrefab;
-            prefabBunkerSpider.enemyName = "Bunker Spider";
-            prefabLootBug = Pinto_ModBase.fdLootBugPrefab;
-            prefabLootBug.enemyName = "Loot Bug";
-            prefabNutcracker = Pinto_ModBase.fdNutcrackerPrefab;
-            prefabNutcracker.enemyName = "Nutcracker";
-            prefabSnareFlea = Pinto_ModBase.fdSnareFleaPrefab;
-            prefabSnareFlea.enemyName = "Snare Flea";
-            prefabThumper = Pinto_ModBase.fdThumperPrefab;
-            prefabThumper.enemyName = "Thumper";
-
             Debug.Log("PintoBoy FD: FD Awake");
             mainmenuWaitTimer = mainmenuWaitTime;
 
@@ -244,9 +231,9 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             gameState = FDState.MainMenu;
 
             List<FD_EnemyWeight> enemyList = new List<FD_EnemyWeight>();
-            enemyList.Add(new FD_EnemyWeight(prefabThumper, 100, FDEnemyType.Thumper));
-            enemyList.Add(new FD_EnemyWeight(prefabBunkerSpider, 30, FDEnemyType.BunkerSpider));
-            enemyList.Add(new FD_EnemyWeight(prefabLootBug, 60, FDEnemyType.LootBug));
+            enemyList.Add(new FD_EnemyWeight(prefabThumper.GetComponent<FD_Enemy>(), 100, FDEnemyType.Thumper));
+            enemyList.Add(new FD_EnemyWeight(prefabBunkerSpider.GetComponent<FD_Enemy>(), 30, FDEnemyType.BunkerSpider));
+            enemyList.Add(new FD_EnemyWeight(prefabLootBug.GetComponent<FD_Enemy>(), 60, FDEnemyType.LootBug));
             //enemyList.Add(new FD_EnemyWeight(prefabBracken, 500000000));
 
             int lvlIndex = 0;
@@ -254,30 +241,30 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             lvlIndex++;
             enemyList.Clear();
 
-            enemyList.Add(new FD_EnemyWeight(prefabThumper, 90, FDEnemyType.Thumper));
-            enemyList.Add(new FD_EnemyWeight(prefabBunkerSpider, 40, FDEnemyType.BunkerSpider));
-            enemyList.Add(new FD_EnemyWeight(prefabLootBug, 60, FDEnemyType.LootBug));
-            enemyList.Add(new FD_EnemyWeight(prefabSnareFlea, 10, FDEnemyType.SnareFlea));
+            enemyList.Add(new FD_EnemyWeight(prefabThumper.GetComponent<FD_Enemy>(), 90, FDEnemyType.Thumper));
+            enemyList.Add(new FD_EnemyWeight(prefabBunkerSpider.GetComponent<FD_Enemy>(), 40, FDEnemyType.BunkerSpider));
+            enemyList.Add(new FD_EnemyWeight(prefabLootBug.GetComponent<FD_Enemy>(), 60, FDEnemyType.LootBug));
+            enemyList.Add(new FD_EnemyWeight(prefabSnareFlea.GetComponent<FD_Enemy>(), 10, FDEnemyType.SnareFlea));
 
             levels.Add(new FD_Level(lvlIndex, 5.5f, 50, .75f, enemyList.ToList()));
             lvlIndex++;
             enemyList.Clear();
 
-            enemyList.Add(new FD_EnemyWeight(prefabThumper, 90, FDEnemyType.Thumper));
-            enemyList.Add(new FD_EnemyWeight(prefabBunkerSpider, 40, FDEnemyType.BunkerSpider));
-            enemyList.Add(new FD_EnemyWeight(prefabLootBug, 60, FDEnemyType.LootBug));
-            enemyList.Add(new FD_EnemyWeight(prefabSnareFlea, 40, FDEnemyType.SnareFlea));
-            enemyList.Add(new FD_EnemyWeight(prefabBracken, 10, FDEnemyType.Bracken));
+            enemyList.Add(new FD_EnemyWeight(prefabThumper.GetComponent<FD_Enemy>(), 90, FDEnemyType.Thumper));
+            enemyList.Add(new FD_EnemyWeight(prefabBunkerSpider.GetComponent<FD_Enemy>(), 40, FDEnemyType.BunkerSpider));
+            enemyList.Add(new FD_EnemyWeight(prefabLootBug.GetComponent<FD_Enemy>(), 60, FDEnemyType.LootBug));
+            enemyList.Add(new FD_EnemyWeight(prefabSnareFlea.GetComponent<FD_Enemy>(), 40, FDEnemyType.SnareFlea));
+            enemyList.Add(new FD_EnemyWeight(prefabBracken.GetComponent<FD_Enemy>(), 10, FDEnemyType.Bracken));
 
             levels.Add(new FD_Level(lvlIndex, 6f, 60, .75f, enemyList.ToList()));
             lvlIndex++;
             enemyList.Clear();
 
-            enemyList.Add(new FD_EnemyWeight(prefabThumper, 90, FDEnemyType.Thumper));
-            enemyList.Add(new FD_EnemyWeight(prefabBunkerSpider, 40, FDEnemyType.BunkerSpider));
-            enemyList.Add(new FD_EnemyWeight(prefabLootBug, 60, FDEnemyType.LootBug));
-            enemyList.Add(new FD_EnemyWeight(prefabSnareFlea, 40, FDEnemyType.SnareFlea));
-            enemyList.Add(new FD_EnemyWeight(prefabBracken, 20, FDEnemyType.Bracken));
+            enemyList.Add(new FD_EnemyWeight(prefabThumper.GetComponent<FD_Enemy>(), 90, FDEnemyType.Thumper));
+            enemyList.Add(new FD_EnemyWeight(prefabBunkerSpider.GetComponent<FD_Enemy>(), 40, FDEnemyType.BunkerSpider));
+            enemyList.Add(new FD_EnemyWeight(prefabLootBug.GetComponent<FD_Enemy>(), 60, FDEnemyType.LootBug));
+            enemyList.Add(new FD_EnemyWeight(prefabSnareFlea.GetComponent<FD_Enemy>(), 40, FDEnemyType.SnareFlea));
+            enemyList.Add(new FD_EnemyWeight(prefabBracken.GetComponent<FD_Enemy>(), 20, FDEnemyType.Bracken));
 
             levels.Add(new FD_Level(lvlIndex, 6.5f, 80, .75f, enemyList.ToList()));
             lvlIndex++;
@@ -410,6 +397,28 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             if (playerState != FDPlayerState.Latched && playerState != FDPlayerState.Hiding && playerState != FDPlayerState.Dead)
             {
                 playerState = FDPlayerState.Walking;
+            }
+            if (IsOwner)
+            {
+                DestroyEnemyClientRpc();
+            }
+        }
+
+        [ServerRpc]
+        public void DestroyEnemyServerRpc()
+        {
+            if(currentEnemy != null)
+            {
+                DestroyEnemy();
+            }
+        }
+
+        [ClientRpc]
+        public void DestroyEnemyClientRpc()
+        {
+            if (!IsOwner && currentEnemy)
+            {
+                DestroyEnemy();
             }
         }
 
@@ -643,12 +652,12 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             else
             {
                 FD_EnemyWeight[] enemyList = {
-                new FD_EnemyWeight(prefabThumper, 90, FDEnemyType.Thumper),
-                new FD_EnemyWeight(prefabBunkerSpider, 40, FDEnemyType.BunkerSpider),
-                new FD_EnemyWeight(prefabLootBug, 60, FDEnemyType.LootBug),
-                new FD_EnemyWeight(prefabSnareFlea, 40, FDEnemyType.SnareFlea),
-                new FD_EnemyWeight(prefabBracken, 20, FDEnemyType.Bracken),
-                new FD_EnemyWeight(prefabNutcracker, 20, FDEnemyType.Nutcracker)
+                new FD_EnemyWeight(prefabThumper.GetComponent < FD_Enemy >(), 90, FDEnemyType.Thumper),
+                new FD_EnemyWeight(prefabBunkerSpider.GetComponent < FD_Enemy >(), 40, FDEnemyType.BunkerSpider),
+                new FD_EnemyWeight(prefabLootBug.GetComponent < FD_Enemy >(), 60, FDEnemyType.LootBug),
+                new FD_EnemyWeight(prefabSnareFlea.GetComponent < FD_Enemy >(), 40, FDEnemyType.SnareFlea),
+                new FD_EnemyWeight(prefabBracken.GetComponent < FD_Enemy >(), 20, FDEnemyType.Bracken),
+                new FD_EnemyWeight(prefabNutcracker.GetComponent < FD_Enemy >(), 20, FDEnemyType.Nutcracker)
             };
                 levels.Add(new FD_Level(levelIndex, gameSpeed + gameSpeedIncrement, 100, .75f, enemyList.ToList()));
             }
@@ -889,6 +898,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
                 if (rand <= cumulativeWeight)
                 {
                     SpawnEnemyServerRpc(currentEnemyList[i].type.ToString(), distance);
+                    //SpawnEnemy(prefabThumper.GetComponent<FD_Enemy>(), distance);
                     return;
                 }
             }
@@ -904,11 +914,12 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             {
 
                 //Debug.Log("PintoBoy FD: Spawning " + prefab.name);
-                FD_Enemy enemy = Instantiate(prefab, trEnemySpawn);
+                FD_Enemy enemy = Instantiate(prefab, Vector3.zero, Quaternion.identity, trEnemySpawn).GetComponent<FD_Enemy>();
                 enemy.distance = distance;
                 enemy.game = this;
                 enemy.dead.AddListener(DestroyEnemy);
 
+                enemy.animator.SetFloat("Speed", gameSpeed / startingGameSpeed);
                 currentEnemy = enemy;
                 return enemy;
             }
@@ -946,26 +957,26 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             switch (enemyType)
             {
                 case FDEnemyType.Bracken:
-                    newPrefab = prefabBracken;
+                    newPrefab = Pinto_ModBase.fdBrackenPrefab.GetComponent<FD_Enemy>();
                     break;
                 case FDEnemyType.BunkerSpider:
-                    newPrefab = prefabBunkerSpider;
+                    newPrefab = Pinto_ModBase.fdBunkerSpiderPrefab.GetComponent<FD_Enemy>();
                     break;
                 case FDEnemyType.LootBug:
-                    newPrefab = prefabLootBug;
+                    newPrefab = Pinto_ModBase.fdLootBugPrefab.GetComponent<FD_Enemy>();
                     break;
                 case FDEnemyType.Nutcracker:
-                    newPrefab = prefabNutcracker;
+                    newPrefab = Pinto_ModBase.fdNutcrackerPrefab.GetComponent<FD_Enemy>();
                     break;
                 case FDEnemyType.SnareFlea:
-                    newPrefab = prefabSnareFlea;
+                    newPrefab = Pinto_ModBase.fdSnareFleaPrefab.GetComponent<FD_Enemy>();
                     break;
                 case FDEnemyType.Thumper:
-                    newPrefab = prefabThumper;
+                    newPrefab = Pinto_ModBase.fdThumperPrefab.GetComponent<FD_Enemy>();
                     break;
                 default:
                     Debug.Log("PintoBoy FD: EnumToEnemy failed. Results:"+enemyType.ToString()+". Spawning Thumper");
-                    newPrefab = prefabThumper;
+                    newPrefab = Pinto_ModBase.fdThumperPrefab.GetComponent<FD_Enemy>();
                     break;
             }
             return newPrefab;

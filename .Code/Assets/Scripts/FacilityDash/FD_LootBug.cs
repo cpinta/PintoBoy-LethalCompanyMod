@@ -14,11 +14,18 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         void Awake()
         {
             Initialize();
+            spriteRenderer.enabled = true;
         }
 
         void LateUpdate()
         {
             base.GameUpdate();
+            if(game != null && leaveTimer == 0)
+            {
+                leaveTimer = 3 / (game.gameSpeed / game.startingGameSpeed);
+            }
+
+
             if (leaveTimer > 0)
             {
                 if (!aggressive)
@@ -39,7 +46,6 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         {
             base.Initialize();
 
-            leaveTimer = 3 / (game.gameSpeed / game.startingGameSpeed);
             EnemyName = "Loot Bug";
             Health = 2;
             AttackSpeeed = 2;

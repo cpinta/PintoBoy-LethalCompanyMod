@@ -24,8 +24,8 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
             EnemyName = "Thumper";
             Health = 4;
-            AttackSpeeed = 5; 
-            acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/thumper yell");
+            AttackSpeeed = 5;
+            //acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/thumper yell");
         }
 
         void Update()

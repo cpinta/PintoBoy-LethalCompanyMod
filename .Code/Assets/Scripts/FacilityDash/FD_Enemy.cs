@@ -12,7 +12,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 {
     public abstract class FD_Enemy : MonoBehaviour
     {
-        protected Animator animator;
+        public Animator animator;
         protected SpriteRenderer spriteRenderer;
         public FacilityDash game;
 
@@ -74,7 +74,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
         float[] sizes = { 1f, 0.8f, 0.6f, 0.4f, 0.3f };
 
-        AudioClip acDefaultAttack;
+        public AudioClip acDefaultAttack;
 
         void Awake()
         {
@@ -82,18 +82,24 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
         public virtual void Initialize()
         {
-            game = transform.parent.parent.parent.GetComponent<FacilityDash>();
+            Debug.Log("Initializing FD_Enemy");
+            Debug.Log("FD_Enemy: game: "+game);
             animator = transform.GetComponent<Animator>();
+            Debug.Log("FD_Enemy: animator: " + animator);
             spriteRenderer = GetComponent<SpriteRenderer>();
+            Debug.Log("FD_Enemy: spriteRenderer: " + spriteRenderer);
 
             spriteRenderer.enabled = false;
-            animator.SetFloat(strSpeedString, game.gameSpeed / game.startingGameSpeed);
-
-            acDefaultAttack = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "67_knock (Player hit)");
+            Debug.Log("FD_Enemy: spriteRender false");
         }
 
         protected void GameUpdate()
         {
+            if(game == null)
+            {
+                return;
+            }
+
             if (game.gameState == FDState.Lost)
             {
                 return;

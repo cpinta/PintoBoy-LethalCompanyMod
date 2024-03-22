@@ -50,8 +50,6 @@ public class PintoBoy : GrabbableObject
 
     public bool pressButton = false;
 
-    public NetworkVariable<int> screenId = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-
     bool spawnScreen = true;
 
     Material matRenderTex = null;
@@ -382,7 +380,6 @@ public class PintoBoy : GrabbableObject
         for (int i = currentId; i < boys.Length + currentId; i++)
         {
             Debug.Log("SpawnScreenServerRpc Called");
-            boys[i].screenId.Value = i;
         }//
         Pinto_ModBase.Instance.Value.currentId += boys.Length;
         SpawnScreenClientRpc();

@@ -23,7 +23,6 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         {
             base.Initialize();
 
-            leaveTimer = 3 / (game.gameSpeed / game.startingGameSpeed);
             EnemyName = "Nutcracker";
             Health = 5;
             AttackSpeeed = 2.5f;
@@ -38,6 +37,11 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         void LateUpdate()
         {
             base.GameUpdate();
+
+            if (game != null && leaveTimer == 0)
+            {
+                leaveTimer = 3 / (game.gameSpeed / game.startingGameSpeed);
+            }
             if (leaveTimer > 0)
             {
                 if (!aggressive)

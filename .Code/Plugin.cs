@@ -22,6 +22,7 @@ using PintoMod.Assets.Scripts.LethalJumpany;
 using PintoMod.Assets.Scripts.FacilityDash;
 using UnityEngine.UIElements.Layout;
 using UnityEngine.InputSystem;
+using System.ComponentModel;
 
 namespace PintoMod
 {
@@ -57,12 +58,12 @@ namespace PintoMod
         public static Item itemPintoBoyFD;
         public static Item itemFDCartridgePrefab;
         public static FacilityDash gameFacilityDashPrefab;
-        public static FD_Bracken fdBrackenPrefab;
-        public static FD_BunkerSpider fdBunkerSpiderPrefab;
-        public static FD_LootBug fdLootBugPrefab;
-        public static FD_Nutcracker fdNutcrackerPrefab;
-        public static FD_SnareFlea fdSnareFleaPrefab;
-        public static FD_Thumper fdThumperPrefab;
+        public static GameObject fdBrackenPrefab;
+        public static GameObject fdBunkerSpiderPrefab;
+        public static GameObject fdLootBugPrefab;
+        public static GameObject fdNutcrackerPrefab;
+        public static GameObject fdSnareFleaPrefab;
+        public static GameObject fdThumperPrefab;
 
         public int currentId = 0;
 
@@ -116,19 +117,17 @@ namespace PintoMod
 
         private void SetVariables()
         {
-            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(ljSpiderPrefab);
-            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(ljSlimePrefab);
-            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(ljLootbugPrefab);
+            //LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(ljSpiderPrefab);
+            //LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(ljSlimePrefab);
+            //LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(ljLootbugPrefab);
             //LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(screenPrefab);
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(itemPintoBoyPrefab.spawnPrefab);
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(itemPintoBoyLJ.spawnPrefab);
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(itemPintoBoyFD.spawnPrefab);
 
-            //Items.RegisterScrap(itemPintoBoyPrefab, (int) config_PintoboyRarity.Value, Levels.LevelTypes.All);
-            Items.RegisterScrap(itemPintoBoyLJ, (int)config_PintoboyRarity.Value, Levels.LevelTypes.All);
+            //Items.RegisterScrap(itemPintoBoyLJ, (int)config_PintoboyRarity.Value, Levels.LevelTypes.All);
             //Items.RegisterScrap(itemPintoBoyFD, (int)config_PintoboyRarity.Value, Levels.LevelTypes.All);
-            //Items.RegisterScrap(itemLJCartridgePrefab, 100, Levels.LevelTypes.All);
-            //Items.RegisterScrap(itemFDCartridgePrefab, 100, Levels.LevelTypes.All);
+            Items.RegisterScrap(itemPintoBoyFD, 1000, Levels.LevelTypes.All);
         }
 
         private void LoadBundle()
@@ -176,23 +175,55 @@ namespace PintoMod
 
             // Enemies
 
-            fdBrackenPrefab = LoadFDPrefab(new FD_Bracken(), "bracken").GetComponent<FD_Bracken>();
-            if (fdBrackenPrefab == null) throw new Exception("Failed to load fdBrackenPrefab Prefab!");
 
-            fdBunkerSpiderPrefab = LoadFDPrefab(new FD_BunkerSpider(), "bunker spider").GetComponent<FD_BunkerSpider>();
-            if (fdBunkerSpiderPrefab == null) throw new Exception("Failed to load fdBunkerSpiderPrefab Prefab!");
+            string prefabName = "";
 
-            fdLootBugPrefab = LoadFDPrefab(new FD_LootBug(), "loot bug").GetComponent<FD_LootBug>();
-            if (fdLootBugPrefab == null) throw new Exception("Failed to load fdLootBugPrefab Prefab!");
 
-            fdSnareFleaPrefab = LoadFDPrefab(new FD_SnareFlea(), "snare flea").GetComponent<FD_SnareFlea>();
-            if (fdSnareFleaPrefab == null) throw new Exception("Failed to load fdSnareFleaPrefab Prefab!");
+            AudioClip acDefaultAttack = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "67_knock (Player hit)");
 
-            fdThumperPrefab = LoadFDPrefab(new FD_Thumper(), "thumper").GetComponent<FD_Thumper>();
-            if (fdThumperPrefab == null) throw new Exception("Failed to load fdThumperPrefab Prefab!");
+            // Bracken
+            prefabName = "Bracken";
+            fdBrackenPrefab = pintoBundle.LoadAsset<GameObject>($"{fdSpritesPath}/{prefabName}.prefab");
+            if (fdBrackenPrefab == null) throw new Exception("Failed to load " + prefabName + " Prefab Object!");
+            Debug.Log($"Loading {prefabName} Prefab");
+            fdBrackenPrefab.AddComponent<FD_Bracken>();
 
-            fdNutcrackerPrefab = LoadFDPrefab(new FD_Nutcracker(), "nutcracker").GetComponent<FD_Nutcracker>();
-            if (fdNutcrackerPrefab == null) throw new Exception("Failed to load fdNutcrackerPrefab Prefab!");
+            // Bunker Spider
+            prefabName = "Bunker Spider";
+            fdBunkerSpiderPrefab = pintoBundle.LoadAsset<GameObject>($"{fdSpritesPath}/{prefabName}.prefab");
+            if (fdBunkerSpiderPrefab == null) throw new Exception("Failed to load " + prefabName + " Prefab Object!");
+            Debug.Log($"Loading {prefabName} Prefab");
+            fdBunkerSpiderPrefab.AddComponent<FD_BunkerSpider>();
+
+            // Loot Bug
+            prefabName = "Loot Bug";
+            fdLootBugPrefab = pintoBundle.LoadAsset<GameObject>($"{fdSpritesPath}/{prefabName}.prefab");
+            if (fdLootBugPrefab == null) throw new Exception("Failed to load " + prefabName + " Prefab Object!");
+            Debug.Log($"Loading {prefabName} Prefab");
+            fdLootBugPrefab.AddComponent<FD_LootBug>();
+
+            // Snare Flea
+            prefabName = "Snare Flea";
+            fdSnareFleaPrefab = pintoBundle.LoadAsset<GameObject>($"{fdSpritesPath}/{prefabName}.prefab");
+            if (fdSnareFleaPrefab == null) throw new Exception("Failed to load " + prefabName + " Prefab Object!");
+            Debug.Log($"Loading {prefabName} Prefab");
+            fdSnareFleaPrefab.AddComponent<FD_SnareFlea>();
+
+            // Thumper
+            prefabName = "Thumper";
+            fdThumperPrefab = pintoBundle.LoadAsset<GameObject>($"{fdSpritesPath}/{prefabName}.prefab");
+            if (fdThumperPrefab == null) throw new Exception("Failed to load " + prefabName + " Prefab Object!");
+            Debug.Log($"Loading {prefabName} Prefab");
+            FD_Thumper thumper = fdThumperPrefab.AddComponent<FD_Thumper>();
+            thumper.acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/thumper yell");
+            thumper.acDefaultAttack = acDefaultAttack;
+
+            // Nutcracker
+            prefabName = "Nutcracker";
+            fdNutcrackerPrefab = pintoBundle.LoadAsset<GameObject>($"{fdSpritesPath}/{prefabName}.prefab");
+            if (fdNutcrackerPrefab == null) throw new Exception("Failed to load " + prefabName + " Prefab Object!");
+            Debug.Log($"Loading {prefabName} Prefab");
+            fdNutcrackerPrefab.AddComponent<FD_Nutcracker>();
 
             itemPintoBoyLJ = pintoBundle.LoadAsset<Item>($"{basePath}/pintoboy lj.asset");
             if (itemPintoBoyLJ == null) throw new Exception("Failed to load Pinto LJ Item!");
@@ -202,9 +233,15 @@ namespace PintoMod
 
             itemPintoBoyFD = pintoBundle.LoadAsset<Item>($"{basePath}/pintoboy fd.asset");
             if (itemPintoBoyFD == null) throw new Exception("Failed to load Pinto FD Item!");
-            PintoBoy pintoBoyFD = itemPintoBoyFD.spawnPrefab.AddComponent<FacilityDash>();
+            FacilityDash pintoBoyFD = itemPintoBoyFD.spawnPrefab.AddComponent<FacilityDash>();
             if (pintoBoyFD == null) throw new Exception("Failed to load Pinto Boy!");
             pintoBoyFD.itemProperties = itemPintoBoyFD;
+            pintoBoyFD.prefabBracken = fdBrackenPrefab;
+            pintoBoyFD.prefabBunkerSpider = fdBunkerSpiderPrefab;
+            pintoBoyFD.prefabLootBug = fdLootBugPrefab;
+            pintoBoyFD.prefabNutcracker = fdNutcrackerPrefab;
+            pintoBoyFD.prefabSnareFlea = fdSnareFleaPrefab;
+            pintoBoyFD.prefabThumper = fdThumperPrefab;
         }
 
         GameObject LoadFDPrefab(MonoBehaviour component, string prefabName)
