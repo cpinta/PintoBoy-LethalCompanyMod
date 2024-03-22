@@ -16,10 +16,16 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         void Awake()
         {
             Initialize();
+        }
+
+        public override void Initialize()
+        {
+            base.Initialize();
+
             EnemyName = "Thumper";
             Health = 4;
-            AttackSpeeed = 5;
-
+            AttackSpeeed = 5; 
+            acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/thumper yell");
         }
 
         void Update()

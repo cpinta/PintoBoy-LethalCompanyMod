@@ -17,10 +17,15 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         void Awake()
         {
             Initialize();
-            EnemyName = "Spider";
+            acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/spider sound");
+        }
+
+        public override void Initialize()
+        {
+            base.Initialize();
+            EnemyName = "BunkerSpider";
             Health = 5;
             AttackSpeeed = 6;
-
         }
 
         void Update()

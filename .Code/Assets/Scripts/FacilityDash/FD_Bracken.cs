@@ -9,7 +9,6 @@ namespace PintoMod.Assets.Scripts.FacilityDash
     {
         float leaveTimerMin = 1;
         float leaveTimerMax = 2;
-        float leaveTime = 0;
 
         float maxStartingTime = 2;
         float staringTimer = 0;
@@ -18,8 +17,6 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         float postAggressionTimerMax = 2;
         float postAggressionTimerMultiplier = 3f;
         float postAggressionScaleMultiplier = .2f;
-
-        float postAttackedAttackSpeed = 2;
 
         public bool aggressive = false;
         bool oldAgressive = false;
@@ -30,14 +27,21 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         void Awake()
         {
             Initialize();
+
+            animator = GetComponent<Animator>();
+        }
+
+        public override void Initialize()
+        {
+            base.Initialize();
+
             leaveTimer = Random.Range(leaveTimerMin, leaveTimerMax);
             EnemyName = "Bracken";
             Health = 6;
             AttackSpeeed = 3f;
             AttackDamage = 5;
-
-            animator = GetComponent<Animator>();
-
+            acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/Bracken found");
+            acAngered = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/Bracken Angered");
         }
 
         void Update()

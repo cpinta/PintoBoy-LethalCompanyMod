@@ -21,6 +21,7 @@ using PintoMod.Assets.Scripts;
 using PintoMod.Assets.Scripts.LethalJumpany;
 using PintoMod.Assets.Scripts.FacilityDash;
 using UnityEngine.UIElements.Layout;
+using UnityEngine.InputSystem;
 
 namespace PintoMod
 {
@@ -115,41 +116,19 @@ namespace PintoMod
 
         private void SetVariables()
         {
-
-            itemPintoBoyPrefab.canBeGrabbedBeforeGameStart = true;
-            itemPintoBoyPrefab.isScrap = true;
-            itemPintoBoyPrefab.canBeInspected = true;
-            itemPintoBoyPrefab.allowDroppingAheadOfPlayer = true;
-            itemPintoBoyPrefab.rotationOffset = new Vector3(0, 0, 0);
-            itemPintoBoyPrefab.positionOffset = new Vector3(0, 0, 0);
-            itemPintoBoyPrefab.restingRotation = new Vector3(-30, 0, 0);
-            itemPintoBoyPrefab.verticalOffset = -0.1f;
-
-            //Battery
-            itemPintoBoyPrefab.requiresBattery = true;
-            itemPintoBoyPrefab.batteryUsage = 600;
-
-            itemPintoBoyPrefab.syncInteractLRFunction = true;
-
-
-
-
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(ljSpiderPrefab);
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(ljSlimePrefab);
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(ljLootbugPrefab);
             //LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(screenPrefab);
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(itemPintoBoyPrefab.spawnPrefab);
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(itemPintoBoyLJ.spawnPrefab);
-            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(itemLJCartridgePrefab.spawnPrefab);
-            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(itemFDCartridgePrefab.spawnPrefab);
+            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(itemPintoBoyFD.spawnPrefab);
 
             //Items.RegisterScrap(itemPintoBoyPrefab, (int) config_PintoboyRarity.Value, Levels.LevelTypes.All);
-            //Items.RegisterScrap(itemPintoBoyLJ, (int)config_PintoboyRarity.Value, Levels.LevelTypes.All);
-            Items.RegisterScrap(itemPintoBoyFD, (int)config_PintoboyRarity.Value, Levels.LevelTypes.All);
+            Items.RegisterScrap(itemPintoBoyLJ, (int)config_PintoboyRarity.Value, Levels.LevelTypes.All);
+            //Items.RegisterScrap(itemPintoBoyFD, (int)config_PintoboyRarity.Value, Levels.LevelTypes.All);
             //Items.RegisterScrap(itemLJCartridgePrefab, 100, Levels.LevelTypes.All);
             //Items.RegisterScrap(itemFDCartridgePrefab, 100, Levels.LevelTypes.All);
-
-            Debug.Log("Scrapitems: " + Items.scrapItems.Count + ": " + Items.scrapItems[0].modName + " rarity:" + Items.scrapItems[0].rarity);
         }
 
         private void LoadBundle()
@@ -171,18 +150,6 @@ namespace PintoMod
             matOnScreen = pintoBundle.LoadAsset<Material>($"Screen Mat.mat");
             if (matOnScreen == null) throw new Exception("Failed to load Screen Mat material!");
 
-
-            Debug.Log("milestone 1");
-            // Lethal Jumpany prefabs
-            // Cartridge
-            itemLJCartridgePrefab = pintoBundle.LoadAsset<Item>($"{ljBasePath}/lethaljumpany.asset");
-            if (itemLJCartridgePrefab == null) throw new Exception("Failed to load LethalJumpany Item!");
-            LJCartridge ljCart = itemLJCartridgePrefab.spawnPrefab.AddComponent<LJCartridge>();
-            ljCart.itemProperties = itemLJCartridgePrefab;
-
-            //gameLethalJumpanyPrefab = pintoBundle.LoadAsset<GameObject>($"{ljBasePath}/game.prefab").AddComponent<LethalJumpany>();
-            //if (gameLethalJumpanyPrefab == null) throw new Exception($"Failed to load gameLethalJumpanyPrefab at {ljBasePath}/2d.prefab");
-            //ljCart.gamePrefab = gameLethalJumpanyPrefab;
 
             Debug.Log("milestone 3");
             // Enemies
@@ -207,103 +174,37 @@ namespace PintoMod
 
             Debug.Log("milestone 2");
 
-            itemFDCartridgePrefab = pintoBundle.LoadAsset<Item>($"{fdBasePath}/facilitydash.asset");
-            if (itemFDCartridgePrefab == null) throw new Exception("Failed to load Facility Dash Item!");
-            FDCartridge fdCart = itemFDCartridgePrefab.spawnPrefab.AddComponent<FDCartridge>();
-            fdCart.itemProperties = itemFDCartridgePrefab;
-
             // Enemies
 
             fdBrackenPrefab = LoadFDPrefab(new FD_Bracken(), "bracken").GetComponent<FD_Bracken>();
             if (fdBrackenPrefab == null) throw new Exception("Failed to load fdBrackenPrefab Prefab!");
-            fdBrackenPrefab.acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/Bracken found");
-            fdBrackenPrefab.acAngered = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/Bracken Angered");
 
             fdBunkerSpiderPrefab = LoadFDPrefab(new FD_BunkerSpider(), "bunker spider").GetComponent<FD_BunkerSpider>();
             if (fdBunkerSpiderPrefab == null) throw new Exception("Failed to load fdBunkerSpiderPrefab Prefab!");
-            fdBunkerSpiderPrefab.acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/spider sound");
 
             fdLootBugPrefab = LoadFDPrefab(new FD_LootBug(), "loot bug").GetComponent<FD_LootBug>();
             if (fdLootBugPrefab == null) throw new Exception("Failed to load fdLootBugPrefab Prefab!");
-            fdLootBugPrefab.acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/loot bug walk");
-            fdLootBugPrefab.acAngered = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/loot bug dead");
 
             fdSnareFleaPrefab = LoadFDPrefab(new FD_SnareFlea(), "snare flea").GetComponent<FD_SnareFlea>();
             if (fdSnareFleaPrefab == null) throw new Exception("Failed to load fdSnareFleaPrefab Prefab!");
-            fdSnareFleaPrefab.acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/Snare Flea walk");
-            fdSnareFleaPrefab.acAngered = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/Snare Flea on head");
 
             fdThumperPrefab = LoadFDPrefab(new FD_Thumper(), "thumper").GetComponent<FD_Thumper>();
             if (fdThumperPrefab == null) throw new Exception("Failed to load fdThumperPrefab Prefab!");
-            fdThumperPrefab.acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/thumper yell");
 
             fdNutcrackerPrefab = LoadFDPrefab(new FD_Nutcracker(), "nutcracker").GetComponent<FD_Nutcracker>();
             if (fdNutcrackerPrefab == null) throw new Exception("Failed to load fdNutcrackerPrefab Prefab!");
-            fdNutcrackerPrefab.acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/nutcracker entrance");
-            fdNutcrackerPrefab.acAngered = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/nutcracker mad");
-            fdNutcrackerPrefab.acShotgun = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/shotgun");
-
-
 
             itemPintoBoyLJ = pintoBundle.LoadAsset<Item>($"{basePath}/pintoboy lj.asset");
             if (itemPintoBoyLJ == null) throw new Exception("Failed to load Pinto LJ Item!");
-            PintoBoy pintoBoyLJ = itemPintoBoyLJ.spawnPrefab.AddComponent<PintoBoy>();
+            PintoBoy pintoBoyLJ = itemPintoBoyLJ.spawnPrefab.AddComponent<LethalJumpany>();
             if (pintoBoyLJ == null) throw new Exception("Failed to load Pinto Boy!");
-            pintoBoyLJ.itemProperties = itemPintoBoyPrefab;
-            LJCartridge cartLJ = pintoBoyLJ.transform.Find("Model/Cartridge/Cartridge").gameObject.AddComponent<LJCartridge>();
-            GetChildRecursive(pintoBoyLJ.transform.Find("2D Cam").gameObject, 1);
-            LethalJumpany gameLJ = pintoBoyLJ.transform.Find("2D Cam/2D Scene/Game").gameObject.AddComponent<LethalJumpany>();
-            gameLJ.cartridge = cartLJ;
-            gameLJ.pintoBoy = pintoBoyLJ;
-            cartLJ.game = gameLJ;
-            cartLJ.pintoBoy = pintoBoyLJ;
-            gameLJ.transform.localPosition = Vector3.zero;
-            gameLJ.transform.localRotation = Quaternion.identity;
-            gameLJ.transform.localScale = Vector3.one;
-            cartLJ.itemProperties = itemLJCartridgePrefab;
-            pintoBoyLJ.currentGame = gameLJ;
-            cartLJ.CartridgeAwake();
+            pintoBoyLJ.itemProperties = itemPintoBoyLJ;
 
             itemPintoBoyFD = pintoBundle.LoadAsset<Item>($"{basePath}/pintoboy fd.asset");
             if (itemPintoBoyFD == null) throw new Exception("Failed to load Pinto FD Item!");
-            PintoBoy pintoBoyFD = itemPintoBoyFD.spawnPrefab.AddComponent<PintoBoy>();
+            PintoBoy pintoBoyFD = itemPintoBoyFD.spawnPrefab.AddComponent<FacilityDash>();
             if (pintoBoyFD == null) throw new Exception("Failed to load Pinto Boy!");
-            pintoBoyFD.itemProperties = itemPintoBoyPrefab;
-            FDCartridge cartFD = pintoBoyFD.transform.Find("Model/Cartridge/Cartridge").gameObject.AddComponent<FDCartridge>();
-            GetChildRecursive(pintoBoyFD.transform.Find("2D Cam").gameObject, 1);
-            FacilityDash gameFD = pintoBoyFD.transform.Find("2D Cam/2D Scene/Game").gameObject.AddComponent<FacilityDash>();
-            gameFD.cartridge = cartFD;
-            gameFD.pintoBoy = pintoBoyFD;
-            cartFD.game = gameFD;
-            cartFD.pintoBoy = pintoBoyFD;
-            gameFD.transform.localPosition = Vector3.zero;
-            gameFD.transform.localRotation = Quaternion.identity;
-            gameFD.transform.localScale = Vector3.one;
-            gameFD.prefabBracken = fdBrackenPrefab;
-            gameFD.prefabBunkerSpider = fdBunkerSpiderPrefab;
-            gameFD.prefabLootBug = fdLootBugPrefab;
-            gameFD.prefabNutcracker = fdNutcrackerPrefab;
-            gameFD.prefabSnareFlea = fdSnareFleaPrefab;
-            gameFD.prefabThumper = fdThumperPrefab;
-            cartFD.itemProperties = itemFDCartridgePrefab;
-            pintoBoyFD.currentGame = gameFD;
-            cartFD.CartridgeAwake();
-        }
-
-
-        private void GetChildRecursive(GameObject obj, int level)
-        {
-            if (null == obj)
-                return;
-
-            foreach (Transform child in obj.transform)
-            {
-                if (null == child)
-                    continue;
-                //child.gameobject contains the current child you can do whatever you want like add it to an array
-                Debug.Log(String.Concat(Enumerable.Repeat("*", level)) + child.gameObject.name);
-                GetChildRecursive(child.gameObject, level + 1);
-            }
+            pintoBoyFD.itemProperties = itemPintoBoyFD;
         }
 
         GameObject LoadFDPrefab(MonoBehaviour component, string prefabName)

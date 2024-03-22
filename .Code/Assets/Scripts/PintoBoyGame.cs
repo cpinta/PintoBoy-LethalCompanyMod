@@ -8,7 +8,6 @@ namespace PintoMod.Assets.Scripts
     public abstract class PintoBoyGame : MonoBehaviour
     {
         public PintoBoy pintoBoy;
-        public PintoBoyCartridge cartridge;
         public bool isActive;
         public bool isPaused;
         public bool isInGame;
@@ -34,35 +33,37 @@ namespace PintoMod.Assets.Scripts
             wasInitialized = true;
         }
 
-        public virtual void InsertedIntoPintoBoy(PintoBoy pintoBoy, Transform gameRoot, PintoBoyCartridge cartridge)
-        {
-            try
-            {
-                EnableChildren();
-                Debug.Log("Inserted Game");
-                this.pintoBoy = pintoBoy;
-                this.cartridge = cartridge;
-                transform.parent = gameRoot;
-                transform.localPosition = Vector3.zero;
-                transform.localRotation = Quaternion.identity;
-                transform.localScale = Vector3.one;
-                if (!wasInitialized)
-                {
-                    Debug.Log("Initializing Game that was Inserted: "+ gameRoot.name);
+        //unsued
+        //public virtual void InsertedIntoPintoBoy(PintoBoy pintoBoy, Transform gameRoot, PintoBoyCartridge cartridge)
+        //{
+        //    try
+        //    {
+        //        EnableChildren();
+        //        Debug.Log("Inserted Game");
+        //        this.pintoBoy = pintoBoy;
+        //        this.cartridge = cartridge;
+        //        transform.parent = gameRoot;
+        //        transform.localPosition = Vector3.zero;
+        //        transform.localRotation = Quaternion.identity;
+        //        transform.localScale = Vector3.one;
+        //        if (!wasInitialized)
+        //        {
+        //            Debug.Log("Initializing Game that was Inserted: "+ gameRoot.name);
                     
-                    InitializeObjects(transform);
-                }
-                else
-                {
-                    Debug.Log("already initialized??");
-                }
-            }
-            catch(Exception e)
-            {
-                Debug.Log($"{e}: PintoBoyGame.InsertedIntoPintoBoy() failed: {pintoBoy}");
-            }
-        }
+        //            InitializeObjects(transform);
+        //        }
+        //        else
+        //        {
+        //            Debug.Log("already initialized??");
+        //        }
+        //    }
+        //    catch(Exception e)
+        //    {
+        //        Debug.Log($"{e}: PintoBoyGame.InsertedIntoPintoBoy() failed: {pintoBoy}");
+        //    }
+        //}
 
+        //unsued
         public virtual void TakenOutPintoBoy()
         {
             pintoBoy = null;

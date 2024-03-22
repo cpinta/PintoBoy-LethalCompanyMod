@@ -16,7 +16,6 @@ public class LJEnemy : NetworkBehaviour
 {
     public PintoEnemyType enemyType;
     public float speed = 5f;
-    float startX;
     float distance;
     public LethalJumpany game;
     public UnityEvent<LJEnemy> onDeath = new UnityEvent<LJEnemy>();
@@ -42,7 +41,7 @@ public class LJEnemy : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!game.pintoBoy.isBeingUsed)
+        if (!game.isBeingUsed)
         {
             return;
         }

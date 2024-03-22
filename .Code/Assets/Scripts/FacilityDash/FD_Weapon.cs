@@ -10,13 +10,10 @@ namespace PintoMod.Assets.Scripts.FacilityDash
     {
         Animator movementAnim;
         FD_Shovel shovel;
-        Animator weaponAnim;
         string strDeadString = "Dead";
         public UnityEvent hit;
         bool isDead;
         float startYHeight = 0;
-        float deadYHeight = -40;
-        float deathFallSpeed = 4;
         public UnityEvent dead;
 
         // Start is called before the first frame update

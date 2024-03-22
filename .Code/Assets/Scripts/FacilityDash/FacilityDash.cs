@@ -7,7 +7,9 @@ using System.Linq;
 using System.Xml.Linq;
 using TMPro;
 using Unity.Collections.LowLevel.Unsafe;
+using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace PintoMod.Assets.Scripts.FacilityDash
 {
@@ -36,15 +38,27 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         Exit = 1,
     }
 
+    public enum FDEnemyType
+    {
+        Bracken = 0,
+        BunkerSpider = 1,
+        LootBug = 2,
+        Nutcracker = 3,
+        SnareFlea = 4,
+        Thumper = 5,
+    }
+
     public class FD_EnemyWeight
     {
         public FD_Enemy enemy;
         public int weight;
+        public FDEnemyType type;
 
-        public FD_EnemyWeight(FD_Enemy enemy, int weight)
+        public FD_EnemyWeight(FD_Enemy enemy, int weight, FDEnemyType type)
         {
             this.enemy = enemy;
             this.weight = weight;
+            this.type = type;
         }
     }
 
@@ -66,13 +80,11 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         }
     }
 
-    public class FacilityDash : PintoBoyGame
+    public class FacilityDash : PintoBoy
     {
-        public FDCartridge fdCart;
-
         public FDState gameState;
         FDPlayerState _playerState;
-        public FDPlayerState playerState { get => _playerState; set { Debug.Log("playerState changed to " + value); _playerState = value; } }
+        public FDPlayerState playerState { get => _playerState; set { _playerState = value; } }
         public FDHallwayState hallwayState;
         public bool pressButton = false;
         public bool hideButton = false;
@@ -123,7 +135,6 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
         //Levels
         int levelIndex = 0;
-        bool inLevelTransition = false;
         List<FD_Level> levels = new List<FD_Level>();
 
         //Shovel
@@ -163,8 +174,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         int oldDistanceMod = 0;
         int highscore = 0;
         float currentFrameDistance = 0;     //gameSpeed * Time.deltaTime
-        float distanceTraveled = 0;         //distanceTraveled this level
-        float hallwayStateDistanceTraveled = 0; //distanceTraveled during the current FDHallwayState
+        //float distanceTraveled = 0;         //distanceTraveled this level
         float previousDistanceTraveled = 0; //distanceTraveled within the last levels combined
         float currentLevelDistanceGoal = 0; //distance needed to move on to the next level
         public float startingGameSpeed = 4;
@@ -191,7 +201,22 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
         private void Awake()
         {
-            Debug.Log("FD Awake");
+            PintoAwake();
+
+            prefabBracken = Pinto_ModBase.fdBrackenPrefab;
+            prefabBracken.enemyName = "Bracken";
+            prefabBunkerSpider = Pinto_ModBase.fdBunkerSpiderPrefab;
+            prefabBunkerSpider.enemyName = "Bunker Spider";
+            prefabLootBug = Pinto_ModBase.fdLootBugPrefab;
+            prefabLootBug.enemyName = "Loot Bug";
+            prefabNutcracker = Pinto_ModBase.fdNutcrackerPrefab;
+            prefabNutcracker.enemyName = "Nutcracker";
+            prefabSnareFlea = Pinto_ModBase.fdSnareFleaPrefab;
+            prefabSnareFlea.enemyName = "Snare Flea";
+            prefabThumper = Pinto_ModBase.fdThumperPrefab;
+            prefabThumper.enemyName = "Thumper";
+
+            Debug.Log("PintoBoy FD: FD Awake");
             mainmenuWaitTimer = mainmenuWaitTime;
 
             acNewHighscore = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "80_chaindone (highscore)");
@@ -207,7 +232,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
             acSnapNeck = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/Bracken snap neck");
 
-            Debug.Log("Loaded Audio.");
+            Debug.Log("PintoBoy FD: Loaded Audio.");
 
             //prefabBracken = Pinto_ModBase.fdBrackenPrefab;
             //prefabBunkerSpider = Pinto_ModBase.fdBunkerSpiderPrefab;
@@ -219,9 +244,9 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             gameState = FDState.MainMenu;
 
             List<FD_EnemyWeight> enemyList = new List<FD_EnemyWeight>();
-            enemyList.Add(new FD_EnemyWeight(prefabThumper, 100));
-            enemyList.Add(new FD_EnemyWeight(prefabBunkerSpider, 30));
-            enemyList.Add(new FD_EnemyWeight(prefabLootBug, 60));
+            enemyList.Add(new FD_EnemyWeight(prefabThumper, 100, FDEnemyType.Thumper));
+            enemyList.Add(new FD_EnemyWeight(prefabBunkerSpider, 30, FDEnemyType.BunkerSpider));
+            enemyList.Add(new FD_EnemyWeight(prefabLootBug, 60, FDEnemyType.LootBug));
             //enemyList.Add(new FD_EnemyWeight(prefabBracken, 500000000));
 
             int lvlIndex = 0;
@@ -229,30 +254,30 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             lvlIndex++;
             enemyList.Clear();
 
-            enemyList.Add(new FD_EnemyWeight(prefabThumper, 90));
-            enemyList.Add(new FD_EnemyWeight(prefabBunkerSpider, 40));
-            enemyList.Add(new FD_EnemyWeight(prefabLootBug, 60));
-            enemyList.Add(new FD_EnemyWeight(prefabSnareFlea, 10));
+            enemyList.Add(new FD_EnemyWeight(prefabThumper, 90, FDEnemyType.Thumper));
+            enemyList.Add(new FD_EnemyWeight(prefabBunkerSpider, 40, FDEnemyType.BunkerSpider));
+            enemyList.Add(new FD_EnemyWeight(prefabLootBug, 60, FDEnemyType.LootBug));
+            enemyList.Add(new FD_EnemyWeight(prefabSnareFlea, 10, FDEnemyType.SnareFlea));
 
             levels.Add(new FD_Level(lvlIndex, 5.5f, 50, .75f, enemyList.ToList()));
             lvlIndex++;
             enemyList.Clear();
 
-            enemyList.Add(new FD_EnemyWeight(prefabThumper, 90));
-            enemyList.Add(new FD_EnemyWeight(prefabBunkerSpider, 40));
-            enemyList.Add(new FD_EnemyWeight(prefabLootBug, 60));
-            enemyList.Add(new FD_EnemyWeight(prefabSnareFlea, 40));
-            enemyList.Add(new FD_EnemyWeight(prefabBracken, 10));
+            enemyList.Add(new FD_EnemyWeight(prefabThumper, 90, FDEnemyType.Thumper));
+            enemyList.Add(new FD_EnemyWeight(prefabBunkerSpider, 40, FDEnemyType.BunkerSpider));
+            enemyList.Add(new FD_EnemyWeight(prefabLootBug, 60, FDEnemyType.LootBug));
+            enemyList.Add(new FD_EnemyWeight(prefabSnareFlea, 40, FDEnemyType.SnareFlea));
+            enemyList.Add(new FD_EnemyWeight(prefabBracken, 10, FDEnemyType.Bracken));
 
             levels.Add(new FD_Level(lvlIndex, 6f, 60, .75f, enemyList.ToList()));
             lvlIndex++;
             enemyList.Clear();
 
-            enemyList.Add(new FD_EnemyWeight(prefabThumper, 90));
-            enemyList.Add(new FD_EnemyWeight(prefabBunkerSpider, 40));
-            enemyList.Add(new FD_EnemyWeight(prefabLootBug, 60));
-            enemyList.Add(new FD_EnemyWeight(prefabSnareFlea, 40));
-            enemyList.Add(new FD_EnemyWeight(prefabBracken, 20));
+            enemyList.Add(new FD_EnemyWeight(prefabThumper, 90, FDEnemyType.Thumper));
+            enemyList.Add(new FD_EnemyWeight(prefabBunkerSpider, 40, FDEnemyType.BunkerSpider));
+            enemyList.Add(new FD_EnemyWeight(prefabLootBug, 60, FDEnemyType.LootBug));
+            enemyList.Add(new FD_EnemyWeight(prefabSnareFlea, 40, FDEnemyType.SnareFlea));
+            enemyList.Add(new FD_EnemyWeight(prefabBracken, 20, FDEnemyType.Bracken));
 
             levels.Add(new FD_Level(lvlIndex, 6.5f, 80, .75f, enemyList.ToList()));
             lvlIndex++;
@@ -268,6 +293,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         // Update is called once per frame
         void Update()
         {
+            PintoBoyUpdate();
             if (pressButton)
             {
                 ButtonPress();
@@ -317,10 +343,6 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         public override void ButtonPress()
         {
             base.ButtonPress();
-
-            Debug.Log("Pressed Button FD");
-
-
         }
 
         public override void ButtonRelease(float timeHeld)
@@ -400,10 +422,6 @@ namespace PintoMod.Assets.Scripts.FacilityDash
                 return;
             }
 
-            if (fdCart == null && cartridge != null)
-            {
-                fdCart = (FDCartridge)cartridge;
-            }
 
             if (playerState == FDPlayerState.Latched)
             {
@@ -429,29 +447,32 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             {
                 if (startWaitTimer <= 0)
                 {
-                    currentFrameDistance = gameSpeed * Time.deltaTime;
-                    distanceTraveled += currentFrameDistance;
-                    hallwayStateDistanceTraveled += currentFrameDistance;
+                    if (IsOwner)
+                    {
+                        currentFrameDistance = gameSpeed * Time.deltaTime;
+                        currentScore.Value += currentFrameDistance;
+                        hallwayStateDistanceTraveled.Value += currentFrameDistance;
+                    }
                 }
 
                 switch (hallwayState)
                 {
                     case FDHallwayState.Enter:
-                        distanceMod = (int)hallwayStateDistanceTraveled % (hallwayEnterFrameCount + 1);
+                        distanceMod = (int)hallwayStateDistanceTraveled.Value % (hallwayEnterFrameCount + 1);
                         if (distanceMod == hallwayEnterFrameCount)
                         {
                             ChangeHallwayState(FDHallwayState.Inside);
                         }
                         break;
                     case FDHallwayState.Inside:
-                        distanceMod = (int)hallwayStateDistanceTraveled % (hallwayFrameCount);
-                        if (distanceMod == 0 && distanceTraveled > currentLevelDistanceGoal)
+                        distanceMod = (int)hallwayStateDistanceTraveled.Value % (hallwayFrameCount);
+                        if (distanceMod == 0 && currentScore.Value > currentLevelDistanceGoal)
                         {
                             ChangeHallwayState(FDHallwayState.Exit);
                         }
                         break;
                     case FDHallwayState.Exit:
-                        distanceMod = (int)hallwayStateDistanceTraveled % (hallwayExitFrameCount + 1);
+                        distanceMod = (int)hallwayStateDistanceTraveled.Value % (hallwayExitFrameCount + 1);
                         if (distanceMod == hallwayExitFrameCount)
                         {
                             animHallway.SetInteger(strStateString, hallwayExitFrameCount);
@@ -471,14 +492,17 @@ namespace PintoMod.Assets.Scripts.FacilityDash
                 }
 
 
-                shovelWalkYOffset = -(2 - ((int)distanceTraveled % 3));
+                shovelWalkYOffset = -(2 - ((int)currentScore.Value % 3));
 
                 if (currentEnemy != null)
                 {
-                    if (currentEnemy.distance < distanceTraveled)
+                    if (currentEnemy.distance < currentScore.Value)
                     {
-                        distanceTraveled = currentEnemy.distance;
-                        EnemyInFront();
+                        if (IsOwner)
+                        {
+                            currentScore.Value = currentEnemy.distance;
+                            EnemyInFront();
+                        }
                     }
                 }
             }
@@ -535,14 +559,17 @@ namespace PintoMod.Assets.Scripts.FacilityDash
                 }
             }
 
-            txtScore.text = ((int)distanceTraveled).ToString();
+            txtScore.text = ((int)currentScore.Value).ToString();
 
             if (animHallway.GetInteger(strStateString) == FrameAddSub(hallwayMonsterSpawnFrame, -4) && hallwayState == FDHallwayState.Inside)
             {
-                if (!hasEnemyBeenRolled)
+                if (IsOwner)
                 {
-                    RollForMonsterSpawn((int)distanceTraveled + 5);
-                    hasEnemyBeenRolled = true;
+                    if (!hasEnemyBeenRolled)
+                    {
+                        RollForMonsterSpawn((int)currentScore.Value + 5);
+                        hasEnemyBeenRolled = true;
+                    }
                 }
             }
             else
@@ -551,7 +578,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             }
 
 
-            if(isHoldingButton)
+            if (isHoldingButton)
             {
                 Hide();
             }
@@ -580,7 +607,10 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         void StartGame()
         {
             levelIndex = 0;
-            distanceTraveled = 0;
+            if (IsOwner)
+            {
+                currentScore.Value = 0;
+            }
             lives = 1;
             playerState = FDPlayerState.Walking;
             gameState = FDState.InGame;
@@ -613,19 +643,19 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             else
             {
                 FD_EnemyWeight[] enemyList = {
-                new FD_EnemyWeight(prefabThumper, 90),
-                new FD_EnemyWeight(prefabBunkerSpider, 40),
-                new FD_EnemyWeight(prefabLootBug, 60),
-                new FD_EnemyWeight(prefabSnareFlea, 40),
-                new FD_EnemyWeight(prefabBracken, 20),
-                new FD_EnemyWeight(prefabNutcracker, 20)
+                new FD_EnemyWeight(prefabThumper, 90, FDEnemyType.Thumper),
+                new FD_EnemyWeight(prefabBunkerSpider, 40, FDEnemyType.BunkerSpider),
+                new FD_EnemyWeight(prefabLootBug, 60, FDEnemyType.LootBug),
+                new FD_EnemyWeight(prefabSnareFlea, 40, FDEnemyType.SnareFlea),
+                new FD_EnemyWeight(prefabBracken, 20, FDEnemyType.Bracken),
+                new FD_EnemyWeight(prefabNutcracker, 20, FDEnemyType.Nutcracker)
             };
                 levels.Add(new FD_Level(levelIndex, gameSpeed + gameSpeedIncrement, 100, .75f, enemyList.ToList()));
             }
 
             gameSpeed = levels[levelIndex].speed;
             currentMonsterSpawnChance = levels[levelIndex].monsterSpawnChance;
-            previousDistanceTraveled = distanceTraveled;
+            previousDistanceTraveled = currentScore.Value;
             currentLevelDistanceGoal = levels[levelIndex].distanceLength + previousDistanceTraveled;
 
             animShovel.speed = 1 * (gameSpeed / startingGameSpeed);
@@ -649,7 +679,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
                 PlaySound(acSong2);
             }
 
-            Debug.Log("Level " + levelIndex + " loaded");
+            Debug.Log("PintoBoy FD: Level " + levelIndex + " loaded");
         }
 
         void NextLevel()
@@ -683,7 +713,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         {
             for (int i = 0; i < levels[levelIndex].enemyList.Count; i++)
             {
-                SetupAddEnemy(levels[levelIndex].enemyList[i].enemy, levels[levelIndex].enemyList[i].weight);
+                SetupAddEnemy(levels[levelIndex].enemyList[i].enemy, levels[levelIndex].enemyList[i].weight, levels[levelIndex].enemyList[i].type);
             }
 
             SetupSetTotalWeight();
@@ -709,11 +739,11 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             if (rand < currentMonsterSpawnChance)
             {
                 SpawnRandomEnemy(distance);
-                Debug.Log("Monster roll success");
+                Debug.Log("PintoBoy FD: Monster roll success");
             }
             else
             {
-                Debug.Log("Monster roll failed");
+                Debug.Log("PintoBoy FD: Monster roll failed");
             }
         }
 
@@ -766,7 +796,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         {
             if (currentEnemy != null && isEnemyInFront)
             {
-                //Debug.Log("attack connected:"+currentEnemy.name);
+                //Debug.Log("PintoBoy FD: attack connected:"+currentEnemy.name);
                 bool isDead = currentEnemy.TakeDamage();
                 float rand = UnityEngine.Random.value;
                 if (rand > 0)
@@ -788,7 +818,10 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         void ChangeHallwayState(FDHallwayState state)
         {
             hallwayState = state;
-            hallwayStateDistanceTraveled = 0;
+            if (IsOwner)
+            {
+                hallwayStateDistanceTraveled.Value = 0;
+            }
             animHallway.SetInteger(strEnterExitString, (int)hallwayState);
         }
 
@@ -840,9 +873,9 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             }
         }
 
-        void SetupAddEnemy(FD_Enemy enemy, int weight)
+        void SetupAddEnemy(FD_Enemy enemy, int weight, FDEnemyType type)
         {
-            currentEnemyList.Add(new FD_EnemyWeight(enemy, weight));
+            currentEnemyList.Add(new FD_EnemyWeight(enemy, weight, type));
         }
 
         void SpawnRandomEnemy(int distance)
@@ -855,26 +888,93 @@ namespace PintoMod.Assets.Scripts.FacilityDash
                 cumulativeWeight += currentEnemyList[i].weight;
                 if (rand <= cumulativeWeight)
                 {
-                    SpawnEnemy(currentEnemyList[i].enemy, distance);
+                    SpawnEnemyServerRpc(currentEnemyList[i].type.ToString(), distance);
                     return;
                 }
             }
         }
 
-        void SpawnEnemy(FD_Enemy prefab, int distance)
+        FD_Enemy SpawnEnemy(FD_Enemy prefab, int distance)
         {
-            Debug.Log("Spawning " + prefab.name);
-            FD_Enemy enemy = Instantiate(prefab, trEnemySpawn);
-            enemy.distance = distance;
-            enemy.game = this;
-            enemy.dead.AddListener(DestroyEnemy);
+            if(prefab == null)
+            {
+                Debug.Log("bruh, this is null");
+            }
+            try
+            {
 
-            currentEnemy = enemy;
+                //Debug.Log("PintoBoy FD: Spawning " + prefab.name);
+                FD_Enemy enemy = Instantiate(prefab, trEnemySpawn);
+                enemy.distance = distance;
+                enemy.game = this;
+                enemy.dead.AddListener(DestroyEnemy);
+
+                currentEnemy = enemy;
+                return enemy;
+            }
+            catch (Exception ex)
+            {
+                Debug.Log("Error when trying to spawnEnemy in Facility Dash"+ex);
+                return null;
+            }
         }
+
+        [ServerRpc]
+        void SpawnEnemyServerRpc(string enemy, int distance)
+        {
+            //Debug.Log("PintoBoy FD: attempting to spawn "+enemy+" serverside");
+            //FDEnemyType enemyType = Enum.Parse<FDEnemyType>(enemy);
+            //Debug.Log("PintoBoy FD: enemy enum parsed: " + enemyType.ToString());
+            //FD_Enemy newEnemy = SpawnEnemy(EnumToEnemy(enemyType), distance);
+            //Debug.Log("PintoBoy FD: enemy spawned locally");
+            SpawnEnemyClientRpc(enemy, distance);
+        }
+
+        [ClientRpc]
+        void SpawnEnemyClientRpc(string enemy, int distance)
+        {
+            Debug.Log("PintoBoy FD: CLient spawning "+enemy);
+            FDEnemyType enemyType = Enum.Parse<FDEnemyType>(enemy);
+            Debug.Log("PintoBoy FD: enemy enum parsed: " + enemyType.ToString());
+            FD_Enemy newEnemy = SpawnEnemy(EnumToEnemy(enemyType), distance);
+            Debug.Log("PintoBoy FD: enemy spawned locally through client");
+        }
+
+        FD_Enemy EnumToEnemy(FDEnemyType enemyType)
+        {
+            FD_Enemy newPrefab;
+            switch (enemyType)
+            {
+                case FDEnemyType.Bracken:
+                    newPrefab = prefabBracken;
+                    break;
+                case FDEnemyType.BunkerSpider:
+                    newPrefab = prefabBunkerSpider;
+                    break;
+                case FDEnemyType.LootBug:
+                    newPrefab = prefabLootBug;
+                    break;
+                case FDEnemyType.Nutcracker:
+                    newPrefab = prefabNutcracker;
+                    break;
+                case FDEnemyType.SnareFlea:
+                    newPrefab = prefabSnareFlea;
+                    break;
+                case FDEnemyType.Thumper:
+                    newPrefab = prefabThumper;
+                    break;
+                default:
+                    Debug.Log("PintoBoy FD: EnumToEnemy failed. Results:"+enemyType.ToString()+". Spawning Thumper");
+                    newPrefab = prefabThumper;
+                    break;
+            }
+            return newPrefab;
+        }
+
 
         public int GetDistanceTraveled()
         {
-            return (int)distanceTraveled;
+            return (int)currentScore.Value;
         }
 
         public void PlayerIsAttacked(int damage, bool isAttackBlockedByHiding)
@@ -928,23 +1028,23 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
         void ShowEndScreen()
         {
-            Debug.Log("Showing end screen");
-            if (distanceTraveled > highscore)
+            Debug.Log("PintoBoy FD: Showing end screen");
+            if (currentScore.Value > highscore)
             {
                 txtEndScreen.text = $"New Best!\n" +
-                                     $"{Mathf.Round(distanceTraveled)}\n" +
+                                     $"{Mathf.Round(currentScore.Value)}\n" +
                                      $"Last Best\n" +
                                      $"{Mathf.Round(highscore)}";
-                //if (ljCart.IsOwner)
-                //{
-                highscore = (int)distanceTraveled;
-                //}
+                if (IsOwner)
+                {
+                    highScore.Value = (int)currentScore.Value;
+                }
                 PlaySound(acNewHighscore);
             }
             else
             {
                 txtEndScreen.text = $"Score\n" +
-                                     $"{Mathf.Round(distanceTraveled)}\n" +
+                                     $"{Mathf.Round(currentScore.Value)}\n" +
                                      $"Best\n" +
                                      $"{Mathf.Round(highscore)}";
                 PlaySound(acNoHighscore);
@@ -955,47 +1055,36 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         {
             base.InitializeObjects(gameRoot);
 
-            Debug.Log("intializing FacilityDash");
+            Debug.Log("PintoBoy FD: intializing FacilityDash");
             if (gameRoot != null)
             {
-                Debug.Log("root name: " + gameRoot.name);
-                Debug.Log("child name: " + gameRoot.GetChild(0).name);
-                Debug.Log("parent name: " + gameRoot.parent.name);
+                Debug.Log("PintoBoy FD: root name: " + gameRoot.name);
+                Debug.Log("PintoBoy FD: child name: " + gameRoot.GetChild(0).name);
+                Debug.Log("PintoBoy FD: parent name: " + gameRoot.parent.name);
             }
             else
             {
-                Debug.Log("gameRoot null");
+                Debug.Log("PintoBoy FD: gameRoot null");
             }
 
-            Debug.Log("Debug 1");
             trMainMenu = gameRoot.transform.Find("Main Menu");
-            Debug.Log("Debug 1");
             trMainMenu.gameObject.SetActive(true);
-            Debug.Log("Debug 1");
             animMainMenu = trMainMenu.transform.Find("Main Menu Sprite").GetComponent<Animator>();
-
-            Debug.Log("Debug 1");
             trInGame = gameRoot.transform.Find("Game");
-            Debug.Log("Debug 1");
 
             animGame = trInGame.GetComponent<Animator>();
-            Debug.Log("Debug 1");
 
             animHallway = trInGame.transform.Find("Hallway").GetComponent<Animator>();
-            Debug.Log("Debug 1");
 
-            Debug.Log("initializing shovel");
+            Debug.Log("PintoBoy FD: initializing shovel");
             trShovel = trInGame.transform.Find("Shovel");
-            Debug.Log("adding shovel script");
             shovel = trShovel.gameObject.AddComponent<FD_Shovel>();
-            Debug.Log("added shovel script");
+            Debug.Log("PintoBoy FD: added shovel script");
             shovel.hit.AddListener(ShovelAttackConnected);
             shovel.dead.AddListener(Dead);
             trShovelSpawnpoint = trInGame.transform.Find("Shovel Spawnpoint");
             animShovel = trShovel.GetComponent<Animator>();
-
-
-            Debug.Log("shovel done");
+            Debug.Log("PintoBoy FD: shovel done");
 
             trEnemySpawn = trInGame.transform.Find("Current Enemy");
 

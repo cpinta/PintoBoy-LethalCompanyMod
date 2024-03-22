@@ -13,11 +13,6 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 {
     public class FD_SnareFlea : FD_Enemy
     {
-        float jumpTimerMin = 5;
-        float jumpTimerMax = 10;
-        float jumpTimer = 0;
-        float jumpTime = 0;
-
         bool attacking = false;
 
         public bool latched = false;
@@ -27,12 +22,19 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         void Awake()
         {
             Initialize();
-            jumpTimer = Random.Range(jumpTimerMin, jumpTimerMax);
+            animator = GetComponent<Animator>();
+        }
+
+
+        public override void Initialize()
+        {
+            base.Initialize();
+
             EnemyName = "Snare Flea";
             Health = 3;
             AttackSpeeed = 8;
-            animator = GetComponent<Animator>();
-
+            acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/Snare Flea walk");
+            acAngered = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/Snare Flea on head");
         }
 
         void LateUpdate()

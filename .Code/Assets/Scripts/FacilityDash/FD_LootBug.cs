@@ -6,10 +6,6 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 {
     public class FD_LootBug : FD_Enemy
     {
-        float leaveTimerMin = 3;
-        float leaveTimerMax = 5;
-        float leaveTime = 0;
-
         public bool aggressive = false;
         bool firstAttack = true;
 
@@ -18,11 +14,6 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         void Awake()
         {
             Initialize();
-            leaveTimer = 3 / (game.gameSpeed / game.startingGameSpeed);
-            EnemyName = "Loot Bug";
-            Health = 2;
-            AttackSpeeed = 2;
-
         }
 
         void LateUpdate()
@@ -42,6 +33,18 @@ namespace PintoMod.Assets.Scripts.FacilityDash
                     Leave();
                 }
             }
+        }
+
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            leaveTimer = 3 / (game.gameSpeed / game.startingGameSpeed);
+            EnemyName = "Loot Bug";
+            Health = 2;
+            AttackSpeeed = 2;
+            acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/loot bug walk");
+            acAngered = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/loot bug dead");
         }
 
         public override void Attack(bool isAttackBlockedByHiding)

@@ -17,7 +17,6 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         public FacilityDash game;
 
         public UnityEvent dead;
-        public UnityEvent<int> playerDamage;
 
         public AudioClip acEntrance;
 
@@ -81,7 +80,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         {
         }
 
-        protected void Initialize()
+        public virtual void Initialize()
         {
             game = transform.parent.parent.parent.GetComponent<FacilityDash>();
             animator = transform.GetComponent<Animator>();
