@@ -44,6 +44,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             if (!attacking)
             {
                 base.GameUpdate();
+                transform.localPosition = Vector3.zero;
             }
         }
 

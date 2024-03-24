@@ -199,6 +199,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         AudioClip acSnapNeck;
 
 
+        public NetworkVariable<float> hallwayStateDistanceTraveled = new NetworkVariable<float>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         private void Awake()
         {
             PintoAwake();
@@ -363,7 +364,10 @@ namespace PintoMod.Assets.Scripts.FacilityDash
                     gameState = FDState.MainMenu;
                     txtEndScreen.text = "";
                     startWaitTimer = startWaitTime;
-                    DestroyEnemy();
+                    if (IsOwner)
+                    {
+                        DestroyEnemyServerRpc();
+                    }
                     break;
             }
         }
@@ -388,8 +392,11 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
         public void DestroyEnemy()
         {
-            Destroy(currentEnemy.gameObject);
-            currentEnemy = null;
+            if(currentEnemy != null)
+            {
+                Destroy(currentEnemy.gameObject);
+                currentEnemy = null;
+            }
             isEnemyInFront = false;
 
             animButtonTooltips.SetBool("Active", false);
@@ -819,7 +826,10 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
                 if (isDead)
                 {
-                    DestroyEnemy();
+                    if(IsOwner)
+                    {
+                        DestroyEnemyServerRpc();
+                    }
                 }
             }
         }
@@ -856,8 +866,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
         void UnLatch()
         {
-            Destroy(currentEnemy.gameObject);
-            currentEnemy = null;
+            DestroyEnemy();
 
             playerState = FDPlayerState.Walking;
             shovel.TurnOn();

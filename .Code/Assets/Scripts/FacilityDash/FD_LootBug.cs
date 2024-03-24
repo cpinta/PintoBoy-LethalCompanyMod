@@ -14,7 +14,6 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         void Awake()
         {
             Initialize();
-            spriteRenderer.enabled = true;
         }
 
         void LateUpdate()
@@ -26,11 +25,14 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             }
 
 
+
+
             if (leaveTimer > 0)
             {
                 if (!aggressive)
                 {
                     leaveTimer -= Time.deltaTime;
+                    transform.localPosition = Vector3.zero;
                 }
             }
             else
