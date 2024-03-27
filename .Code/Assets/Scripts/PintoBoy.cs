@@ -70,6 +70,7 @@ public class PintoBoy : GrabbableObject
     public NetworkVariable<float> currentScore = new NetworkVariable<float>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     public NetworkVariable<int> health = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
+    Color32 bodyColor;
 
     //isBeingUsed means that the item is on and using battery
 
@@ -79,9 +80,14 @@ public class PintoBoy : GrabbableObject
     {
         audioSource = this.GetComponent<AudioSource>();
 
-
         Debug.Log($"PintoBoy Awake");
+        propColliders = new Collider[1];
+        propColliders[0] = GetComponent<Collider>();
+        Debug.Log($"{this.name} propColliders Length:"+propColliders.Length);
+        Debug.Log($"{this.name} propColliders Length:" + propColliders.Length + ", item 0:" + propColliders[0]);
+
         mainObjectRenderer = transform.Find("Model").GetComponent<MeshRenderer>();
+        originalScale = new Vector3(0.25f, 0.25f, 0.25f);
         Debug.Log($"{this.name} mainObjectRenderer: {mainObjectRenderer.name}");
 
         scanNodeProperties = this.GetComponentInChildren<ScanNodeProperties>();
@@ -111,12 +117,20 @@ public class PintoBoy : GrabbableObject
         cartridgeLocation = mainObjectRenderer.transform.Find("Cartridge");
 
         Debug.Log("cartLoc.childcount:" + cartridgeLocation.childCount);
+
+        ChangeBodyColor(Color.red);
     }
 
     // Update is called once per frame
     protected void PintoBoyUpdate()
     {
         base.Update();
+
+        //if this isnt there. the PintoBoy's scale is set to 0 when it is dropped
+        //if(transform.localScale.magnitude < 0.20f)
+        //{
+        //    transform.localScale = Vector3.one * 0.25f;
+        //}
 
         if (spawnScreen)
         {
@@ -345,7 +359,7 @@ public class PintoBoy : GrabbableObject
         Debug.Log("Pinto Button being pressed" + Time.time);
         float buttonStartPress = Time.time;
         hideStartHoldTimer = hideStartHoldTime;
-        yield return new WaitUntil(() => !isButtonPressing || !isHeld || !isBeingUsed);
+        yield return new WaitUntil(() => !isButtonPressing || !isHeld);
         Debug.Log("Pinto Button end press " + Time.deltaTime);
         animButton.SetBool("Press", false);
         if(isBeingUsed)
@@ -401,7 +415,7 @@ public class PintoBoy : GrabbableObject
         }
 
         Debug.Log("Spawning Screen");
-        GetChildRecursive(transform, 1);
+        
         cam = transform.Find("2D Cam").gameObject;
         if (cam == null)
         {
@@ -480,6 +494,11 @@ public class PintoBoy : GrabbableObject
         }
 
         rendModelScreen.material = Pinto_ModBase.matOffScreen;
+    }
+
+    protected void ChangeBodyColor(Color newColor)
+    {
+        mainObjectRenderer.materials[0].color = newColor;
     }
 
 

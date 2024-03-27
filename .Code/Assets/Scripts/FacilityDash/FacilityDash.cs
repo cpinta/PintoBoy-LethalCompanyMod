@@ -270,6 +270,8 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             levels.Add(new FD_Level(lvlIndex, 6.5f, 80, .75f, enemyList.ToList()));
             lvlIndex++;
             enemyList.Clear();
+
+            //ChangeBodyColor(Color.red);
         }
 
         // Start is called before the first frame update
