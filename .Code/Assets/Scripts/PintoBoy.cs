@@ -14,6 +14,8 @@ using Random = UnityEngine.Random;
 using PintoMod.Assets.Scripts;
 using static UnityEngine.UIElements.StylePropertyAnimationSystem;
 using System.Linq;
+using System.ComponentModel;
+using System.IO;
 //using System.Numerics;
 
 
@@ -69,8 +71,9 @@ public class PintoBoy : GrabbableObject
     public NetworkVariable<float> highScore = new NetworkVariable<float>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     public NetworkVariable<float> currentScore = new NetworkVariable<float>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     public NetworkVariable<int> health = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-
     Color32 bodyColor;
+    bool colorSet = false;
+    bool testcolor = false;
 
     //isBeingUsed means that the item is on and using battery
 
@@ -118,8 +121,6 @@ public class PintoBoy : GrabbableObject
         cartridgeLocation = mainObjectRenderer.transform.Find("Cartridge");
 
         Debug.Log("cartLoc.childcount:" + cartridgeLocation.childCount);
-
-        ChangeBodyColor(Color.red);
     }
 
     // Update is called once per frame
@@ -132,6 +133,49 @@ public class PintoBoy : GrabbableObject
         //{
         //    transform.localScale = Vector3.one * 0.25f;
         //}
+
+        if(IsServer && (!colorSet || testcolor))
+        {
+            Debug.Log("PintoBoy: setting body color");
+
+            /*Color options:
+                White:          #FFFFFF     
+                Charcoal:       #575757     
+                Red:            #FF6B6B     
+                Peach:          #FFDAB9     
+                Banana:         #FFFFCC     
+                Mint Green:     #98FF98     
+                Teal:           #008080     
+                Turqoise:       #5999BE
+                Light Blue:     #CBCBFF     
+                Fairy:          #D9AEDD
+             */
+
+            string[] htmlColors = new string[]
+             {
+                    "#FFFFFF",  // White
+                    "#575757",  // Charcoal
+                    "#FF6B6B",  // Red
+                    "#FFDAB9",  // Peach
+                    "#FFFFCC",  // Banana
+                    "#98FF98",  // Mint Green
+                    "#008080",  // Teal
+                    "#5999BE",  // Turquoise
+                    "#CBCBFF",  // Light Blue
+                    "#D9AEDD"   // Fairy
+             };
+
+            Color32[] colorArray = new Color32[htmlColors.Length];
+            for (int i = 0; i < htmlColors.Length; i++)
+            {
+                ColorUtility.TryParseHtmlString(htmlColors[i], out Color color);
+                colorArray[i] = color;
+            }
+
+            ChangeBodyColorServerRpc(colorArray[Random.Range(0, colorArray.Length)]);
+            colorSet = true;
+            testcolor = false;
+        }
 
         if (spawnScreen)
         {
@@ -497,9 +541,20 @@ public class PintoBoy : GrabbableObject
         rendModelScreen.material = Pinto_ModBase.matOffScreen;
     }
 
-    protected void ChangeBodyColor(Color newColor)
+    [ServerRpc]
+    void ChangeBodyColorServerRpc(Color newColor)
     {
         mainObjectRenderer.materials[0].color = newColor;
+        Debug.Log("PintoBoy: server body color to:"+newColor.ToString());
+        SetBodyColorClientRpc(newColor.r, newColor.g, newColor.b);
+    }
+
+
+    [ClientRpc]
+    void SetBodyColorClientRpc(float r, float g, float b)
+    {
+        Debug.Log("PintoBoy: client body color");
+        //mainObjectRenderer.materials[0].color = new Color(r, g, b);
     }
 
 
