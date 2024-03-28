@@ -81,8 +81,9 @@ public class PintoBoy : GrabbableObject
         audioSource = this.GetComponent<AudioSource>();
 
         Debug.Log($"PintoBoy Awake");
-        propColliders = new Collider[1];
+        propColliders = new Collider[2];
         propColliders[0] = GetComponent<Collider>();
+        propColliders[1] = transform.Find("ScanNode").GetComponent<Collider>();
         Debug.Log($"{this.name} propColliders Length:"+propColliders.Length);
         Debug.Log($"{this.name} propColliders Length:" + propColliders.Length + ", item 0:" + propColliders[0]);
 
