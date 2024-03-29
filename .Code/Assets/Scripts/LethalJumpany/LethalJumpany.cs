@@ -711,9 +711,9 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
             ShowTitleScreen();
         }
 
-        public override void TurnedOff()
+        public override void ResetGame()
         {
-            //DisableAllAnimators();
+            base.ResetGame();
         }
 
         void EnableAllAnimators()

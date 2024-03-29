@@ -213,6 +213,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         public bool TakeDamage()
         {
             health--;
+            Debug.Log("PintoBoy FD: Enemy: was hit. health:"+health);
             Hurt();
             if (health > 0)
             {

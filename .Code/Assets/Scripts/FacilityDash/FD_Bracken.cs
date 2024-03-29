@@ -48,6 +48,8 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         {
             base.GameUpdate();
 
+
+
             if (isCurrentEnemy)
             {
                 if (aggressive)
@@ -106,6 +108,10 @@ namespace PintoMod.Assets.Scripts.FacilityDash
                         }
                     }
                 }
+            }
+            if (!leaving)
+            {
+                transform.localPosition = Vector3.zero;
             }
         }
 

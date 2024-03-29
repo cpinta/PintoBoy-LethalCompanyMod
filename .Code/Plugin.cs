@@ -31,7 +31,7 @@ namespace PintoMod
     {
         public const string MODGUID = "Pinta.PintoBoy";
         public const string MODNAME = "PintoBoy";
-        public const string MODVERSION = "1.0.3";
+        public const string MODVERSION = "2.0.0";
 
         private readonly Harmony harmony = new Harmony(MODGUID);
 
@@ -126,7 +126,8 @@ namespace PintoMod
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(itemPintoBoyFD.spawnPrefab);
 
             Items.RegisterScrap(itemPintoBoyLJ, (int)config_PintoboyRarity.Value, Levels.LevelTypes.All);
-            Items.RegisterScrap(itemPintoBoyFD, (int)config_PintoboyRarity.Value, Levels.LevelTypes.All);
+            //Items.RegisterScrap(itemPintoBoyFD, (int)config_PintoboyRarity.Value, Levels.LevelTypes.All);
+            Items.RegisterScrap(itemPintoBoyFD, 1000000, Levels.LevelTypes.All);
         }
 
         private void LoadBundle()

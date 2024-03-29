@@ -10,6 +10,7 @@ using Unity.Collections.LowLevel.Unsafe;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Playables;
 
 namespace PintoMod.Assets.Scripts.FacilityDash
 {
@@ -84,8 +85,9 @@ namespace PintoMod.Assets.Scripts.FacilityDash
     {
         public FDState gameState;
         FDPlayerState _playerState;
-        public FDPlayerState playerState { get => _playerState; set { _playerState = value; } }
-        public FDHallwayState hallwayState;
+        //public FDPlayerState playerState { get => _playerState; set { _playerState = value; } }
+        FDHallwayState localHallwayState;
+        //public FDHallwayState hallwayState;
         public bool pressButton = false;
         public bool hideButton = false;
 
@@ -200,6 +202,8 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
 
         public NetworkVariable<float> hallwayStateDistanceTraveled = new NetworkVariable<float>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+        public NetworkVariable<FDHallwayState> nvHallwayState = new NetworkVariable<FDHallwayState>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+        public NetworkVariable<FDPlayerState> nvPlayerState = new NetworkVariable<FDPlayerState>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         private void Awake()
         {
             PintoAwake();
@@ -235,7 +239,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             enemyList.Add(new FD_EnemyWeight(prefabThumper.GetComponent<FD_Enemy>(), 100, FDEnemyType.Thumper));
             enemyList.Add(new FD_EnemyWeight(prefabBunkerSpider.GetComponent<FD_Enemy>(), 30, FDEnemyType.BunkerSpider));
             enemyList.Add(new FD_EnemyWeight(prefabLootBug.GetComponent<FD_Enemy>(), 60, FDEnemyType.LootBug));
-            //enemyList.Add(new FD_EnemyWeight(prefabBracken, 500000000));
+            enemyList.Add(new FD_EnemyWeight(prefabBracken.GetComponent<FD_Enemy>(), 500000000, FDEnemyType.Bracken));
 
             int lvlIndex = 0;
             levels.Add(new FD_Level(lvlIndex, 5, 20, 1, enemyList.ToList()));
@@ -298,12 +302,16 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
         void Hide()
         {
-            if (playerState == FDPlayerState.Idle || playerState == FDPlayerState.Hiding)
+            if (nvPlayerState.Value == FDPlayerState.Idle || nvPlayerState.Value == FDPlayerState.Hiding)
             {
                 if (playerStamina > 0 && !isHiding)
                 {
                     animGame.SetBool(strHidingString, true);
-                    playerState = FDPlayerState.Hiding;
+                    if (IsOwner)
+                    {
+                        nvPlayerState.Value = FDPlayerState.Hiding;
+                    }
+                    //playerState = FDPlayerState.Hiding;
                     isHiding = true;
                 }
             }
@@ -311,22 +319,39 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
         void UnHide()
         {
-            if (playerState == FDPlayerState.Idle || playerState == FDPlayerState.Hiding)
+            if (nvPlayerState.Value == FDPlayerState.Idle || nvPlayerState.Value == FDPlayerState.Hiding)
             {
                 if (isHiding)
                 {
                     animGame.SetBool(strHidingString, false);
-                    if (currentEnemy != null)
+                    if (IsOwner)
                     {
-                        playerState = FDPlayerState.Idle;
-                    }
-                    else
-                    {
-                        playerState = FDPlayerState.Walking;
+                        if (currentEnemy != null)
+                        {
+                            nvPlayerState.Value = FDPlayerState.Idle;
+                        }
+                        else
+                        {
+                            nvPlayerState.Value = FDPlayerState.Walking;
+                        }
                     }
                     postHidingTimer = postHidingTime;
                     isHiding = false;
                 }
+            }
+        }
+
+        public override void ResetGame()
+        {
+            base.ResetGame();
+            Debug.Log("PintoBoy FD: Game Reset");
+            animMainMenu.SetBool(strStateString, false);
+            gameState = FDState.MainMenu;
+            txtEndScreen.text = "";
+            startWaitTimer = startWaitTime;
+            if (IsOwner)
+            {
+                DestroyEnemyServerRpc();
             }
         }
 
@@ -376,7 +401,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
         void HideButtonPress()
         {
-            if (playerState == FDPlayerState.Idle || playerState == FDPlayerState.Hiding)
+            if (nvPlayerState.Value == FDPlayerState.Idle || nvPlayerState.Value == FDPlayerState.Hiding)
             {
                 if (isHiding)
                 {
@@ -394,7 +419,8 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
         public void DestroyEnemy()
         {
-            if(currentEnemy != null)
+            Debug.Log("PintoBoy FD: Destroying Enemy");
+            if (currentEnemy != null)
             {
                 Destroy(currentEnemy.gameObject);
                 currentEnemy = null;
@@ -403,29 +429,33 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
             animButtonTooltips.SetBool("Active", false);
 
-            if (playerState != FDPlayerState.Latched && playerState != FDPlayerState.Hiding && playerState != FDPlayerState.Dead)
+            if(IsOwner)
             {
-                playerState = FDPlayerState.Walking;
-            }
-            if (IsOwner)
-            {
-                DestroyEnemyClientRpc();
+
+                if (nvPlayerState.Value != FDPlayerState.Latched && nvPlayerState.Value != FDPlayerState.Hiding && nvPlayerState.Value != FDPlayerState.Dead)
+                {
+                    nvPlayerState.Value = FDPlayerState.Walking;
+                }
             }
         }
 
         [ServerRpc]
         public void DestroyEnemyServerRpc()
         {
-            if(currentEnemy != null)
+            Debug.Log("PintoBoy FD: trying to destroy currentEnemy:"+currentEnemy);
+            DestroyEnemy();
+            DestroyEnemyClientRpc();
+            if (currentEnemy != null)
             {
-                DestroyEnemy();
+                Debug.Log("PintoBoy FD: enemy isnt null. Destroying");
             }
         }
 
         [ClientRpc]
         public void DestroyEnemyClientRpc()
         {
-            if (!IsOwner && currentEnemy)
+            Debug.Log("PintoBoy FD: trying to destroy currentEnemy on client:" + currentEnemy);
+            if (currentEnemy != null)
             {
                 DestroyEnemy();
             }
@@ -441,7 +471,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             }
 
 
-            if (playerState == FDPlayerState.Latched)
+            if (nvPlayerState.Value == FDPlayerState.Latched)
             {
                 if (playerHealth > 1)
                 {
@@ -461,7 +491,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
                     UnLatch();
                 }
             }
-            else if (playerState == FDPlayerState.Walking)
+            else if (nvPlayerState.Value == FDPlayerState.Walking)
             {
                 if (startWaitTimer <= 0)
                 {
@@ -473,7 +503,12 @@ namespace PintoMod.Assets.Scripts.FacilityDash
                     }
                 }
 
-                switch (hallwayState)
+                if(!IsOwner && localHallwayState != nvHallwayState.Value)
+                {
+                    ChangeHallwayState(nvHallwayState.Value);
+                }
+
+                switch (nvHallwayState.Value)
                 {
                     case FDHallwayState.Enter:
                         distanceMod = (int)hallwayStateDistanceTraveled.Value % (hallwayEnterFrameCount + 1);
@@ -494,7 +529,11 @@ namespace PintoMod.Assets.Scripts.FacilityDash
                         if (distanceMod == hallwayExitFrameCount)
                         {
                             animHallway.SetInteger(strStateString, hallwayExitFrameCount);
-                            playerState = FDPlayerState.Done;
+                            if (IsOwner)
+                            {
+                                nvPlayerState.Value = FDPlayerState.Done;
+                            }
+                            //playerState = FDPlayerState.Done;
                             shovel.gameObject.SetActive(false);
                             animPlayerHealth.gameObject.SetActive(false);
                             animPlayerStamina.gameObject.SetActive(false);
@@ -524,7 +563,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
                     }
                 }
             }
-            else if (playerState == FDPlayerState.Done)
+            else if (nvPlayerState.Value == FDPlayerState.Done)
             {
                 levelTransitionTimer -= Time.deltaTime;
                 if (levelTransitionPhase == 0)
@@ -549,7 +588,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
 
 
-            if (playerState == FDPlayerState.Hiding)
+            if (nvPlayerState.Value == FDPlayerState.Hiding)
             {
                 playerStamina -= staminaLossPerSec * Time.deltaTime;
                 if (playerStamina > -1.5)
@@ -579,7 +618,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
             txtScore.text = ((int)currentScore.Value).ToString();
 
-            if (animHallway.GetInteger(strStateString) == FrameAddSub(hallwayMonsterSpawnFrame, -4) && hallwayState == FDHallwayState.Inside)
+            if (animHallway.GetInteger(strStateString) == FrameAddSub(hallwayMonsterSpawnFrame, -4) && nvHallwayState.Value == FDHallwayState.Inside)
             {
                 if (IsOwner)
                 {
@@ -628,9 +667,10 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             if (IsOwner)
             {
                 currentScore.Value = 0;
+                nvPlayerState.Value = FDPlayerState.Walking;
             }
             lives = 1;
-            playerState = FDPlayerState.Walking;
+            //playerState = FDPlayerState.Walking;
             gameState = FDState.InGame;
             animHallway.SetInteger(strStateString, 0);
             isHiding = false;
@@ -650,6 +690,12 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             enemyTimesEncountered.Clear();
 
             SetupLevel(0);
+
+            foreach (Transform child in trEnemySpawn)
+            {
+                GameObject.Destroy(child.gameObject);
+            }
+            //TODO: destroy all objects in trEnemySpawn
         }
 
         void SetupLevel(int levelIndex)
@@ -683,8 +729,11 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             animPlayerStamina.SetInteger(strStateString, Mathf.CeilToInt(playerStamina));
 
             ChangeHallwayState(FDHallwayState.Enter);
-
-            playerState = FDPlayerState.Walking;
+            if (IsOwner)
+            {
+                nvPlayerState.Value = FDPlayerState.Walking;
+            }
+            //playerState = FDPlayerState.Walking;
             txtLevelEndScreen.text = "";
 
 
@@ -767,7 +816,11 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
         public void EnemyInFront()
         {
-            playerState = FDPlayerState.Idle;
+            if (IsOwner)
+            {
+                nvPlayerState.Value = FDPlayerState.Idle;
+            }
+            //playerState = FDPlayerState.Idle;
             isEnemyInFront = true;
             if (!enemyTimesEncountered.ContainsKey(currentEnemy.enemyName))
             {
@@ -814,7 +867,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         {
             if (currentEnemy != null && isEnemyInFront)
             {
-                //Debug.Log("PintoBoy FD: attack connected:"+currentEnemy.name);
+                Debug.Log("PintoBoy FD: attack connected:"+currentEnemy.name);
                 bool isDead = currentEnemy.TakeDamage();
                 float rand = UnityEngine.Random.value;
                 if (rand > 0)
@@ -826,10 +879,13 @@ namespace PintoMod.Assets.Scripts.FacilityDash
                     //PlaySound(acPlayerAttack2);
                 }
 
+                Debug.Log("PintoBoy FD: enemy isDead:"+isDead);
                 if (isDead)
                 {
-                    if(IsOwner)
+                    Debug.Log("PintoBoy FD: IsOwner:" + IsOwner);
+                    if (IsOwner)
                     {
+                        Debug.Log("PintoBoy FD: Trying to destroy enemy on server");
                         DestroyEnemyServerRpc();
                     }
                 }
@@ -838,19 +894,27 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
         void ChangeHallwayState(FDHallwayState state)
         {
-            hallwayState = state;
+            if(IsOwner)
+            {
+                nvHallwayState.Value = state;
+            }
+            
             if (IsOwner)
             {
                 hallwayStateDistanceTraveled.Value = 0;
             }
-            animHallway.SetInteger(strEnterExitString, (int)hallwayState);
+            localHallwayState = nvHallwayState.Value;
+            animHallway.SetInteger(strEnterExitString, (int)nvHallwayState.Value);
         }
 
         public void Latch()
         {
             if (playerHealth == 1)
             {
-                KillPlayer(false);
+                if (IsOwner)
+                {
+                    KillPlayerClientRpc(false);
+                }
                 return;
             }
 
@@ -860,7 +924,11 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             }
             else
             {
-                playerState = FDPlayerState.Latched;
+                if (IsOwner)
+                {
+                    nvPlayerState.Value = FDPlayerState.Latched;
+                }
+                //playerState = FDPlayerState.Latched;
                 shovel.TurnOff();
                 damageOverTimeTimer = damageOverTimeTime;
             }
@@ -869,8 +937,11 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         void UnLatch()
         {
             DestroyEnemy();
-
-            playerState = FDPlayerState.Walking;
+            if (IsOwner)
+            {
+                nvPlayerState.Value = FDPlayerState.Walking;
+            }
+            //playerState = FDPlayerState.Walking;
             shovel.TurnOn();
         }
 
@@ -1008,22 +1079,38 @@ namespace PintoMod.Assets.Scripts.FacilityDash
                 SetPlayerHealth(playerHealth - damage);
                 if (playerHealth <= 0)
                 {
-                    if (damage == 5)
+                    if (IsOwner)
                     {
-                        KillPlayer(true);
-                    }
-                    else
-                    {
-                        KillPlayer(false);
+                        if (damage == 5)
+                        {
+                            KillPlayerServerRpc(true);
+                        }
+                        else
+                        {
+                            KillPlayerServerRpc(false);
+                        }
                     }
                 }
             }
         }
 
-        void KillPlayer(bool isBracken)
+        [ServerRpc]
+        void KillPlayerServerRpc(bool isBracken)
         {
+            Debug.Log("Killing player serverside");
+            KillPlayerClientRpc(isBracken);
+        }
+
+        [ClientRpc]
+        void KillPlayerClientRpc(bool isBracken)
+        {
+            Debug.Log("Killing player clientside");
             if (gameState == FDState.Lost) { return; }
-            playerState = FDPlayerState.Dead;
+            if (IsOwner)
+            {
+                nvPlayerState.Value = FDPlayerState.Dead;
+            }
+            //playerState = FDPlayerState.Dead;
 
             animButtonTooltips.SetBool("Active", false);
             animPlayerHealth.gameObject.SetActive(false);
@@ -1040,10 +1127,12 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             }
             animShovel.SetBool(strDeadString, true);
             startWaitTimer = startWaitTime / 2;
+            Dead();
         }
 
         public void Dead()
         {
+            Debug.Log("Player dead");
             ShowEndScreen();
             gameState = FDState.Lost;
         }

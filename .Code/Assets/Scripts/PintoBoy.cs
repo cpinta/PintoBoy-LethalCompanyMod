@@ -199,7 +199,7 @@ public class PintoBoy : GrabbableObject
             SetScreenToOffTexture();
 
             isBeingUsed = true;
-            TurnOff();
+            TurnOff(true);
         }
 
 
@@ -238,8 +238,6 @@ public class PintoBoy : GrabbableObject
 
     public virtual void GameUpdate() { }
 
-
-    public virtual void TurnedOff() { }
     public virtual void TurnedOn() { }
 
     public virtual void InitializeObjects(Transform gameRoot)
@@ -284,7 +282,7 @@ public class PintoBoy : GrabbableObject
     {
         base.EquipItem();
         playerHeldBy.equippedUsableItemQE = true;
-        ChangeOwnershipOfProp(playerHeldBy.playerClientId);
+        //ChangeOwnershipOfProp(playerHeldBy.playerClientId);
     }
 
     public virtual void ButtonPress()
@@ -302,12 +300,7 @@ public class PintoBoy : GrabbableObject
         Debug.Log("PintoBoy battery used up");
         base.UseUpBatteries();
 
-        isBeingUsed = false;
-        SetScreenToOffTexture();
-
-        TurnedOff();
-
-        audioSource.Stop();
+        TurnOff(false);
     }
 
     void TogglePause()
@@ -353,13 +346,13 @@ public class PintoBoy : GrabbableObject
         }
         else
         {
-            TurnOff();
+            TurnOff(true);
         }
     }
 
-    void TurnOff()
+    void TurnOff(bool checkBeingUsed)
     {
-        if (!isBeingUsed)
+        if (!isBeingUsed && checkBeingUsed)
         {
             return;
         }
@@ -368,6 +361,7 @@ public class PintoBoy : GrabbableObject
         SetScreenToOffTexture();
 
         audioSource.Stop();
+        ResetGame();
     }
 
     void TurnOn()
@@ -539,6 +533,12 @@ public class PintoBoy : GrabbableObject
         }
 
         rendModelScreen.material = Pinto_ModBase.matOffScreen;
+        ResetGame();
+    }
+
+    public virtual void ResetGame()
+    {
+
     }
 
     [ServerRpc]

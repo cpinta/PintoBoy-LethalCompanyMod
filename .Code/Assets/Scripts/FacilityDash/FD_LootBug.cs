@@ -24,7 +24,10 @@ namespace PintoMod.Assets.Scripts.FacilityDash
                 leaveTimer = 3 / (game.gameSpeed / game.startingGameSpeed);
             }
 
-
+            if (!leaving)
+            {
+                transform.localPosition = Vector3.zero;
+            }
 
 
             if (leaveTimer > 0)
@@ -32,7 +35,6 @@ namespace PintoMod.Assets.Scripts.FacilityDash
                 if (!aggressive)
                 {
                     leaveTimer -= Time.deltaTime;
-                    transform.localPosition = Vector3.zero;
                 }
             }
             else
@@ -50,7 +52,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
             EnemyName = "Loot Bug";
             Health = 2;
-            AttackSpeeed = 2;
+            AttackSpeeed = 4;
             acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/loot bug walk");
             acAngered = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/loot bug dead");
         }
