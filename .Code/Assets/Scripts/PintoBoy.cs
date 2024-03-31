@@ -35,17 +35,13 @@ public class PintoBoy : GrabbableObject
     bool isButtonPressing = false;      //when the button is being pressed but isnt seen as a hold
     protected bool isHoldingButton = false;       //when the button is being pressed and it is seen as a hold
 
-    GameObject cam;
+    public GameObject cam;
     Transform trCam2DScene;
     GameObject modelScreen;
     Transform cartridgeLocation;
     Animator animButton;
 
     ScanNodeProperties scanNodeProperties;
-    public float jumpHeight = 9.75f;
-    public float fastFallSpeed = 15f;
-    public float rayCastDistance = 0.5f;
-    public float rayCastOffset = -0.05f;
 
     float hideStartHoldTime = 0.2f; //when a button hold is considered started
     float hideStartHoldTimer = 0;
@@ -127,12 +123,6 @@ public class PintoBoy : GrabbableObject
     protected void PintoBoyUpdate()
     {
         base.Update();
-
-        //if this isnt there. the PintoBoy's scale is set to 0 when it is dropped
-        //if(transform.localScale.magnitude < 0.20f)
-        //{
-        //    transform.localScale = Vector3.one * 0.25f;
-        //}
 
         if(IsServer && (!colorSet || testcolor))
         {
@@ -397,7 +387,6 @@ public class PintoBoy : GrabbableObject
         //yield return new WaitForSeconds(0.2f);
         Debug.Log("Pinto Button being pressed" + Time.time);
         float buttonStartPress = Time.time;
-        hideStartHoldTimer = hideStartHoldTime;
         yield return new WaitUntil(() => !isButtonPressing || !isHeld);
         Debug.Log("Pinto Button end press " + Time.deltaTime);
         animButton.SetBool("Press", false);

@@ -57,10 +57,9 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
         string DeathString = "Death";
         string ResetString = "Reset";
 
-
         public float jumpHeight = 8f;
         public float fastFallSpeed = 15f;
-        public float rayCastDistance = 0.5f;
+        public float rayCastDistance = 0.25f;
         public float rayCastOffset = -0.05f;
 
         bool isGrounded = false;
@@ -83,6 +82,9 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
         float spiderSpeed = 2.5f;
         float lootbugSpeed = 3f;
         float slimeSpeed = 2f;
+
+        float spiderLootBugSpawnChance = 0.1f;
+        float spiderLootBugDistance = 2.5f;
 
         float scoreIncreaseRate = 15f;     //how much score is added every second
 
@@ -140,10 +142,14 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
         int stepSoundIndex = 0;
 
         float backgroundMusicTimer = 0f;
-        float backgroundMusicTime = 0f;
+        float backgroundMusicTime = 0f; 
 
         public bool jump = false;
         public Transform trGameRoot;
+        float jumpTimer = 0f;
+        float maxJumpTime = 0.5f;
+        float jumpForce = 8;
+        bool jumping = false;
 
         // Start is called before the first frame update
         void Awake()
@@ -347,9 +353,26 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
             {
             }
 
-            if (isGrounded)
+            if (isGrounded && !jumping)
             {
                 PlayStepSound();
+
+                jumpTimer = 0;
+            }
+            else
+            {
+                if (isHoldingButton)
+                {
+                    if (jumpTimer > 0)
+                    {
+                        //playerRb.velocity = new Vector2(playerRb.velocity.x, jumpForce * (jumpTimer/maxJumpTime));
+                        jumpTimer -= Time.deltaTime;
+                    }
+                }
+                else
+                {
+                    jumpTimer = 0;
+                }
             }
 
             if (backgroundMusicTimer > 0)
@@ -368,6 +391,7 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
                     Debug.Log("PintoBoy LJ: acBackgroundSong is null");
                 }
             }
+
         }
 
         [ServerRpc]
@@ -469,7 +493,16 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
         {
             Debug.Log("PintoBoy LJ: Spawning enemy serverside");
             PintoEnemyType enemyType = Enum.Parse<PintoEnemyType>(enemy);
-            SpawnEnemy(EnumToJumpanyEnemy(enemyType), EnumToEnemySpawnPoint(enemyType), speed, enemyType, EnumToEnemySounds(enemyType));
+            SpawnEnemy(EnumToJumpanyEnemy(enemyType), EnumToEnemySpawnPoint(enemyType), 0, speed, enemyType, EnumToEnemySounds(enemyType));
+            SpawnEnemyClientRpc(speed, enemy);
+        }
+
+        [ServerRpc]
+        void SpawnEnemyServerRpc(float speed, float distance, string enemy)
+        {
+            Debug.Log("PintoBoy LJ: Spawning enemy serverside");
+            PintoEnemyType enemyType = Enum.Parse<PintoEnemyType>(enemy);
+            SpawnEnemy(EnumToJumpanyEnemy(enemyType), EnumToEnemySpawnPoint(enemyType), distance, speed, enemyType, EnumToEnemySounds(enemyType));
             SpawnEnemyClientRpc(speed, enemy);
         }
 
@@ -480,13 +513,14 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
             PintoEnemyType enemyType = Enum.Parse<PintoEnemyType>(enemy);
             if (!IsOwner)
             {
-                SpawnEnemy(EnumToJumpanyEnemy(enemyType), EnumToEnemySpawnPoint(enemyType), speed, enemyType, EnumToEnemySounds(enemyType));
+                SpawnEnemy(EnumToJumpanyEnemy(enemyType), EnumToEnemySpawnPoint(enemyType), 0, speed, enemyType, EnumToEnemySounds(enemyType));
             }
         }
 
-        LJEnemy SpawnEnemy(LJEnemy prefab, Transform position, float speed, PintoEnemyType enemy, AudioClip[] audioClips)
+        LJEnemy SpawnEnemy(LJEnemy prefab, Transform position, float spawnOffset, float speed, PintoEnemyType enemy, AudioClip[] audioClips)
         {
             LJEnemy enemyObj = Instantiate(prefab, position.position, Quaternion.identity, position);
+            enemyObj.transform.position += Vector3.right * spawnOffset;
             enemyObj.speed = speed + increaseSpeedAddition * speedAdditionMultiplier;
             enemyObj.game = this;
             enemyObj.onDeath.AddListener(OnEnemyDeath);
@@ -511,6 +545,16 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
         void SpawnLootbug()
         {
             SpawnEnemyServerRpc(lootbugSpeed, PintoEnemyType.Lootbug.ToString());
+            if(currentScore.Value > 700)
+            {
+                float rand = Random.value;
+                Debug.Log("PintoBoy LJ: rolling for Spider after lootbug");
+                if (rand < spiderLootBugSpawnChance)     //10 percent change a spider spawns right after
+                {
+                    Debug.Log("PintoBoy LJ: spider rolled");
+                    SpawnEnemyServerRpc(spiderSpeed, spiderLootBugDistance, PintoEnemyType.Spider.ToString());
+                }
+            }
         }
 
         void SpawnSlime()
@@ -693,13 +737,31 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
         {
             if (isGrounded)
             {
+                //playerRb.velocity = new Vector2(0, jumpHeight);
                 playerRb.velocity = new Vector2(0, jumpHeight);
+                //playerRb.position = playerRb.position + (Vector2.up*0.3f);
+                isGrounded = false;
+                jumpTimer = maxJumpTime;
+                jumping = true;
                 PlaySound(acPlayerJump);
             }
             else
             {
                 playerRb.velocity = new Vector2(0, -fastFallSpeed);
                 PlaySound(acPlayerJump);
+            }
+        }
+        public override void ButtonRelease(float timeHeld)
+        {
+            if(playerRb.velocity.y > 0)
+            {
+                playerRb.velocity = new Vector2(playerRb.velocity.x, playerRb.velocity.y / 4);
+            }
+
+
+            jumping = false;
+            if (!isGrounded && playerRb.velocity.y > 0.1f)
+            {
             }
         }
 

@@ -125,9 +125,10 @@ namespace PintoMod
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(itemPintoBoyLJ.spawnPrefab);
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(itemPintoBoyFD.spawnPrefab);
 
-            Items.RegisterScrap(itemPintoBoyLJ, (int)config_PintoboyRarity.Value, Levels.LevelTypes.All);
+            //Items.RegisterScrap(itemPintoBoyLJ, (int)config_PintoboyRarity.Value, Levels.LevelTypes.All);
             //Items.RegisterScrap(itemPintoBoyFD, (int)config_PintoboyRarity.Value, Levels.LevelTypes.All);
-            Items.RegisterScrap(itemPintoBoyFD, 1000000, Levels.LevelTypes.All);
+            Items.RegisterScrap(itemPintoBoyLJ, 1000000, Levels.LevelTypes.All);
+            //Items.RegisterScrap(itemPintoBoyFD, 1000000, Levels.LevelTypes.All);
         }
 
         private void LoadBundle()
@@ -184,36 +185,36 @@ namespace PintoMod
             // Bracken
             prefabName = "Bracken";
             fdBrackenPrefab = pintoBundle.LoadAsset<GameObject>($"{fdSpritesPath}/{prefabName}.prefab");
-            if (fdBrackenPrefab == null) throw new Exception("Failed to load " + prefabName + " Prefab Object!");
-            Debug.Log($"Loading {prefabName} Prefab");
+            if (fdBrackenPrefab == null) throw new Exception("PintoBoy FD: Failed to load " + prefabName + " Prefab Object!");
+            Debug.Log($"PintoBoy FD: Loading {prefabName} Prefab");
             fdBrackenPrefab.AddComponent<FD_Bracken>();
 
             // Bunker Spider
             prefabName = "Bunker Spider";
             fdBunkerSpiderPrefab = pintoBundle.LoadAsset<GameObject>($"{fdSpritesPath}/{prefabName}.prefab");
-            if (fdBunkerSpiderPrefab == null) throw new Exception("Failed to load " + prefabName + " Prefab Object!");
-            Debug.Log($"Loading {prefabName} Prefab");
+            if (fdBunkerSpiderPrefab == null) throw new Exception("PintoBoy FD: Failed to load " + prefabName + " Prefab Object!");
+            Debug.Log($"PintoBoy FD: Loading {prefabName} Prefab");
             fdBunkerSpiderPrefab.AddComponent<FD_BunkerSpider>();
 
             // Loot Bug
             prefabName = "Loot Bug";
             fdLootBugPrefab = pintoBundle.LoadAsset<GameObject>($"{fdSpritesPath}/{prefabName}.prefab");
-            if (fdLootBugPrefab == null) throw new Exception("Failed to load " + prefabName + " Prefab Object!");
-            Debug.Log($"Loading {prefabName} Prefab");
+            if (fdLootBugPrefab == null) throw new Exception("PintoBoy FD: Failed to load " + prefabName + " Prefab Object!");
+            Debug.Log($"PintoBoy FD: Loading {prefabName} Prefab");
             fdLootBugPrefab.AddComponent<FD_LootBug>();
 
             // Snare Flea
             prefabName = "Snare Flea";
             fdSnareFleaPrefab = pintoBundle.LoadAsset<GameObject>($"{fdSpritesPath}/{prefabName}.prefab");
-            if (fdSnareFleaPrefab == null) throw new Exception("Failed to load " + prefabName + " Prefab Object!");
-            Debug.Log($"Loading {prefabName} Prefab");
+            if (fdSnareFleaPrefab == null) throw new Exception("PintoBoy FD: Failed to load " + prefabName + " Prefab Object!");
+            Debug.Log($"PintoBoy FD: Loading {prefabName} Prefab");
             fdSnareFleaPrefab.AddComponent<FD_SnareFlea>();
 
             // Thumper
             prefabName = "Thumper";
             fdThumperPrefab = pintoBundle.LoadAsset<GameObject>($"{fdSpritesPath}/{prefabName}.prefab");
-            if (fdThumperPrefab == null) throw new Exception("Failed to load " + prefabName + " Prefab Object!");
-            Debug.Log($"Loading {prefabName} Prefab");
+            if (fdThumperPrefab == null) throw new Exception("PintoBoy FD: Failed to load " + prefabName + " Prefab Object!");
+            Debug.Log($"PintoBoy FD: Loading {prefabName} Prefab");
             FD_Thumper thumper = fdThumperPrefab.AddComponent<FD_Thumper>();
             thumper.acEntrance = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "monster sounds/thumper yell");
             thumper.acDefaultAttack = acDefaultAttack;
@@ -221,8 +222,8 @@ namespace PintoMod
             // Nutcracker
             prefabName = "Nutcracker";
             fdNutcrackerPrefab = pintoBundle.LoadAsset<GameObject>($"{fdSpritesPath}/{prefabName}.prefab");
-            if (fdNutcrackerPrefab == null) throw new Exception("Failed to load " + prefabName + " Prefab Object!");
-            Debug.Log($"Loading {prefabName} Prefab");
+            if (fdNutcrackerPrefab == null) throw new Exception("PintoBoy FD: Failed to load " + prefabName + " Prefab Object!");
+            Debug.Log($"PintoBoy FD: Loading {prefabName} Prefab");
             fdNutcrackerPrefab.AddComponent<FD_Nutcracker>();
 
             itemPintoBoyLJ = pintoBundle.LoadAsset<Item>($"{basePath}/pintoboy lj.asset");
@@ -248,7 +249,7 @@ namespace PintoMod
         {
             GameObject gameObject = pintoBundle.LoadAsset<GameObject>($"{fdSpritesPath}/{prefabName}.prefab");
             if (gameObject == null) throw new Exception("Failed to load " + prefabName + " Prefab Object!");
-            Debug.Log($"Loading {prefabName} Prefab. Component type is:" + component.GetType());
+            Debug.Log($"PintoBoy FD: Loading {prefabName} Prefab. Component type is:" + component.GetType());
             gameObject.AddComponent(component.GetType());
             return gameObject;
         }
@@ -286,6 +287,47 @@ namespace PintoMod
                 PintoBoy pinto = (PintoBoy)scrapObject;
                 pinto.MakeScreenNOTSpawnable();
                 Debug.Log("PintoBoy added to ship and screen not spawned");
+            }
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.DespawnPropsAtEndOfRound))]
+        public static void DespawnPintoBoyScreens(RoundManager __instance, ref bool despawnAllItems)
+        {
+            if (!__instance.IsServer)
+            {
+                return;
+            }
+            PintoBoy[] pintoBoyArray = Object.FindObjectsOfType<PintoBoy>();
+            for(int i = 0; i < pintoBoyArray.Length; i++)
+            {
+                if (despawnAllItems || (!pintoBoyArray[i].isHeld && !pintoBoyArray[i].isInShipRoom))
+                {
+                    if (pintoBoyArray[i].isHeld && pintoBoyArray[i].playerHeldBy != null)
+                    {
+                        pintoBoyArray[i].playerHeldBy.DropAllHeldItemsAndSync();
+                    }
+                    NetworkObject component = pintoBoyArray[i].gameObject.GetComponent<NetworkObject>();
+                    if (component != null && component.IsSpawned)
+                    {
+                        Object.Destroy(pintoBoyArray[i].cam.gameObject);
+                        pintoBoyArray[i].gameObject.GetComponent<NetworkObject>().Despawn(true);
+                    }
+                    else
+                    {
+                        Debug.Log("Error/warning: prop '" + pintoBoyArray[i].gameObject.name + "' was not spawned or did not have a NetworkObject component! Skipped despawning and destroyed it instead.");
+                        Object.Destroy(pintoBoyArray[i].cam.gameObject);
+                        Object.Destroy(pintoBoyArray[i].gameObject);
+                    }
+                }
+                else
+                {
+                    pintoBoyArray[i].scrapPersistedThroughRounds = true;
+                }
+                if (__instance.spawnedSyncedObjects.Contains(pintoBoyArray[i].gameObject))
+                {
+                    __instance.spawnedSyncedObjects.Remove(pintoBoyArray[i].gameObject);
+                }
             }
         }
     }
