@@ -720,9 +720,9 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             else
             {
                 FD_EnemyWeight[] enemyList = {
-                new FD_EnemyWeight(prefabThumper.GetComponent < FD_Enemy >(), 90, FDEnemyType.Thumper),
+                new FD_EnemyWeight(prefabThumper.GetComponent < FD_Enemy >(), 20, FDEnemyType.Thumper),
                 new FD_EnemyWeight(prefabBunkerSpider.GetComponent < FD_Enemy >(), 40, FDEnemyType.BunkerSpider),
-                new FD_EnemyWeight(prefabLootBug.GetComponent < FD_Enemy >(), 60, FDEnemyType.LootBug),
+                new FD_EnemyWeight(prefabLootBug.GetComponent < FD_Enemy >(), 30, FDEnemyType.LootBug),
                 new FD_EnemyWeight(prefabSnareFlea.GetComponent < FD_Enemy >(), 40, FDEnemyType.SnareFlea),
                 new FD_EnemyWeight(prefabBracken.GetComponent < FD_Enemy >(), 20, FDEnemyType.Bracken),
                 new FD_EnemyWeight(prefabNutcracker.GetComponent < FD_Enemy >(), 20, FDEnemyType.Nutcracker)
