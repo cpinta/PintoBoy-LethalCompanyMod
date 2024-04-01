@@ -83,8 +83,8 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
         float lootbugSpeed = 3f;
         float slimeSpeed = 2f;
 
-        float spiderLootBugSpawnChance = 0.1f;
-        float spiderLootBugDistance = 2.5f;
+        float spiderLootBugSpawnChance = 0.4f;
+        float spiderLootBugDistance = 2.75f;
 
         float scoreIncreaseRate = 15f;     //how much score is added every second
 
@@ -511,7 +511,7 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
         {
             Debug.Log("PintoBoy LJ: Spawning enemy clientside");
             PintoEnemyType enemyType = Enum.Parse<PintoEnemyType>(enemy);
-            if (!IsOwner)
+            if (!IsServer)
             {
                 SpawnEnemy(EnumToJumpanyEnemy(enemyType), EnumToEnemySpawnPoint(enemyType), 0, speed, enemyType, EnumToEnemySounds(enemyType));
             }

@@ -125,10 +125,8 @@ namespace PintoMod
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(itemPintoBoyLJ.spawnPrefab);
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(itemPintoBoyFD.spawnPrefab);
 
-            //Items.RegisterScrap(itemPintoBoyLJ, (int)config_PintoboyRarity.Value, Levels.LevelTypes.All);
-            //Items.RegisterScrap(itemPintoBoyFD, (int)config_PintoboyRarity.Value, Levels.LevelTypes.All);
-            Items.RegisterScrap(itemPintoBoyLJ, 1000000, Levels.LevelTypes.All);
-            //Items.RegisterScrap(itemPintoBoyFD, 1000000, Levels.LevelTypes.All);
+            Items.RegisterScrap(itemPintoBoyLJ, (int)config_PintoboyRarity.Value, Levels.LevelTypes.All);
+            Items.RegisterScrap(itemPintoBoyFD, (int)config_PintoboyRarity.Value, Levels.LevelTypes.All);
         }
 
         private void LoadBundle()
@@ -150,8 +148,6 @@ namespace PintoMod
             matOnScreen = pintoBundle.LoadAsset<Material>($"Screen Mat.mat");
             if (matOnScreen == null) throw new Exception("Failed to load Screen Mat material!");
 
-
-            Debug.Log("milestone 3");
             // Enemies
             GameObject ljSpider = pintoBundle.LoadAsset<GameObject>($"{ljSpritesPath}/spider/spider.prefab");
             if (ljSpider == null) throw new Exception("Failed to load Spider Prefab Object!");
@@ -171,15 +167,8 @@ namespace PintoMod
             ljLootbugPrefab = ljLootbug;
             if (ljLootbugPrefab == null) throw new Exception("Failed to load Lootbug Prefab!");
 
-
-            Debug.Log("milestone 2");
-
             // Enemies
-
-
             string prefabName = "";
-
-
             AudioClip acDefaultAttack = Pinto_ModBase.GetAudioClip(Pinto_ModBase.fdAudioPath + "67_knock (Player hit)");
 
             // Bracken

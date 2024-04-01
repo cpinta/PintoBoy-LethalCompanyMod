@@ -38,6 +38,15 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         {
             base.GameUpdate();
 
+            if (!leaving)
+            {
+                transform.localPosition = Vector3.zero;
+            }
+            else
+            {
+                transform.localPosition = Vector3.zero - ((Vector3.right * 10) * (1 - (leaveLengthTime/leaveTimer)));
+            }
+
             if (game != null && leaveTimer == 0)
             {
                 leaveTimer = 3 / (game.gameSpeed / game.startingGameSpeed);

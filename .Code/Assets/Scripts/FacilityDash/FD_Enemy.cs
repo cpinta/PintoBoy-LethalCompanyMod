@@ -57,7 +57,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         float attackTimer = 0;
 
         protected bool leaving = false;
-        float leaveLengthTime = 1.25f;
+        protected float leaveLengthTime = 1.25f;
         protected float leaveTimer = 0;
 
         public int distance;

@@ -67,6 +67,7 @@ public class PintoBoy : GrabbableObject
     public NetworkVariable<float> highScore = new NetworkVariable<float>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     public NetworkVariable<float> currentScore = new NetworkVariable<float>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     public NetworkVariable<int> health = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    public NetworkVariable<Color32> color = new NetworkVariable<Color32>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     Color32 bodyColor;
     bool colorSet = false;
     bool testcolor = false;
@@ -117,14 +118,23 @@ public class PintoBoy : GrabbableObject
         cartridgeLocation = mainObjectRenderer.transform.Find("Cartridge");
 
         Debug.Log("cartLoc.childcount:" + cartridgeLocation.childCount);
+
+        if(color.Value != Color.black)
+        {
+            SetBodyColor(color.Value);
+        }
     }
 
     // Update is called once per frame
     protected void PintoBoyUpdate()
     {
         base.Update();
+        if (color.Value != Color.black)
+        {
+            SetBodyColor(color.Value);
+        }
 
-        if(IsServer && (!colorSet || testcolor))
+        if (IsServer && (!colorSet || testcolor))
         {
             Debug.Log("PintoBoy: setting body color");
 
@@ -535,6 +545,7 @@ public class PintoBoy : GrabbableObject
     {
         mainObjectRenderer.materials[0].color = newColor;
         Debug.Log("PintoBoy: server body color to:"+newColor.ToString());
+        color.Value = newColor;
         SetBodyColorClientRpc(newColor.r, newColor.g, newColor.b);
     }
 
@@ -543,7 +554,12 @@ public class PintoBoy : GrabbableObject
     void SetBodyColorClientRpc(float r, float g, float b)
     {
         Debug.Log("PintoBoy: client body color");
-        //mainObjectRenderer.materials[0].color = new Color(r, g, b);
+        mainObjectRenderer.materials[0].color = new Color(r, g, b);
+    }
+
+    void SetBodyColor(Color32 newColor)
+    {
+        mainObjectRenderer.materials[0].color = newColor;
     }
 
 

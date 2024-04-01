@@ -200,6 +200,9 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
         AudioClip acSnapNeck;
 
+        float buttonPressingTimer = 0;
+        float timeToHide = 0.2f;
+
 
         public NetworkVariable<float> hallwayStateDistanceTraveled = new NetworkVariable<float>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         public NetworkVariable<FDHallwayState> nvHallwayState = new NetworkVariable<FDHallwayState>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
@@ -239,7 +242,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             enemyList.Add(new FD_EnemyWeight(prefabThumper.GetComponent<FD_Enemy>(), 100, FDEnemyType.Thumper));
             enemyList.Add(new FD_EnemyWeight(prefabBunkerSpider.GetComponent<FD_Enemy>(), 30, FDEnemyType.BunkerSpider));
             enemyList.Add(new FD_EnemyWeight(prefabLootBug.GetComponent<FD_Enemy>(), 60, FDEnemyType.LootBug));
-            enemyList.Add(new FD_EnemyWeight(prefabBracken.GetComponent<FD_Enemy>(), 500000000, FDEnemyType.Bracken));
+            //enemyList.Add(new FD_EnemyWeight(prefabNutcracker.GetComponent<FD_Enemy>(), 500000000, FDEnemyType.Nutcracker));
 
             int lvlIndex = 0;
             levels.Add(new FD_Level(lvlIndex, 5, 20, 1, enemyList.ToList()));
@@ -417,6 +420,14 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             }
         }
 
+        void TryDestroyEnemy()
+        {
+            if (IsOwner)
+            {
+                DestroyEnemyServerRpc();
+            }
+        }
+
         public void DestroyEnemy()
         {
             Debug.Log("PintoBoy FD: Destroying Enemy");
@@ -431,11 +442,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
             if(IsOwner)
             {
-
-                if (nvPlayerState.Value != FDPlayerState.Latched && nvPlayerState.Value != FDPlayerState.Hiding && nvPlayerState.Value != FDPlayerState.Dead)
-                {
-                    nvPlayerState.Value = FDPlayerState.Walking;
-                }
+                nvPlayerState.Value = FDPlayerState.Walking;
             }
         }
 
@@ -459,6 +466,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
             {
                 DestroyEnemy();
             }
+            animButtonTooltips.SetBool("Active", false);
         }
 
         public override void GameUpdate()
@@ -637,10 +645,15 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
             if (isHoldingButton)
             {
-                Hide();
+                buttonPressingTimer += Time.deltaTime;
+                if(buttonPressingTimer > timeToHide)
+                {
+                    Hide();
+                }
             }
             else
             {
+                buttonPressingTimer = 0;
                 if (isHiding)
                 {
                     UnHide();
@@ -999,7 +1012,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
                 FD_Enemy enemy = Instantiate(prefab, Vector3.zero, Quaternion.identity, trEnemySpawn).GetComponent<FD_Enemy>();
                 enemy.distance = distance;
                 enemy.game = this;
-                enemy.dead.AddListener(DestroyEnemy);
+                enemy.dead.AddListener(TryDestroyEnemy);
 
                 enemy.animator.SetFloat("Speed", gameSpeed / startingGameSpeed);
                 currentEnemy = enemy;
