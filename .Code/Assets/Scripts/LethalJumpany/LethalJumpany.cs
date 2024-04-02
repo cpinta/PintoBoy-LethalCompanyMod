@@ -631,7 +631,6 @@ namespace PintoMod.Assets.Scripts.LethalJumpany
 
         void StartGame()
         {
-
             SwitchState(LJState.InGame);
 
             playerRb.bodyType = RigidbodyType2D.Dynamic;

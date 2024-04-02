@@ -37,8 +37,9 @@ namespace PintoMod
 
         public ManualLogSource logger;
 
-        public static ConfigEntry<float>
-            config_PintoboyRarity;
+        public static ConfigEntry<float> config_PintoBoyLethalJumpanyRarity;
+        public static ConfigEntry<float> config_PintoBoyFacilityDashRarity;
+        public static ConfigEntry<float> config_PintoBoy;
 
         public static readonly Lazy<Pinto_ModBase> Instance = new Lazy<Pinto_ModBase>(() => new Pinto_ModBase());
 
@@ -112,7 +113,8 @@ namespace PintoMod
 
         private void ConfigSetup()
         {
-            config_PintoboyRarity = Config.Bind("Pintoboy Rarity", "Value", 25f, "How rare is the PintoBoy");
+            config_PintoBoyLethalJumpanyRarity = Config.Bind("Lethal Jumpany PintoBoy", "Value", 25f, "How rare is the PintoBoy with Lethal Jumpany");
+            config_PintoBoyFacilityDashRarity = Config.Bind("Facility Dash PintoBoy", "Value", 12f, "How rare is the PintoBoy with Facility Dash");
         }
 
         private void SetVariables()
@@ -125,8 +127,8 @@ namespace PintoMod
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(itemPintoBoyLJ.spawnPrefab);
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(itemPintoBoyFD.spawnPrefab);
 
-            Items.RegisterScrap(itemPintoBoyLJ, (int)config_PintoboyRarity.Value, Levels.LevelTypes.All);
-            Items.RegisterScrap(itemPintoBoyFD, (int)config_PintoboyRarity.Value, Levels.LevelTypes.All);
+            Items.RegisterScrap(itemPintoBoyLJ, (int)config_PintoBoyLethalJumpanyRarity.Value, Levels.LevelTypes.All);
+            Items.RegisterScrap(itemPintoBoyFD, (int)config_PintoBoyFacilityDashRarity.Value, Levels.LevelTypes.All);
         }
 
         private void LoadBundle()

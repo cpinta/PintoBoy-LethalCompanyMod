@@ -704,6 +704,11 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
             SetupLevel(0);
 
+            if(isHiding)
+            {
+                UnHide();
+            }
+
             foreach (Transform child in trEnemySpawn)
             {
                 GameObject.Destroy(child.gameObject);
@@ -1110,14 +1115,14 @@ namespace PintoMod.Assets.Scripts.FacilityDash
         [ServerRpc]
         void KillPlayerServerRpc(bool isBracken)
         {
-            Debug.Log("Killing player serverside");
+            Debug.Log("PintoBoy FD: Killing player serverside");
             KillPlayerClientRpc(isBracken);
         }
 
         [ClientRpc]
         void KillPlayerClientRpc(bool isBracken)
         {
-            Debug.Log("Killing player clientside");
+            Debug.Log("PintoBoy FD: Killing player clientside");
             if (gameState == FDState.Lost) { return; }
             if (IsOwner)
             {
@@ -1145,7 +1150,7 @@ namespace PintoMod.Assets.Scripts.FacilityDash
 
         public void Dead()
         {
-            Debug.Log("Player dead");
+            Debug.Log("PintoBoy FD: Player dead");
             ShowEndScreen();
             gameState = FDState.Lost;
         }
