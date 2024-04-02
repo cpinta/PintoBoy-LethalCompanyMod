@@ -1,8 +1,8 @@
 {
     "name": "PintoBoy",
-    "version_number": "1.0.4",
+    "version_number": "2.0.0",
     "website_url": "https://github.com/cpinta/PintoBoy-LethalCompanyMod",
-    "description": "Adds a scrap with a minigame reminiscent of 80s handhelds",
+    "description": "Adds a scrap with minigames reminiscent of 80s handhelds",
     "dependencies": [
 		"BepInEx-BepInExPack-5.4.2100",
 		"Evaisa-HookGenPatcher-0.0.5",
