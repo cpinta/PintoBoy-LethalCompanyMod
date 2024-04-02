@@ -1,8 +1,9 @@
-# Pintoboy
-This is a mod for Lethal Company that adds a scrap item reminiscent of a GameBoy and plays a minigame. <br>
+# PintoBoy
+This is a mod for Lethal Company that adds a scrap item reminiscent of a GameBoy and plays minigames. <br>
 [Thunderstore Link](https://thunderstore.io/c/lethal-company/p/Pinta/PintoBoy/)
 
-![](https://github.com/cpinta/PintoBoy-LethalCompanyMod/blob/master/Lethal%20Jumpany%20Gameplay%20ingame.gif)
+<img src=https://i.imgur.com/OmAdeGb.gif height="300">
+<img src=https://i.imgur.com/LVSFeGj.gif height="300">
 
 Code, Sprites, Textures, and 3D models were all created by me
 
