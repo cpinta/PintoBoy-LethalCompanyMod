@@ -10,7 +10,7 @@ namespace PintoMod.Assets.Scripts
     public class PintoCam : MonoBehaviour
     {
         int timeToCheck = 30;
-        float timer = 0f;
+        float timer = 2f;
         Collider col;
 
         // Start is called before the first frame update
