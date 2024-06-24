@@ -16,8 +16,6 @@ namespace PintoMod.Assets.Scripts
         // Start is called before the first frame update
         void Awake()
         {
-            col = GetComponent<Collider>();
-            Debug.Log("PintoBoy Cam: checking if any PintoBoy Cams intersect with this one");
             CheckColliders();
         }
 
@@ -37,6 +35,7 @@ namespace PintoMod.Assets.Scripts
 
         void CheckColliders()
         {
+            Debug.Log("PintoBoy Cam: checking if any PintoBoy Cams intersect with this one");
             Collider[] colliders = Physics.OverlapBox(transform.position, Vector3.one * 10);
             if (col == null)
             {
