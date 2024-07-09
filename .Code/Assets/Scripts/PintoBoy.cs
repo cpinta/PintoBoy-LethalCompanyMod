@@ -269,12 +269,12 @@ public class PintoBoy : GrabbableObject
 
     public override void DiscardItem()
     {
-        if (playerHeldBy != null)
-        {
-            playerHeldBy.equippedUsableItemQE = false;
-        }
-        isBeingUsed = false;
+        //if (playerHeldBy != null)
+        //{
+        //    playerHeldBy.equippedUsableItemQE = false;
+        //}
         base.DiscardItem();
+        isBeingUsed = false;
     }
 
 
@@ -455,6 +455,7 @@ public class PintoBoy : GrabbableObject
         Debug.Log("Spawning Screen");
         
         cam = transform.Find("2D Cam").gameObject;
+        cam.AddComponent<PintoCam>();
         if (cam == null)
         {
             Debug.Log("Screen in Pintoboy is null even after instantiate");
